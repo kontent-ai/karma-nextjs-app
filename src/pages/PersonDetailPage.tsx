@@ -1,39 +1,34 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { createClient } from "../utils/client";
-import { useAppContext } from "../context/AppContext";
-import { Person } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@portabletext/react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import PageSection from "../components/PageSection";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import type { FC } from "react";
+import { useParams } from "react-router";
+import KontentImage from "../components/KontentImage.tsx";
+import PageSection from "../components/PageSection.tsx";
+import type { Person } from "../model/index.ts";
+import { NotFoundError } from "../utils/errors.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
-const PersonDetailPage: React.FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+const PersonDetailPage: FC = () => {
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
 
-  const personData = useQuery({
-    queryKey: [`person-detail_${slug}`],
-    queryFn: () =>
-      createClient(environmentId, apiKey, isPreview)
-        .item<Person>(slug ?? "")
-        .toPromise()
-        .then(res => res.data.item)
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
+  const personData = useSuspenseQuery({
+    queryKey: ["person-detail", slug, environmentId, isPreviewEnabled],
+    queryFn: async () => {
+      try {
+        const res = await client.item<Person>(slug ?? "").toPromise();
+        return res.data.item;
+      } catch (err) {
+        if (err instanceof DeliveryError) {
+          throw new NotFoundError(`Person '${slug}' not found`);
+        }
+        throw err;
+      }
+    },
   });
-
-  if (!personData.data) {
-    return <div className="flex-grow" />;
-  }
 
   const person = personData.data;
 
@@ -46,12 +41,12 @@ const PersonDetailPage: React.FC = () => {
               Person
             </div>
             <h1 className="text-heading-1 text-heading-1-color">
-              {person.elements.prefix?.value
-                && <span>{person.elements.prefix.value}</span>}
+              {person.elements.prefix?.value ? <span>{person.elements.prefix.value}</span> : null}
               &nbsp;
               {person.elements.first_name?.value} {person.elements.last_name?.value}
-              {person.elements.suffixes?.value
-                && <span>, {person.elements.suffixes.value}</span>}
+              {person.elements.suffixes?.value ? (
+                <span>, {person.elements.suffixes.value}</span>
+              ) : null}
             </h1>
             <p className="text-[32px] leading-[130%] text-body-color">
               {person.elements.job_title?.value}
@@ -59,13 +54,16 @@ const PersonDetailPage: React.FC = () => {
           </div>
 
           <div className="flex-1 flex justify-end">
-            <img
+            <KontentImage
               src={person.elements.image?.value[0]?.url}
-              alt={person.elements.image?.value[0]?.description
-                ?? `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`}
+              alt={
+                person.elements.image?.value[0]?.description ??
+                `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`
+              }
               width={550}
               height={440}
               className="rounded-lg w-[550px] h-[440px] object-cover"
+              isPriority={true}
             />
           </div>
         </div>
@@ -80,21 +78,22 @@ const PersonDetailPage: React.FC = () => {
             />
           </div>
 
-          {(person.elements.phone?.value || person.elements.email?.value
-            || person.elements.website?.value) && (
+          {person.elements.phone?.value ||
+          person.elements.email?.value ||
+          person.elements.website?.value ? (
             <div className="flex-1 flex flex-col gap-10">
               <h2 className="text-heading-2 text-burgundy">Contact</h2>
 
               <div className="flex flex-col gap">
-                {person.elements.phone?.value && (
+                {person.elements.phone?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Phone:</span> {person.elements.phone.value}
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {person.elements.email?.value && (
+                {person.elements.email?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Email:</span>&nbsp;
@@ -106,9 +105,9 @@ const PersonDetailPage: React.FC = () => {
                       </a>
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {person.elements.website?.value && (
+                {person.elements.website?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-[700]">Website:</span>&nbsp;
@@ -122,10 +121,10 @@ const PersonDetailPage: React.FC = () => {
                       </a>
                     </p>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </PageSection>
     </div>

@@ -1,7 +1,9 @@
-import { NavLink, useSearchParams } from "react-router-dom";
-import { createPreviewLink } from "../utils/link";
+import type { FC } from "react";
+import { NavLink, useSearchParams } from "react-router";
+import { createPreviewLink } from "../utils/link.ts";
+import KontentImage from "./KontentImage.tsx";
 
-const PersonCard: React.FC<{
+const PersonCard: FC<{
   prefix?: string;
   firstName: string;
   lastName: string;
@@ -11,25 +13,30 @@ const PersonCard: React.FC<{
     url?: string;
     alt: string;
   };
-}> = ({ prefix, firstName, lastName, suffix, jobTitle, image }) => {
+  codename: string;
+}> = ({ prefix, firstName, lastName, suffix, jobTitle, image, codename }) => {
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 
   return (
     <div className="flex gap-4 items-center">
-      <img src={image.url} alt={image.alt} className="w-[95px] h-[95px] object-cover rounded-full" />
+      <KontentImage
+        src={image.url}
+        alt={image.alt}
+        width={95}
+        height={95}
+        className="w-[95px] h-[95px] object-cover rounded-full"
+      />
       <div className="flex flex-col gap-2 items-start max-w-[325px]">
         <NavLink
-          to={createPreviewLink(`/team/${firstName}-${lastName}`, isPreview)}
+          to={createPreviewLink(`/our-team/${codename}`, isPreview)}
           className="text-heading-4 underline text-burgundy hover:text-azure"
         >
-          {prefix && <span>{prefix}</span>}
+          {prefix ? <span>{prefix}</span> : null}
           {firstName} {lastName}
-          {suffix && <span>, {suffix}</span>}
+          {suffix ? <span>, {suffix}</span> : null}
         </NavLink>
-        <p className="text-small text-grey">
-          {jobTitle}
-        </p>
+        <p className="text-small text-grey">{jobTitle}</p>
       </div>
     </div>
   );

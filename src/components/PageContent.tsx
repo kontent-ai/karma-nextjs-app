@@ -1,13 +1,16 @@
-import { FC } from "react";
-import { isDisclaimer, isVideo, LandingPage } from "../model";
-import Video from "./Video";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import { PortableText, PortableTextReactResolvers } from "@kontent-ai/rich-text-resolver/utils/react";
-import PromotionalDisclaimer from "./disclaimer/PromotionalDisclaimer";
-import InformationalDisclaimer from "./disclaimer/InformationalDisclaimer";
-import CallToAction from "./CallToAction";
-import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink";
+import {
+  PortableText,
+  type PortableTextReactResolvers,
+} from "@kontent-ai/rich-text-resolver-react";
+import { type FC, useMemo } from "react";
+import { isDisclaimer, isVideo, type LandingPage } from "../model/index.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
+import CallToAction from "./CallToAction.tsx";
+import InformationalDisclaimer from "./disclaimer/InformationalDisclaimer.tsx";
+import PromotionalDisclaimer from "./disclaimer/PromotionalDisclaimer.tsx";
+import Video from "./Video.tsx";
 
 type PageContentProps = {
   body: LandingPage["elements"]["body_copy"];
@@ -15,16 +18,19 @@ type PageContentProps = {
 };
 
 const PageContent: FC<PageContentProps> = ({ body, itemId }) => {
-  const portableText = transformToPortableText(body.value);
+  const portableText = useMemo(() => transformToPortableText(body.value), [body.value]);
+  const portableTextComponents = useMemo(
+    () => createPortableTextComponents(body, itemId),
+    [body, itemId],
+  );
 
   return (
-    <div className="pt-[104px] pb-40 flex flex-col gap-40"
+    <div
+      className="pt-[104px] pb-40 flex flex-col gap-40"
       {...createItemSmartLink(itemId)}
-      {...createElementSmartLink(
-        "body_copy"
-      )}
+      {...createElementSmartLink("body_copy")}
     >
-      <PortableText value={portableText} components={createPortableTextComponents(body,itemId)} />
+      <PortableText value={portableText} components={portableTextComponents} />
     </div>
   );
 };
@@ -36,9 +42,11 @@ const createPortableTextComponents = (
   ...defaultPortableRichTextResolvers,
   types: {
     componentOrItem: ({ value }) => {
-      const item = element.linkedItems.find(item => item.system.codename === value.componentOrItem._ref);
+      const item = element.linkedItems.find(
+        (item) => item.system.codename === value.componentOrItem._ref,
+      );
       if (!item) {
-        return <div>Did not find any item with codename {value.component._ref}</div>;
+        return <div>Did not find any item with codename {value.componentOrItem._ref}</div>;
       }
 
       if (isVideo(item)) {
@@ -46,9 +54,21 @@ const createPortableTextComponents = (
       }
 
       if (isDisclaimer(item)) {
-        return item.elements.type.value[0]?.codename === "promotional"
-          ? <PromotionalDisclaimer title={item.elements.headline.value} text={item.elements.subheadline.value} parentId={parentId} componentId={item.system.id}  />
-          : <InformationalDisclaimer title={item.elements.headline.value} text={item.elements.subheadline.value} parentId={parentId} componentId={item.system.id} />;
+        return item.elements.type.value[0]?.codename === "promotional" ? (
+          <PromotionalDisclaimer
+            title={item.elements.headline.value}
+            text={item.elements.subheadline.value}
+            parentId={parentId}
+            componentId={item.system.id}
+          />
+        ) : (
+          <InformationalDisclaimer
+            title={item.elements.headline.value}
+            text={item.elements.subheadline.value}
+            parentId={parentId}
+            componentId={item.system.id}
+          />
+        );
       }
 
       return (

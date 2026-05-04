@@ -1,29 +1,39 @@
-import { FC } from "react";
-import PageSection from "../components/PageSection";
-import { useAppContext } from "../context/AppContext";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createClient } from "../utils/client";
-import { Page, Service } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import ServiceList from "../components/services/ServiceList";
-import { useSearchParams } from "react-router-dom";
-import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@portabletext/react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import type { FC } from "react";
+import KontentImage from "../components/KontentImage.tsx";
+import PageSection from "../components/PageSection.tsx";
+import ServiceList from "../components/services/ServiceList.tsx";
+import type { Page, Service } from "../model/index.ts";
+import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
+
+const selectServiceList = (data: ReadonlyArray<Service>) =>
+  data.map((service) => ({
+    image: {
+      url: service.elements.image.value[0]?.url ?? "",
+      alt: service.elements.image.value[0]?.description ?? "",
+    },
+    name: service.elements.name.value,
+    summary: service.elements.summary.value,
+    tags: service.elements.medical_specialties.value.map((specialty) => specialty.name),
+    urlSlug: service.elements.url_slug.value,
+  }));
+
 const ServicesListingPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [servicesPage, services] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["services_page"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryKey: ["services_page", environmentId, isPreviewEnabled],
+        queryFn: async () =>
+          client
             .item<Page>("services")
             .toPromise()
-            .then(res => res.data)
+            .then((res) => res.data)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -32,24 +42,19 @@ const ServicesListingPage: FC = () => {
             }),
       },
       {
-        queryKey: ["services_listing"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryKey: ["services_listing", environmentId, isPreviewEnabled],
+        queryFn: async () =>
+          client
             .items<Service>()
             .type("service")
             .toPromise()
-            .then(res => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return null;
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
+        select: selectServiceList,
       },
     ],
   });
 
-  if (!servicesPage.data || !services.data) {
+  if (!servicesPage.data) {
     return <div className="flex-grow" />;
   }
 
@@ -66,12 +71,13 @@ const ServicesListingPage: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
-              width={670}
-              height={440}
+            <KontentImage
               src={servicesPage.data.item.elements.hero_image?.value[0]?.url}
               alt={servicesPage.data.item.elements.hero_image?.value[0]?.description ?? ""}
+              width={670}
+              height={440}
               className="rounded-lg"
+              isPriority={true}
             />
           </div>
         </div>
@@ -87,18 +93,7 @@ const ServicesListingPage: FC = () => {
         </PageSection>
       )}
       <PageSection color="bg-white">
-        <ServiceList
-          services={services.data.map(service => ({
-            image: {
-              url: service.elements.image.value[0]?.url ?? "",
-              alt: service.elements.image.value[0]?.description ?? "",
-            },
-            name: service.elements.name.value,
-            summary: service.elements.summary.value,
-            tags: service.elements.medical_specialties.value.map(specialty => specialty.name),
-            urlSlug: service.elements.url_slug.value,
-          }))}
-        />
+        <ServiceList services={services.data} />
       </PageSection>
     </div>
   );

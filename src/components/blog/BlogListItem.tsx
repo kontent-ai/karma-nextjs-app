@@ -1,7 +1,8 @@
-import React from "react";
-import Link from "../Link";
-import { PortableText } from "@portabletext/react";
-import { PortableTextObject } from "@kontent-ai/rich-text-resolver";
+import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import type { FC } from "react";
+import KontentImage from "../KontentImage.tsx";
+import Link from "../Link.tsx";
 
 type BlogListItemProps = Readonly<{
   imageSrc?: string;
@@ -11,7 +12,7 @@ type BlogListItemProps = Readonly<{
   className?: string;
 }>;
 
-const BlogListItem: React.FC<BlogListItemProps> = ({
+const BlogListItem: FC<BlogListItemProps> = ({
   imageSrc,
   title,
   description,
@@ -21,18 +22,16 @@ const BlogListItem: React.FC<BlogListItemProps> = ({
   return (
     <div className={`flex flex-col md:flex-row gap-16 w-full ${className}`}>
       <div className="">
-        <img
-          width={440}
-          height={288}
+        <KontentImage
           src={imageSrc}
           alt={title}
+          width={440}
+          height={288}
           className=" w-[440px] h-[288px] object-cover rounded-md"
         />
       </div>
       <div className="md:w-2/3 flex flex-col justify-center gap-5">
-        <h2 className="text-heading-2 font-libre text-burgundy mb-4">
-          {title}
-        </h2>
+        <h2 className="text-heading-2 font-libre text-burgundy mb-4">{title}</h2>
         <div className="text-body-lg text-gray mb-4 max-w-3xl line-clamp-4">
           <PortableText value={description} />
         </div>

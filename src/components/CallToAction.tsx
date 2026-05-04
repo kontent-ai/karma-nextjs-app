@@ -1,6 +1,11 @@
-import React from "react";
-import ButtonLink from "./ButtonLink";
-import { createItemSmartLink, createElementSmartLink, createComponentSmartLink } from "../utils/smartlink";
+import type { FC } from "react";
+import {
+  createComponentSmartLink,
+  createElementSmartLink,
+  createItemSmartLink,
+} from "../utils/smartlink.ts";
+import ButtonLink from "./ButtonLink.tsx";
+import KontentImage from "./KontentImage.tsx";
 
 type CallToActionProps = Readonly<{
   title: string;
@@ -10,12 +15,12 @@ type CallToActionProps = Readonly<{
   imageSrc?: string;
   imageAlt: string;
   imagePosition?: "left" | "right" | "center";
-  style?: "burgundy" | "default";
+  variant?: "burgundy" | "default";
   parentId: string;
   componentId: string | null;
 }>;
 
-const CallToAction: React.FC<CallToActionProps> = ({
+const CallToAction: FC<CallToActionProps> = ({
   title,
   description,
   buttonText,
@@ -23,7 +28,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
   imageSrc,
   imageAlt,
   imagePosition = "left",
-  style = "default",
+  variant = "default",
   parentId,
   componentId,
 }) => {
@@ -38,43 +43,43 @@ const CallToAction: React.FC<CallToActionProps> = ({
 
   return (
     <div
-      className={`${style === "burgundy" ? "burgundy-theme" : ""} flex flex-col ${
-        calculateLayout(imagePosition)
-      } items-center gap-16`}
+      className={`${variant === "burgundy" ? "burgundy-theme" : ""} flex flex-col ${calculateLayout(
+        imagePosition,
+      )} items-center gap-16`}
     >
       <div className="rounded-lg xl:w-[560px] lg:w-[420px]">
-        <img
+        <KontentImage
           src={imageSrc}
+          alt={imageAlt}
           width={560}
           height={420}
-          alt={imageAlt}
           className="rounded object-fit"
         />
       </div>
 
-      <div className={`flex lg:flex-1 flex-col gap-5 ${imagePosition === "center" ? "items-center" : ""}`}>
-        <h2 className={`flex w-fit text-6xl font-bold text-heading-2-color`}
-        {...createItemSmartLink(parentId)}
-        {...createElementSmartLink("headline")}
-        {...(componentId && createComponentSmartLink(componentId))}
+      <div
+        className={`flex lg:flex-1 flex-col gap-5 ${imagePosition === "center" ? "items-center" : ""}`}
+      >
+        <h2
+          className={`flex w-fit text-6xl font-bold text-heading-2-color`}
+          {...createItemSmartLink(parentId)}
+          {...createElementSmartLink("headline")}
+          {...(componentId && createComponentSmartLink(componentId))}
         >
           {title}
         </h2>
 
-        <p className={`flex text-xl text-body-color line-clamp-5`}
-        {...createItemSmartLink(parentId)}
-        {...createElementSmartLink("subheadline")}
-        {...(componentId && createComponentSmartLink(componentId))}
+        <p
+          className={`flex text-xl text-body-color line-clamp-5`}
+          {...createItemSmartLink(parentId)}
+          {...createElementSmartLink("subheadline")}
+          {...(componentId && createComponentSmartLink(componentId))}
         >
           {description}
         </p>
 
         <div className="flex pt-5">
-          <ButtonLink
-            href={buttonHref}
-          >
-            {buttonText}
-          </ButtonLink>
+          <ButtonLink href={buttonHref}>{buttonText}</ButtonLink>
         </div>
       </div>
     </div>

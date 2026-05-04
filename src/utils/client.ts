@@ -1,14 +1,18 @@
 import { createDeliveryClient } from "@kontent-ai/delivery-sdk";
-import { CoreClientTypes } from "../model";
+import type { CoreClientTypes } from "../model/index.ts";
 
 const url = !import.meta.env.VITE_KONTENT_URL ? "kontent.ai" : import.meta.env.VITE_KONTENT_URL;
 
-export const createClient = (environmentId: string, previewApiKey: string, usePreviewMode: boolean) =>
+export const createClient = (
+  environmentId: string,
+  previewApiKey: string,
+  isPreviewEnabled: boolean,
+) =>
   createDeliveryClient<CoreClientTypes>({
     environmentId,
-    previewApiKey: previewApiKey,
+    previewApiKey,
     defaultQueryConfig: {
-      usePreviewMode,
+      usePreviewMode: isPreviewEnabled,
       waitForLoadingNewContent: true,
     },
     proxy: {

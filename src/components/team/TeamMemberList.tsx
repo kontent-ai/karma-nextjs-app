@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { TeamListItem } from "./TeamListItem";
+import type { FC } from "react";
+import { TeamListItem } from "./TeamListItem.tsx";
 
 interface TeamMemberListProps {
   teamMembers: {

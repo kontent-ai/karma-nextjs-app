@@ -1,30 +1,43 @@
-import { FC } from "react";
-import PageSection from "../components/PageSection";
-import { useAppContext } from "../context/AppContext";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createClient } from "../utils/client";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import TeamMemberList from "../components/team/TeamMemberList";
-import { Page, Person } from "../model/content-types";
-import { useSearchParams } from "react-router-dom";
-import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@portabletext/react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import type { FC } from "react";
+import KontentImage from "../components/KontentImage.tsx";
+import PageSection from "../components/PageSection.tsx";
+import TeamMemberList from "../components/team/TeamMemberList.tsx";
+import type { Page, Person } from "../model/content-types/index.ts";
+import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
+
+const selectTeamMembers = (data: ReadonlyArray<Person>) =>
+  data.map((member) => ({
+    image: {
+      url: member.elements.image.value[0]?.url ?? "",
+      alt:
+        member.elements.image.value[0]?.description ??
+        `${member.elements.first_name.value} ${member.elements.last_name.value}`,
+    },
+    prefix: member.elements.prefix.value,
+    suffix: member.elements.suffixes.value,
+    firstName: member.elements.first_name.value,
+    lastName: member.elements.last_name.value,
+    position: member.elements.job_title.value,
+    link: member.system.codename,
+  }));
 
 const OurTeamPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [teamPage, teamMembers] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["team_page"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryKey: ["team_page", environmentId, isPreviewEnabled],
+        queryFn: async () =>
+          client
             .item<Page>("our_team")
             .toPromise()
-            .then(res => res.data)
+            .then((res) => res.data)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -33,24 +46,19 @@ const OurTeamPage: FC = () => {
             }),
       },
       {
-        queryKey: ["team_members"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryKey: ["team_members", environmentId, isPreviewEnabled],
+        queryFn: async () =>
+          client
             .items<Person>()
             .type("person")
             .toPromise()
-            .then(res => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return null;
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
+        select: selectTeamMembers,
       },
     ],
   });
 
-  if (!teamPage.data || !teamMembers.data) {
+  if (!teamPage.data) {
     return <div className="flex-grow" />;
   }
 
@@ -67,12 +75,13 @@ const OurTeamPage: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
-              width={670}
-              height={440}
+            <KontentImage
               src={teamPage.data.item.elements.hero_image?.value[0]?.url}
               alt={teamPage.data.item.elements.hero_image?.value[0]?.description ?? ""}
+              width={670}
+              height={440}
               className="rounded-lg"
+              isPriority={true}
             />
           </div>
         </div>
@@ -90,21 +99,7 @@ const OurTeamPage: FC = () => {
       )}
       <PageSection color="bg-white">
         <div className="pb-[160px] pt-[104px]">
-          <TeamMemberList
-            teamMembers={teamMembers.data.map(member => ({
-              image: {
-                url: member.elements.image.value[0]?.url ?? "",
-                alt: member.elements.image.value[0]?.description
-                  ?? member.elements.first_name.value + " " + member.elements.last_name.value,
-              },
-              prefix: member.elements.prefix.value,
-              suffix: member.elements.suffixes.value,
-              firstName: member.elements.first_name.value,
-              lastName: member.elements.last_name.value,
-              position: member.elements.job_title.value,
-              link: member.system.codename,
-            }))}
-          />
+          <TeamMemberList teamMembers={teamMembers.data} />
         </div>
       </PageSection>
     </div>

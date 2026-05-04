@@ -1,11 +1,20 @@
-import { createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react";
 import KontentSmartLink, {
-  IRefreshMessageData,
-  IRefreshMessageMetadata,
-  IUpdateMessageData,
+  type IRefreshMessageData,
+  type IRefreshMessageMetadata,
+  type IUpdateMessageData,
   KontentSmartLinkEvent,
 } from "@kontent-ai/smart-link";
-import { useAppContext } from "./AppContext";
+import {
+  createContext,
+  type FC,
+  type PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useAppContext } from "./AppContext.tsx";
 
 interface SmartLinkContextValue {
   readonly smartLink?: KontentSmartLink | null;
@@ -17,25 +26,30 @@ const defaultContextValue: SmartLinkContextValue = {
 
 const SmartLinkContext = createContext<SmartLinkContextValue>(defaultContextValue);
 
+const baseUrl = import.meta.env.VITE_KONTENT_URL ?? "kontent.ai";
+
 export const SmartLinkContextComponent: FC<PropsWithChildren> = ({ children }) => {
   const { environmentId } = useAppContext();
   const [smartLink, setSmartLink] = useState<KontentSmartLink | null>(null);
 
   useEffect(() => {
-    const instance = KontentSmartLink.initialize({
-      defaultDataAttributes: {
-        projectId: environmentId,
-        languageCodename: "default",
-      },
-    });
-
-    setSmartLink(instance);
+    setSmartLink(KontentSmartLink.initialize());
 
     return () => {
-      // instance?.destroy();
+      smartLink?.destroy();
       setSmartLink(null);
-    };
-  }, [environmentId, smartLink]);
+    }
+  }, [smartLink]);
+
+  useEffect(() => {
+    smartLink?.setConfiguration({
+      defaultDataAttributes: {
+        environmentId,
+        languageCodename: "default",
+      },
+      baseUrl,
+    });
+  }, [smartLink, environmentId]);
 
   const value = useMemo(() => ({ smartLink }), [smartLink]);
 
@@ -46,14 +60,20 @@ export const useSmartLink = (): KontentSmartLink | null => {
   const { smartLink } = useContext(SmartLinkContext);
 
   if (typeof smartLink === "undefined") {
-    throw new Error("You need to place SmartLinkProvider to one of the parent components to use useSmartLink.");
+    throw new Error(
+      "You need to place SmartLinkProvider to one of the parent components to use useSmartLink.",
+    );
   }
 
   return smartLink;
 };
 
 export const useCustomRefresh = (
-  callback: (data: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => void,
+  callback: (
+    data: IRefreshMessageData,
+    metadata: IRefreshMessageMetadata,
+    originalRefresh: () => void,
+  ) => void,
 ): void => {
   const smartLink = useSmartLink();
 
@@ -68,6 +88,25 @@ export const useCustomRefresh = (
 
     return;
   }, [smartLink, callback]);
+};
+
+export const useSmartLinkRefetch = (refetch: () => unknown): void => {
+  const callback = useCallback(
+    (
+      _data: IRefreshMessageData,
+      metadata: IRefreshMessageMetadata,
+      originalRefresh: () => void,
+    ) => {
+      if (metadata.manualRefresh) {
+        originalRefresh();
+      } else {
+        void refetch();
+      }
+    },
+    [refetch],
+  );
+
+  useCustomRefresh(callback);
 };
 
 export const useLivePreview = (callback: (data: IUpdateMessageData) => void): void => {

@@ -1,4 +1,5 @@
-import { FC } from "react";
+import type { FC } from "react";
+import KontentImage from "./KontentImage.tsx";
 
 type ImageWithTagProps = Readonly<{
   image: Readonly<{
@@ -17,12 +18,12 @@ const ImageWithTag: FC<ImageWithTagProps> = ({ image, tagText, className }) => {
       <span className="px-3.5 py-1.5 absolute text-body-xs bg-azure text-white mt-4 ms-4 rounded-md font-bold">
         {tagText}
       </span>
-      <img
-        width={image.width}
-        height={image.height}
+      <KontentImage
         src={image.url}
         alt={image.alt}
-        className={`object-cover static rounded-lg w-[${image.width}px] h-[${image.height}px]`}
+        width={image.width}
+        height={image.height}
+        className="object-cover static rounded-lg"
       />
     </div>
   );

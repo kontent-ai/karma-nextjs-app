@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import type { CSSProperties, FC, ReactNode } from "react";
 
 export type IconProps = {
   className?: string;
@@ -15,8 +15,7 @@ export const IconWrapper: FC<IconProps> = ({
   size = "1em",
   screenReaderText,
 }) => {
-  // You can use inline styles or Tailwind classes here.
-  const style: React.CSSProperties = {
+  const style: CSSProperties = {
     color,
     fontSize: size,
     display: "inline-flex",
@@ -27,7 +26,7 @@ export const IconWrapper: FC<IconProps> = ({
   return (
     <span className={`${className}`} style={style}>
       {children}
-      {screenReaderText && <span className="sr-only">{screenReaderText}</span>}
+      {screenReaderText ? <span className="sr-only">{screenReaderText}</span> : null}
     </span>
   );
 };
