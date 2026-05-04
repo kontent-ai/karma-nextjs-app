@@ -75,7 +75,7 @@ const router = createBrowserRouter([
         <ErrorBoundary
           fallbackRender={({ error }) => (
             <div>
-              There was an error! <pre>{error.message}</pre>
+              There was an error! <pre>{error instanceof Error ? error.message : String(error)}</pre>
             </div>
           )}
         >

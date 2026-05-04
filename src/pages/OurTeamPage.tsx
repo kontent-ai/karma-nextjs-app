@@ -8,7 +8,7 @@ import TeamMemberList from "../components/team/TeamMemberList";
 import { Page, Person } from "../model/content-types";
 import { useSearchParams } from "react-router-dom";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 
 const OurTeamPage: FC = () => {

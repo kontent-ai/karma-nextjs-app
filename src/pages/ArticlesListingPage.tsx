@@ -11,7 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import ImageWithTag from "../components/ImageWithTag";
 import Tags from "../components/Tags";
 import ButtonLink from "../components/ButtonLink";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
 

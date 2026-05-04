@@ -8,7 +8,7 @@ import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import ServiceList from "../components/services/ServiceList";
 import { useSearchParams } from "react-router-dom";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 const ServicesListingPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();

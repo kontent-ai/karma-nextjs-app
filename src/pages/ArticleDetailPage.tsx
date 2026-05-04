@@ -5,7 +5,7 @@ import { createClient } from "../utils/client";
 import { useAppContext } from "../context/AppContext";
 import { Article, LanguageCodenames } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { defaultPortableRichTextResolvers } from "../utils/richtext";
 import PageSection from "../components/PageSection";

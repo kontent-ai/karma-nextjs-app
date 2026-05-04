@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "../Link";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { PortableTextObject } from "@kontent-ai/rich-text-resolver";
 
 type BlogListItemProps = Readonly<{

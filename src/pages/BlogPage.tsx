@@ -8,7 +8,7 @@ import BlogList from "../components/blog/BlogList";
 import { BlogPost, Page } from "../model";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { useSearchParams } from "react-router-dom";
-import { PortableText } from "@portabletext/react";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
 
 const BlogPage: React.FC = () => {

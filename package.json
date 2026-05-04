@@ -16,27 +16,27 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.12.0",
     "@kontent-ai/delivery-sdk": "^16.4.2",
-    "@kontent-ai/rich-text-resolver": "^2.0.1",
-    "@kontent-ai/smart-link": "^4.0.1",
-    "@portabletext/react": "^3.2.0",
+    "@kontent-ai/rich-text-resolver": "^3.0.2",
+    "@kontent-ai/rich-text-resolver-react": "^3.0.2",
+    "@kontent-ai/smart-link": "^5.0.5",
     "@tanstack/react-query": "^5.90.20",
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-error-boundary": "^5.0.0",
+    "react-error-boundary": "^6.1.0",
     "react-router": "^7.13.0",
     "react-router-dom": "^7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@kontent-ai/data-ops": "^2.6.1",
-    "@kontent-ai/model-generator": "^8.0.0",
+    "@kontent-ai/model-generator": "^10.0.0",
     "@react-router/dev": "^7.13.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-basic-ssl": "^2.0.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.21",
     "dprint": "^0.47.6",
     "eslint": "^9.39.2",
@@ -49,6 +49,6 @@
     "tailwindcss": "^3.4.14",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.15.0",
-    "vite": "^6.2.5"
+    "vite": "^7.3.1"
   }
 }

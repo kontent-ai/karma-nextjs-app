@@ -1,4 +1,4 @@
-import { PortableTextReactResolvers } from "@kontent-ai/rich-text-resolver/utils/react";
+import { PortableTextReactResolvers } from "@kontent-ai/rich-text-resolver-react";
 import Link from "../components/Link";
 
 export const defaultPortableRichTextResolvers = {
