@@ -1,13 +1,25 @@
 import React from "react";
-import { IconProps, IconWrapper } from "./IconWrapper";
+import { type IconProps, IconWrapper } from "./IconWrapper.tsx";
 
 type IconGermanyProps = Omit<IconProps, "children">;
 
 const IconGermany = React.forwardRef<SVGSVGElement, IconGermanyProps>(
   ({ className, color, screenReaderText, size }, ref) => {
     return (
-      <IconWrapper className={className} color={color} size={size} screenReaderText={screenReaderText}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ref={ref}>
+      <IconWrapper
+        className={className}
+        color={color}
+        size={size}
+        screenReaderText={screenReaderText}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          ref={ref}
+        >
           <g clip-path="url(#clip0_250_634)">
             <path
               d="M0.746094 16.1739C2.44161 20.7435 6.84012 24 11.9997 24C17.1593 24 21.5578 20.7435 23.2533 16.1739L11.9997 15.1305L0.746094 16.1739Z"

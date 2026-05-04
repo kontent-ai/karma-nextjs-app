@@ -1,8 +1,8 @@
-import React from "react";
-import BlogListItem from "./BlogListItem";
-import Divider from "../Divider";
-import PageSection from "../PageSection";
-import { PortableTextObject } from "@kontent-ai/rich-text-resolver";
+import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
+import type React from "react";
+import Divider from "../Divider.tsx";
+import PageSection from "../PageSection.tsx";
+import BlogListItem from "./BlogListItem.tsx";
 
 type Blog = Readonly<{
   imageSrc?: string;
@@ -34,11 +34,7 @@ const BlogList: React.FC<BlogListProps> = ({ blogs }) => {
     </div>
   ));
 
-  return (
-    <div className="flex flex-col">
-      {blogItems}
-    </div>
-  );
+  return <div className="flex flex-col">{blogItems}</div>;
 };
 
 export default BlogList;

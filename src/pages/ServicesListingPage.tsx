@@ -1,15 +1,16 @@
-import { FC } from "react";
-import PageSection from "../components/PageSection";
-import { useAppContext } from "../context/AppContext";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createClient } from "../utils/client";
-import { Page, Service } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import ServiceList from "../components/services/ServiceList";
-import { useSearchParams } from "react-router-dom";
-import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import type { FC } from "react";
+import { useSearchParams } from "react-router-dom";
+import PageSection from "../components/PageSection.tsx";
+import ServiceList from "../components/services/ServiceList.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import type { Page, Service } from "../model/index.ts";
+import { createClient } from "../utils/client.ts";
+import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+
 const ServicesListingPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const [searchParams] = useSearchParams();
@@ -23,7 +24,7 @@ const ServicesListingPage: FC = () => {
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("services")
             .toPromise()
-            .then(res => res.data)
+            .then((res) => res.data)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -38,7 +39,7 @@ const ServicesListingPage: FC = () => {
             .items<Service>()
             .type("service")
             .toPromise()
-            .then(res => res.data.items)
+            .then((res) => res.data.items)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -88,14 +89,14 @@ const ServicesListingPage: FC = () => {
       )}
       <PageSection color="bg-white">
         <ServiceList
-          services={services.data.map(service => ({
+          services={services.data.map((service) => ({
             image: {
               url: service.elements.image.value[0]?.url ?? "",
               alt: service.elements.image.value[0]?.description ?? "",
             },
             name: service.elements.name.value,
             summary: service.elements.summary.value,
-            tags: service.elements.medical_specialties.value.map(specialty => specialty.name),
+            tags: service.elements.medical_specialties.value.map((specialty) => specialty.name),
             urlSlug: service.elements.url_slug.value,
           }))}
         />

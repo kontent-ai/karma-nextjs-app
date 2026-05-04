@@ -1,19 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { createClient } from "../utils/client";
-import { useAppContext } from "../context/AppContext";
-import { Service, Person } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import PageSection from "../components/PageSection";
-import Tags from "../components/Tags";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
+import { useQuery } from "@tanstack/react-query";
+import type React from "react";
+import { useCallback } from "react";
 import { NavLink, useSearchParams } from "react-router";
-import { createPreviewLink } from "../utils/link";
-import { useCustomRefresh } from "../context/SmartLinkContext";
-import { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
+import { useParams } from "react-router-dom";
+import PageSection from "../components/PageSection.tsx";
+import Tags from "../components/Tags.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import type { Person, Service } from "../model/index.ts";
+import { createClient } from "../utils/client.ts";
+import { createPreviewLink } from "../utils/link.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 
 const TeamMemberCard: React.FC<{
   prefix?: string;
@@ -32,7 +33,11 @@ const TeamMemberCard: React.FC<{
 
   return (
     <div className="flex gap-4 items-center">
-      <img src={image.url} alt={image.alt} className="w-[95px] h-[95px] object-cover rounded-full" />
+      <img
+        src={image.url}
+        alt={image.alt}
+        className="w-[95px] h-[95px] object-cover rounded-full"
+      />
       <div className="flex flex-col gap-2 items-start">
         <NavLink
           to={createPreviewLink(`/our-team/${codename}`, isPreview)}
@@ -42,9 +47,7 @@ const TeamMemberCard: React.FC<{
           {firstName} {lastName}
           {suffix && <span>, {suffix}</span>}
         </NavLink>
-        <p className="text-small text-grey text-center">
-          {jobTitle}
-        </p>
+        <p className="text-small text-grey text-center">{jobTitle}</p>
       </div>
     </div>
   );
@@ -130,11 +133,9 @@ const ServiceDetail: React.FC = () => {
 
           <div className="flex flex-col gap-20">
             <div className="flex flex-col gap-10">
-              <h2 className="text-heading-2 text-burgundy">
-                Medical Specialties
-              </h2>
+              <h2 className="text-heading-2 text-burgundy">Medical Specialties</h2>
               <Tags
-                tags={service.elements.medical_specialties.value.map(specialty => specialty.name)}
+                tags={service.elements.medical_specialties.value.map((specialty) => specialty.name)}
                 orientation="vertical"
               />
             </div>
@@ -153,8 +154,9 @@ const ServiceDetail: React.FC = () => {
                       jobTitle={person.elements.job_title?.value || ""}
                       image={{
                         url: person.elements.image?.value[0]?.url || "",
-                        alt: person.elements.image?.value[0]?.description
-                          || `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`,
+                        alt:
+                          person.elements.image?.value[0]?.description ||
+                          `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`,
                       }}
                       codename={person.system.codename}
                     />

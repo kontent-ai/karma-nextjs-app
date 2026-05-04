@@ -1,21 +1,21 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import LandingPage from "./pages/LandingPage.tsx";
-import { createBrowserRouter, RouteObject, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import BlogPage from "./pages/BlogPage.tsx";
+import { ErrorBoundary } from "react-error-boundary";
+import { createBrowserRouter, type RouteObject, RouterProvider } from "react-router-dom";
+import Auth0ProviderWithRedirect from "./components/auth/AuthProviderWithRedirect.tsx";
 import Layout from "./components/Layout.tsx";
-import BlogDetail from "./pages/BlogDetail.tsx";
-import ServicesListingPage from "./pages/ServicesListingPage.tsx";
-import ServiceDetail from "./pages/ServiceDetail.tsx";
+import Loader from "./components/Loader.tsx";
 import NotFound from "./components/NotFound.tsx";
-import ArticlesListingPage from "./pages/ArticlesListingPage.tsx";
 import ArticleDetailPage from "./pages/ArticleDetailPage.tsx";
+import ArticlesListingPage from "./pages/ArticlesListingPage.tsx";
+import BlogDetail from "./pages/BlogDetail.tsx";
+import BlogPage from "./pages/BlogPage.tsx";
+import LandingPage from "./pages/LandingPage.tsx";
 import OurTeamPage from "./pages/OurTeamPage.tsx";
 import PersonDetailPage from "./pages/PersonDetailPage.tsx";
-import Auth0ProviderWithRedirect from "./components/auth/AuthProviderWithRedirect.tsx";
-import { ErrorBoundary } from "react-error-boundary";
-import Loader from "./components/Loader.tsx";
+import ServiceDetail from "./pages/ServiceDetail.tsx";
+import ServicesListingPage from "./pages/ServicesListingPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -75,7 +75,8 @@ const router = createBrowserRouter([
         <ErrorBoundary
           fallbackRender={({ error }) => (
             <div>
-              There was an error! <pre>{error instanceof Error ? error.message : String(error)}</pre>
+              There was an error!{" "}
+              <pre>{error instanceof Error ? error.message : String(error)}</pre>
             </div>
           )}
         >
@@ -91,7 +92,7 @@ const router = createBrowserRouter([
         </ErrorBoundary>
       </Auth0ProviderWithRedirect>
     ),
-    children: BaseRouting.map(p => ({
+    children: BaseRouting.map((p) => ({
       path: `envid/:envId/${p.path}`,
       ...p,
     })),

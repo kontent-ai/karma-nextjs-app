@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createContext, FC, PropsWithChildren, useContext } from "react";
+import { createContext, type FC, type PropsWithChildren, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { loadPreviewApiKey } from "../utils/api";
+import { loadPreviewApiKey } from "../utils/api.ts";
 
 type AppContext = {
   environmentId: string;
@@ -29,20 +29,20 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
         return defaultAppContext;
       }
       return getAccessTokenSilently()
-        .then(res => {
+        .then((res) => {
           return loadPreviewApiKey({
             accessToken: res,
             environmentId: envId,
           });
         })
-        .then(res => {
+        .then((res) => {
           if (!res) {
             throw new Error("Could not obtain preview API KEY");
           }
 
           return { environmentId: envId, apiKey: res };
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.error === "login_required") {
             loginWithRedirect();
           }
@@ -54,9 +54,5 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
     },
   });
 
-  return (
-    <AppContext.Provider value={contextData.data}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextData.data}>{children}</AppContext.Provider>;
 };

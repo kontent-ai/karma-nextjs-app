@@ -1,14 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { createClient } from "../utils/client";
-import { useAppContext } from "../context/AppContext";
-import { Person } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import PageSection from "../components/PageSection";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useQuery } from "@tanstack/react-query";
+import type React from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import PageSection from "../components/PageSection.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import type { Person } from "../model/index.ts";
+import { createClient } from "../utils/client.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 
 const PersonDetailPage: React.FC = () => {
   const { environmentId, apiKey } = useAppContext();
@@ -22,7 +22,7 @@ const PersonDetailPage: React.FC = () => {
       createClient(environmentId, apiKey, isPreview)
         .item<Person>(slug ?? "")
         .toPromise()
-        .then(res => res.data.item)
+        .then((res) => res.data.item)
         .catch((err) => {
           if (err instanceof DeliveryError) {
             return null;
@@ -46,12 +46,10 @@ const PersonDetailPage: React.FC = () => {
               Person
             </div>
             <h1 className="text-heading-1 text-heading-1-color">
-              {person.elements.prefix?.value
-                && <span>{person.elements.prefix.value}</span>}
+              {person.elements.prefix?.value && <span>{person.elements.prefix.value}</span>}
               &nbsp;
               {person.elements.first_name?.value} {person.elements.last_name?.value}
-              {person.elements.suffixes?.value
-                && <span>, {person.elements.suffixes.value}</span>}
+              {person.elements.suffixes?.value && <span>, {person.elements.suffixes.value}</span>}
             </h1>
             <p className="text-[32px] leading-[130%] text-body-color">
               {person.elements.job_title?.value}
@@ -61,8 +59,10 @@ const PersonDetailPage: React.FC = () => {
           <div className="flex-1 flex justify-end">
             <img
               src={person.elements.image?.value[0]?.url}
-              alt={person.elements.image?.value[0]?.description
-                ?? `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`}
+              alt={
+                person.elements.image?.value[0]?.description ??
+                `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`
+              }
               width={550}
               height={440}
               className="rounded-lg w-[550px] h-[440px] object-cover"
@@ -80,8 +80,9 @@ const PersonDetailPage: React.FC = () => {
             />
           </div>
 
-          {(person.elements.phone?.value || person.elements.email?.value
-            || person.elements.website?.value) && (
+          {(person.elements.phone?.value ||
+            person.elements.email?.value ||
+            person.elements.website?.value) && (
             <div className="flex-1 flex flex-col gap-10">
               <h2 className="text-heading-2 text-burgundy">Contact</h2>
 

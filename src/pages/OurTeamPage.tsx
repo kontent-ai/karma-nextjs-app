@@ -1,15 +1,15 @@
-import { FC } from "react";
-import PageSection from "../components/PageSection";
-import { useAppContext } from "../context/AppContext";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createClient } from "../utils/client";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import TeamMemberList from "../components/team/TeamMemberList";
-import { Page, Person } from "../model/content-types";
-import { useSearchParams } from "react-router-dom";
-import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import type { FC } from "react";
+import { useSearchParams } from "react-router-dom";
+import PageSection from "../components/PageSection.tsx";
+import TeamMemberList from "../components/team/TeamMemberList.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import type { Page, Person } from "../model/content-types/index.ts";
+import { createClient } from "../utils/client.ts";
+import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
 const OurTeamPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
@@ -24,7 +24,7 @@ const OurTeamPage: FC = () => {
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("our_team")
             .toPromise()
-            .then(res => res.data)
+            .then((res) => res.data)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -39,7 +39,7 @@ const OurTeamPage: FC = () => {
             .items<Person>()
             .type("person")
             .toPromise()
-            .then(res => res.data.items)
+            .then((res) => res.data.items)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -91,11 +91,12 @@ const OurTeamPage: FC = () => {
       <PageSection color="bg-white">
         <div className="pb-[160px] pt-[104px]">
           <TeamMemberList
-            teamMembers={teamMembers.data.map(member => ({
+            teamMembers={teamMembers.data.map((member) => ({
               image: {
                 url: member.elements.image.value[0]?.url ?? "",
-                alt: member.elements.image.value[0]?.description
-                  ?? member.elements.first_name.value + " " + member.elements.last_name.value,
+                alt:
+                  member.elements.image.value[0]?.description ??
+                  member.elements.first_name.value + " " + member.elements.last_name.value,
               },
               prefix: member.elements.prefix.value,
               suffix: member.elements.suffixes.value,

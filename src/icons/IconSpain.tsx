@@ -1,5 +1,5 @@
 import React from "react";
-import { IconProps, IconWrapper } from "./IconWrapper";
+import { type IconProps, IconWrapper } from "./IconWrapper.tsx";
 
 type IconSpainProps = Omit<IconProps, "children">;
 

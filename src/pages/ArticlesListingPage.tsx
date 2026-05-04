@@ -1,19 +1,24 @@
-import { FC, useState } from "react";
-import PageSection from "../components/PageSection";
-import { useAppContext } from "../context/AppContext";
-import { useSuspenseQueries } from "@tanstack/react-query";
-import { createClient } from "../utils/client";
-import { Page, Article, isArticleType, isGeneralHealthcareTopics } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import ArticleList from "../components/articles/ArticleList";
-import Selector, { SelectorOption } from "../components/Selector";
-import { useSearchParams } from "react-router-dom";
-import ImageWithTag from "../components/ImageWithTag";
-import Tags from "../components/Tags";
-import ButtonLink from "../components/ButtonLink";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import { type FC, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import ArticleList from "../components/articles/ArticleList.tsx";
+import ButtonLink from "../components/ButtonLink.tsx";
+import ImageWithTag from "../components/ImageWithTag.tsx";
+import PageSection from "../components/PageSection.tsx";
+import Selector, { type SelectorOption } from "../components/Selector.tsx";
+import Tags from "../components/Tags.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import {
+  type Article,
+  isArticleType,
+  isGeneralHealthcareTopics,
+  type Page,
+} from "../model/index.ts";
+import { createClient } from "../utils/client.ts";
+import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
 type FeaturedArticleProps = Readonly<{
   image: {
@@ -28,7 +33,14 @@ type FeaturedArticleProps = Readonly<{
   description: string;
   urlSlug: string;
 }>;
-const FeaturedArticle: FC<FeaturedArticleProps> = ({ image, title, published, tags, description, urlSlug }) => {
+const FeaturedArticle: FC<FeaturedArticleProps> = ({
+  image,
+  title,
+  published,
+  tags,
+  description,
+  urlSlug,
+}) => {
   return (
     <div className="flex flex-col lg:flex-row items-center pt-[104px] pb-[120px] gap-12">
       <ImageWithTag
@@ -46,10 +58,10 @@ const FeaturedArticle: FC<FeaturedArticleProps> = ({ image, title, published, ta
         <h2 className="text-heading-2 text-heading-2-color">{title}</h2>
         <p className="text-body-md text-body-color pt-4">{published}</p>
         <Tags tags={tags} className="mt-4" />
-        <p className="text-body-lg text-body-color pt-3">
-          {description}
-        </p>
-        <ButtonLink href={urlSlug} className="mt-6">Read More</ButtonLink>
+        <p className="text-body-lg text-body-color pt-3">{description}</p>
+        <ButtonLink href={urlSlug} className="mt-6">
+          Read More
+        </ButtonLink>
       </div>
     </div>
   );
@@ -73,7 +85,7 @@ const ArticlesListingPage: FC = () => {
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("research")
             .toPromise()
-            .then(res => res.data)
+            .then((res) => res.data)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -87,7 +99,7 @@ const ArticlesListingPage: FC = () => {
           createClient(environmentId, apiKey, isPreview)
             .taxonomy("article_type")
             .toPromise()
-            .then(res => res.data.taxonomy),
+            .then((res) => res.data.taxonomy),
       },
       {
         queryKey: ["articles_topics"],
@@ -95,7 +107,7 @@ const ArticlesListingPage: FC = () => {
           createClient(environmentId, apiKey, isPreview)
             .taxonomy("general_healthcare_topics")
             .toPromise()
-            .then(res => res.data.taxonomy),
+            .then((res) => res.data.taxonomy),
       },
       {
         queryKey: ["articles_listing"],
@@ -105,7 +117,7 @@ const ArticlesListingPage: FC = () => {
             .type("article")
             .orderByDescending("elements.publish_date")
             .toPromise()
-            .then(res => res.data.items)
+            .then((res) => res.data.items)
             .catch((err) => {
               if (err instanceof DeliveryError) {
                 return null;
@@ -119,12 +131,12 @@ const ArticlesListingPage: FC = () => {
   const handleArticleTypeChange = (option: SelectorOption) => {
     setArticleType(option.label);
     if (option.label === "All") {
-      setSearchParams(prev => {
+      setSearchParams((prev) => {
         prev.delete("type");
         return prev;
       });
     } else {
-      setSearchParams(prev => {
+      setSearchParams((prev) => {
         prev.set("type", option.codename);
         return prev;
       });
@@ -133,12 +145,12 @@ const ArticlesListingPage: FC = () => {
   const handleArticleTopicChange = (option: SelectorOption) => {
     setArticleTopic(option.label);
     if (option.label === "All") {
-      setSearchParams(prev => {
+      setSearchParams((prev) => {
         prev.delete("topic");
         return prev;
       });
     } else {
-      setSearchParams(prev => {
+      setSearchParams((prev) => {
         prev.set("topic", option.codename);
         return prev;
       });
@@ -185,14 +197,14 @@ const ArticlesListingPage: FC = () => {
                 height: 440,
               }}
               title={featuredArticle.elements.title.value}
-              published={`Published on ${
-                new Date(featuredArticle.elements.publish_date.value ?? "").toLocaleDateString("en-US", {
-                  month: "short",
-                  year: "numeric",
-                  day: "numeric",
-                })
-              }`}
-              tags={featuredArticle.elements.topics.value.map(t => t.name)}
+              published={`Published on ${new Date(
+                featuredArticle.elements.publish_date.value ?? "",
+              ).toLocaleDateString("en-US", {
+                month: "short",
+                year: "numeric",
+                day: "numeric",
+              })}`}
+              tags={featuredArticle.elements.topics.value.map((t) => t.name)}
               description={featuredArticle.elements.introduction.value}
               urlSlug={featuredArticle.elements.url_slug.value}
             />
@@ -215,7 +227,7 @@ const ArticlesListingPage: FC = () => {
             label="Article Type"
             options={[
               { label: "All", codename: "all" },
-              ...articlesTypes.data.terms.map(t => ({ label: t.name, codename: t.codename })),
+              ...articlesTypes.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
             ]}
             selectedOption={articleType}
             onChange={handleArticleTypeChange}
@@ -224,7 +236,7 @@ const ArticlesListingPage: FC = () => {
             label="Article Topic"
             options={[
               { label: "All", codename: "all" },
-              ...articlesTopics.data.terms.map(t => ({ label: t.name, codename: t.codename })),
+              ...articlesTopics.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
             ]}
             selectedOption={articleTopic}
             onChange={handleArticleTopicChange}
@@ -232,18 +244,19 @@ const ArticlesListingPage: FC = () => {
         </div>
       </PageSection>
       <ArticleList
-        articles={articles.data.filter(a =>
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          isArticleType(articleTypeCodename)
-            ? a.elements.article_type.value.find(t => t.codename === articleTypeCodename)
-            : true
-        )
-          .filter(a =>
-            isGeneralHealthcareTopics(articleTopicCodename)
-              ? a.elements.topics.value.find(t => t.codename === articleTopicCodename)
-              : true
+        articles={articles.data
+          .filter((a) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            isArticleType(articleTypeCodename)
+              ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
+              : true,
           )
-          .map(article => ({
+          .filter((a) =>
+            isGeneralHealthcareTopics(articleTopicCodename)
+              ? a.elements.topics.value.find((t) => t.codename === articleTopicCodename)
+              : true,
+          )
+          .map((article) => ({
             image: {
               url: article.elements.image.value[0]?.url ?? "",
               alt: article.elements.image.value[0]?.description ?? "",
@@ -252,12 +265,12 @@ const ArticlesListingPage: FC = () => {
             introduction: article.elements.introduction.value,
             publishDate: article.elements.publish_date.value
               ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
               : "No date",
-            topics: article.elements.topics.value.map(topic => topic.name),
+            topics: article.elements.topics.value.map((topic) => topic.name),
             urlSlug: article.elements.url_slug.value,
           }))}
       />

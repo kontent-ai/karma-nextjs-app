@@ -1,6 +1,6 @@
-import React from "react";
+import type React from "react";
 import { NavLink, useSearchParams } from "react-router";
-import { createPreviewLink } from "../utils/link";
+import { createPreviewLink } from "../utils/link.ts";
 
 interface ButtonLinkProps {
   href: string;
@@ -9,7 +9,12 @@ interface ButtonLinkProps {
   className?: string;
 }
 
-const ButtonLink: React.FC<ButtonLinkProps> = ({ href, children, style = "transparent", className = "" }) => {
+const ButtonLink: React.FC<ButtonLinkProps> = ({
+  href,
+  children,
+  style = "transparent",
+  className = "",
+}) => {
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 

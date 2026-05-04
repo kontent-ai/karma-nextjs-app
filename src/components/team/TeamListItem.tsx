@@ -1,5 +1,5 @@
-import { FC } from "react";
-import ButtonLink from "../ButtonLink";
+import type { FC } from "react";
+import ButtonLink from "../ButtonLink.tsx";
 
 type TeamListItemProps = {
   image: {
@@ -14,7 +14,15 @@ type TeamListItemProps = {
   link: string;
 };
 
-export const TeamListItem: FC<TeamListItemProps> = ({ image, prefix, suffix, firstName, lastName, title, link }) => {
+export const TeamListItem: FC<TeamListItemProps> = ({
+  image,
+  prefix,
+  suffix,
+  firstName,
+  lastName,
+  title,
+  link,
+}) => {
   return (
     <div className="flex flex-col items-center text-center gap-6">
       <div className="w-[300px] h-[300px] rounded-full overflow-hidden">

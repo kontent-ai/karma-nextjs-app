@@ -1,7 +1,7 @@
-import React from "react";
-import Link from "../Link";
+import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import { PortableTextObject } from "@kontent-ai/rich-text-resolver";
+import type React from "react";
+import Link from "../Link.tsx";
 
 type BlogListItemProps = Readonly<{
   imageSrc?: string;
@@ -30,9 +30,7 @@ const BlogListItem: React.FC<BlogListItemProps> = ({
         />
       </div>
       <div className="md:w-2/3 flex flex-col justify-center gap-5">
-        <h2 className="text-heading-2 font-libre text-burgundy mb-4">
-          {title}
-        </h2>
+        <h2 className="text-heading-2 font-libre text-burgundy mb-4">{title}</h2>
         <div className="text-body-lg text-gray mb-4 max-w-3xl line-clamp-4">
           <PortableText value={description} />
         </div>

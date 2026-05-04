@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 const Logo: FC = () => (
   <div className="flex gap-4 items-center">

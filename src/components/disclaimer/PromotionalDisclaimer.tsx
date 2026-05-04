@@ -1,5 +1,5 @@
-import React from "react";
-import DisclaimerBase from "./DisclaimerBase";
+import type React from "react";
+import DisclaimerBase from "./DisclaimerBase.tsx";
 
 type PromotionalDisclaimerProps = Readonly<{
   title: string;
@@ -8,8 +8,19 @@ type PromotionalDisclaimerProps = Readonly<{
   componentId: string | null;
 }>;
 
-const PromotionalDisclaimer: React.FC<PromotionalDisclaimerProps> = ({ title, text, parentId, componentId }) => (
-  <DisclaimerBase title={title} text={text} parentId={parentId} componentId={componentId}  theme="burgundy" />
+const PromotionalDisclaimer: React.FC<PromotionalDisclaimerProps> = ({
+  title,
+  text,
+  parentId,
+  componentId,
+}) => (
+  <DisclaimerBase
+    title={title}
+    text={text}
+    parentId={parentId}
+    componentId={componentId}
+    theme="burgundy"
+  />
 );
 
 export default PromotionalDisclaimer;

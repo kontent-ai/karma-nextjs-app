@@ -1,22 +1,23 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { createClient } from "../utils/client";
-import { useAppContext } from "../context/AppContext";
-import { Article, LanguageCodenames } from "../model";
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import PageSection from "../components/PageSection";
-import Tags from "../components/Tags";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
+import { useQuery } from "@tanstack/react-query";
+import type React from "react";
+import { useCallback } from "react";
 import { NavLink, useSearchParams } from "react-router";
-import PersonCard from "../components/PersonCard";
-import ArticleList from "../components/articles/ArticleList";
-import { createPreviewLink } from "../utils/link";
-import { useCustomRefresh } from "../context/SmartLinkContext";
-import { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
-import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink";
+import { useParams } from "react-router-dom";
+import ArticleList from "../components/articles/ArticleList.tsx";
+import PageSection from "../components/PageSection.tsx";
+import PersonCard from "../components/PersonCard.tsx";
+import Tags from "../components/Tags.tsx";
+import { useAppContext } from "../context/AppContext.tsx";
+import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import type { Article, LanguageCodenames } from "../model/index.ts";
+import { createClient } from "../utils/client.ts";
+import { createPreviewLink } from "../utils/link.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
 
 const HeroImageAuthorCard: React.FC<{
   prefix?: string;
@@ -36,10 +37,16 @@ const HeroImageAuthorCard: React.FC<{
 
   return (
     <div className="flex items-center gap-4">
-      <img src={image.url} alt={image.alt} className="w-[50px] h-[50px] object-cover rounded-full" />
+      <img
+        src={image.url}
+        alt={image.alt}
+        className="w-[50px] h-[50px] object-cover rounded-full"
+      />
       <div className="flex flex-col">
         <div className="flex items-center">
-          <span className="text-white text-body-md">{language === "es-ES" ? "Por" : "By"}&nbsp;</span>
+          <span className="text-white text-body-md">
+            {language === "es-ES" ? "Por" : "By"}&nbsp;
+          </span>
           <NavLink
             to={createPreviewLink(`/our-team/${codename}`, isPreview)}
             className="text-white text-body-md font-bold hover:text-burgundy underline"
@@ -130,13 +137,13 @@ const ArticleDetailPage: React.FC = () => {
 
   const formattedDate = article.elements.publish_date.value
     ? new Date(article.elements.publish_date.value).toLocaleDateString(
-      article.system.language === "es-ES" ? "es-ES" : "en-US",
-      {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      },
-    )
+        article.system.language === "es-ES" ? "es-ES" : "en-US",
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        },
+      )
     : "";
 
   return (
@@ -147,9 +154,10 @@ const ArticleDetailPage: React.FC = () => {
             <div className="w-fit text-xs text-body-color border tracking-wider font-[700] border-tag-border-color px-4 py-2 rounded-lg uppercase">
               {article.system.language === "es-ES" ? "Artículo" : "Article"}
             </div>
-            <h1 className="text-heading-1 leading-[84%] text-heading-1-color"
-            {...createItemSmartLink(article.system.id)}
-            {...createElementSmartLink("title")}
+            <h1
+              className="text-heading-1 leading-[84%] text-heading-1-color"
+              {...createItemSmartLink(article.system.id)}
+              {...createElementSmartLink("title")}
             >
               {article.elements.title.value}
             </h1>
@@ -162,8 +170,9 @@ const ArticleDetailPage: React.FC = () => {
                 publishDate={formattedDate}
                 image={{
                   url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url || "",
-                  alt: article.elements.author.linkedItems[0].elements.image?.value[0]?.description
-                    || `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
+                  alt:
+                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ||
+                    `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
                       article.elements.author.linkedItems[0].elements.last_name?.value
                     }`,
                 }}
@@ -173,7 +182,7 @@ const ArticleDetailPage: React.FC = () => {
             )}
             {article.elements.topics.value.length > 0 && article.system.language === "default" && (
               <Tags
-                tags={article.elements.topics.value.map(topic => topic.name)}
+                tags={article.elements.topics.value.map((topic) => topic.name)}
                 orientation="horizontal"
                 className="mt-4"
                 itemId={article.system.id}
@@ -195,15 +204,17 @@ const ArticleDetailPage: React.FC = () => {
 
       <PageSection color="bg-white">
         <div className="flex flex-col gap-12 mx-auto items-center max-w-fit">
-          <p className="text-body-xl text-body-color font-[600] w-[728px] max-w-[728px]"
-          {...createItemSmartLink(article.system.id)}
-          {...createElementSmartLink("introduction")}
+          <p
+            className="text-body-xl text-body-color font-[600] w-[728px] max-w-[728px]"
+            {...createItemSmartLink(article.system.id)}
+            {...createElementSmartLink("introduction")}
           >
             {article.elements.introduction.value}
           </p>
-          <div className="rich-text-body flex mx-auto flex-col gap-5 items-center max-w-[728px]"
-          {...createItemSmartLink(article.system.id)}
-          {...createElementSmartLink("body_copy")}
+          <div
+            className="rich-text-body flex mx-auto flex-col gap-5 items-center max-w-[728px]"
+            {...createItemSmartLink(article.system.id)}
+            {...createElementSmartLink("body_copy")}
           >
             <PortableText
               value={transformToPortableText(article.elements.body_copy?.value)}
@@ -216,9 +227,7 @@ const ArticleDetailPage: React.FC = () => {
       {article.elements.author?.linkedItems[0] && (
         <PageSection color="bg-creme">
           <div className="creme-theme flex gap-24 max-w-[728px] mx-auto py-[104px] items-center ">
-            <h2 className="text-heading-2 text-heading-2-color">
-              Author
-            </h2>
+            <h2 className="text-heading-2 text-heading-2-color">Author</h2>
             <div className="text-body-lg text-body-color">
               <PersonCard
                 prefix={article.elements.author.linkedItems[0].elements.prefix?.value}
@@ -228,8 +237,9 @@ const ArticleDetailPage: React.FC = () => {
                 jobTitle={article.elements.author.linkedItems[0].elements.job_title?.value || ""}
                 image={{
                   url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url || "",
-                  alt: article.elements.author.linkedItems[0].elements.image?.value[0]?.description
-                    || `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
+                  alt:
+                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ||
+                    `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
                       article.elements.author.linkedItems[0].elements.last_name?.value
                     }`,
                 }}
@@ -242,11 +252,9 @@ const ArticleDetailPage: React.FC = () => {
       {article.elements.related_articles.linkedItems.length > 0 && (
         <PageSection color="bg-white">
           <div className="flex flex-col max-w-6xl mx-auto py-[104px]">
-            <h2 className="text-heading-2 text-heading-2-color">
-              Related articles
-            </h2>
+            <h2 className="text-heading-2 text-heading-2-color">Related articles</h2>
             <ArticleList
-              articles={article.elements.related_articles.linkedItems.map(article => ({
+              articles={article.elements.related_articles.linkedItems.map((article) => ({
                 title: article.elements.title.value,
                 image: {
                   url: article.elements.image.value[0]?.url ?? "",
@@ -255,7 +263,7 @@ const ArticleDetailPage: React.FC = () => {
                 urlSlug: article.elements.url_slug.value,
                 introduction: article.elements.introduction.value,
                 publishDate: article.elements.publish_date.value ?? "",
-                topics: article.elements.topics.value.map(topic => topic.name),
+                topics: article.elements.topics.value.map((topic) => topic.name),
               }))}
             />
           </div>

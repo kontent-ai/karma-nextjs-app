@@ -1,5 +1,5 @@
 import { NavLink, useSearchParams } from "react-router-dom";
-import { createPreviewLink } from "../utils/link";
+import { createPreviewLink } from "../utils/link.ts";
 
 const PersonCard: React.FC<{
   prefix?: string;
@@ -17,7 +17,11 @@ const PersonCard: React.FC<{
 
   return (
     <div className="flex gap-4 items-center">
-      <img src={image.url} alt={image.alt} className="w-[95px] h-[95px] object-cover rounded-full" />
+      <img
+        src={image.url}
+        alt={image.alt}
+        className="w-[95px] h-[95px] object-cover rounded-full"
+      />
       <div className="flex flex-col gap-2 items-start max-w-[325px]">
         <NavLink
           to={createPreviewLink(`/team/${firstName}-${lastName}`, isPreview)}
@@ -27,9 +31,7 @@ const PersonCard: React.FC<{
           {firstName} {lastName}
           {suffix && <span>, {suffix}</span>}
         </NavLink>
-        <p className="text-small text-grey">
-          {jobTitle}
-        </p>
+        <p className="text-small text-grey">{jobTitle}</p>
       </div>
     </div>
   );

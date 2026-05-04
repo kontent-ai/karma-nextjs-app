@@ -8,9 +8,13 @@ export type CustomHeaders = Record<string, string>;
 const makeHeaders = (requestContext?: RequestContext): CustomHeaders =>
   requestContext
     ? {
-      ...requestContext.authToken ? { Authorization: `Bearer ${requestContext.authToken}` } : {},
-      ...requestContext.appInstanceId ? { "X-AppInstanceId": requestContext.appInstanceId } : {},
-    }
+        ...(requestContext.authToken
+          ? { Authorization: `Bearer ${requestContext.authToken}` }
+          : {}),
+        ...(requestContext.appInstanceId
+          ? { "X-AppInstanceId": requestContext.appInstanceId }
+          : {}),
+      }
     : {};
 
 export const get = (url: string, requestContext: RequestContext) => {

@@ -1,11 +1,15 @@
-import { FC } from "react";
-import { isArticle, isEvent, LandingPage } from "../../model";
-import PageSection from "../PageSection";
-import FeaturedArticle from "./FeaturedArticle";
-import FeaturedEvent from "./FeaturedEvent";
-import Divider from "../Divider";
-import CallToAction from "../CallToAction";
-import { createElementSmartLink, createFixedAddSmartLink, createItemSmartLink } from "../../utils/smartlink";
+import type { FC } from "react";
+import { isArticle, isEvent, type LandingPage } from "../../model/index.ts";
+import {
+  createElementSmartLink,
+  createFixedAddSmartLink,
+  createItemSmartLink,
+} from "../../utils/smartlink.ts";
+import CallToAction from "../CallToAction.tsx";
+import Divider from "../Divider.tsx";
+import PageSection from "../PageSection.tsx";
+import FeaturedArticle from "./FeaturedArticle.tsx";
+import FeaturedEvent from "./FeaturedEvent.tsx";
 
 type FeaturedContentProps = {
   featuredContent: LandingPage["elements"]["featured_content"];
@@ -13,8 +17,8 @@ type FeaturedContentProps = {
 };
 
 const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }) => {
-  const linkedItems = featuredContent.linkedItems.map(
-    (item) => {
+  const linkedItems = featuredContent.linkedItems
+    .map((item) => {
       if (isArticle(item)) {
         return (
           <PageSection color="bg-creme" key={item.system.codename}>
@@ -27,7 +31,7 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
                 title: item.elements.title.value,
                 publishDate: item.elements.publish_date.value ?? "",
                 introduction: item.elements.introduction.value,
-                topics: item.elements.topics.value.map(t => t.name),
+                topics: item.elements.topics.value.map((t) => t.name),
                 itemId: item.system.id,
               }}
               displayFeatured={true}
@@ -63,18 +67,20 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
           </div>
         </PageSection>
       );
-    },
-  ).flatMap((item, index) =>
-    index === featuredContent.linkedItems.length - 1 ? [item] : [item, <Divider key={`divider-${index}`} />]
-  );
+    })
+    .flatMap((item, index) =>
+      index === featuredContent.linkedItems.length - 1
+        ? [item]
+        : [item, <Divider key={`divider-${index}`} />],
+    );
 
   return (
     <div
-    {...createItemSmartLink(parentId)}
-    {...createElementSmartLink("featured_content")}
-    {...createFixedAddSmartLink("end", "bottom")}
+      {...createItemSmartLink(parentId)}
+      {...createElementSmartLink("featured_content")}
+      {...createFixedAddSmartLink("end", "bottom")}
     >
-      {linkedItems.map(item => item)}
+      {linkedItems.map((item) => item)}
     </div>
   );
 };

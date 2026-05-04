@@ -1,11 +1,19 @@
-import { createContext, FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from "react";
 import KontentSmartLink, {
-  IRefreshMessageData,
-  IRefreshMessageMetadata,
-  IUpdateMessageData,
+  type IRefreshMessageData,
+  type IRefreshMessageMetadata,
+  type IUpdateMessageData,
   KontentSmartLinkEvent,
 } from "@kontent-ai/smart-link";
-import { useAppContext } from "./AppContext";
+import {
+  createContext,
+  type FC,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useAppContext } from "./AppContext.tsx";
 
 interface SmartLinkContextValue {
   readonly smartLink?: KontentSmartLink | null;
@@ -46,14 +54,20 @@ export const useSmartLink = (): KontentSmartLink | null => {
   const { smartLink } = useContext(SmartLinkContext);
 
   if (typeof smartLink === "undefined") {
-    throw new Error("You need to place SmartLinkProvider to one of the parent components to use useSmartLink.");
+    throw new Error(
+      "You need to place SmartLinkProvider to one of the parent components to use useSmartLink.",
+    );
   }
 
   return smartLink;
 };
 
 export const useCustomRefresh = (
-  callback: (data: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => void,
+  callback: (
+    data: IRefreshMessageData,
+    metadata: IRefreshMessageMetadata,
+    originalRefresh: () => void,
+  ) => void,
 ): void => {
   const smartLink = useSmartLink();
 

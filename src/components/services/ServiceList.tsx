@@ -1,5 +1,5 @@
-import React from "react";
-import ServiceListItem from "./ServiceListItem";
+import type React from "react";
+import ServiceListItem from "./ServiceListItem.tsx";
 
 // Define the ServiceData type with a flattened structure
 type ServiceData = Readonly<{
@@ -20,7 +20,9 @@ type ServiceListProps = Readonly<{
 const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
   return (
     <div className="flex flex-col items-center gap-[104px]">
-      {services.length === 0 ? <p className="text-center text-grey text-xl">No services available</p> : (
+      {services.length === 0 ? (
+        <p className="text-center text-grey text-xl">No services available</p>
+      ) : (
         services.map((service, index) => (
           <ServiceListItem
             key={index}

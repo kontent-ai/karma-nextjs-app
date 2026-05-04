@@ -1,6 +1,6 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router";
-import { createPreviewLink } from "../utils/link";
+import { createPreviewLink } from "../utils/link.ts";
 
 const Navigation: FC = () => {
   const { envId } = useParams();
@@ -9,7 +9,9 @@ const Navigation: FC = () => {
 
   const createMenuLink = (name: string, link: string) => (
     <li key={name}>
-      <NavLink to={link} className="text-xl leading-5 text-gray w-fit block hover:text-burgundy">{name}</NavLink>
+      <NavLink to={link} className="text-xl leading-5 text-gray w-fit block hover:text-burgundy">
+        {name}
+      </NavLink>
     </li>
   );
 
@@ -17,10 +19,22 @@ const Navigation: FC = () => {
     <nav>
       <menu className="flex flex-col lg:flex-row gap-5 lg:gap-[60px] items-center list-none">
         {createMenuLink("Home", createPreviewLink(envId ? `/envid/${envId}` : "/", isPreview))}
-        {createMenuLink("Services", createPreviewLink(envId ? `/envid/${envId}/services` : "/services", isPreview))}
-        {createMenuLink("Our Team", createPreviewLink(envId ? `/envid/${envId}/our-team` : "/our-team", isPreview))}
-        {createMenuLink("Research", createPreviewLink(envId ? `/envid/${envId}/research` : "/research", isPreview))}
-        {createMenuLink("Blog", createPreviewLink(envId ? `/envid/${envId}/blog` : "/blog", isPreview))}
+        {createMenuLink(
+          "Services",
+          createPreviewLink(envId ? `/envid/${envId}/services` : "/services", isPreview),
+        )}
+        {createMenuLink(
+          "Our Team",
+          createPreviewLink(envId ? `/envid/${envId}/our-team` : "/our-team", isPreview),
+        )}
+        {createMenuLink(
+          "Research",
+          createPreviewLink(envId ? `/envid/${envId}/research` : "/research", isPreview),
+        )}
+        {createMenuLink(
+          "Blog",
+          createPreviewLink(envId ? `/envid/${envId}/blog` : "/blog", isPreview),
+        )}
       </menu>
     </nav>
   );

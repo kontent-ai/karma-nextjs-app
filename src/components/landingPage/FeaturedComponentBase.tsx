@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react";
+import type { FC, PropsWithChildren } from "react";
 
 type FeaturedContentProps = PropsWithChildren<
   Readonly<{
@@ -11,7 +11,12 @@ type FeaturedContentProps = PropsWithChildren<
   }>
 >;
 
-const FeaturedComponentBase: FC<FeaturedContentProps> = ({ type, image, children, displayFeatured = false }) => {
+const FeaturedComponentBase: FC<FeaturedContentProps> = ({
+  type,
+  image,
+  children,
+  displayFeatured = false,
+}) => {
   return (
     <div className="flex flex-col gap-5 lg:gap-16 lg:flex-row py-5 lg:py-[104px] items-center">
       <div className="basis-auto">
@@ -32,9 +37,7 @@ const FeaturedComponentBase: FC<FeaturedContentProps> = ({ type, image, children
           </>
         )}
       </div>
-      <div className="basis-auto">
-        {children}
-      </div>
+      <div className="basis-auto">{children}</div>
     </div>
   );
 };
