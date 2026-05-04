@@ -1,26 +1,38 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router";
-import { createPreviewLink } from "../utils/link";
+import { createPreviewLink } from "../utils/link.ts";
+
+const navLinks: ReadonlyArray<{ name: string; path: string }> = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Our Team", path: "/our-team" },
+  { name: "Research", path: "/research" },
+  { name: "Blog", path: "/blog" },
+];
 
 const Navigation: FC = () => {
   const { envId } = useParams();
   const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const isPreviewEnabled = searchParams.get("preview") === "true";
 
-  const createMenuLink = (name: string, link: string) => (
-    <li key={name}>
-      <NavLink to={link} className="text-xl leading-5 text-gray w-fit block hover:text-burgundy">{name}</NavLink>
-    </li>
-  );
+  const prefix = envId ? `/envid/${envId}` : "";
 
   return (
     <nav>
       <menu className="flex flex-col lg:flex-row gap-5 lg:gap-[60px] items-center list-none">
-        {createMenuLink("Home", createPreviewLink(envId ? `/envid/${envId}` : "/", isPreview))}
-        {createMenuLink("Services", createPreviewLink(envId ? `/envid/${envId}/services` : "/services", isPreview))}
-        {createMenuLink("Our Team", createPreviewLink(envId ? `/envid/${envId}/our-team` : "/our-team", isPreview))}
-        {createMenuLink("Research", createPreviewLink(envId ? `/envid/${envId}/research` : "/research", isPreview))}
-        {createMenuLink("Blog", createPreviewLink(envId ? `/envid/${envId}/blog` : "/blog", isPreview))}
+        {navLinks.map(({ name, path }) => (
+          <li key={name}>
+            <NavLink
+              to={createPreviewLink(
+                `${prefix}${path === "/" && envId ? "" : path}`,
+                isPreviewEnabled,
+              )}
+              className="text-xl leading-5 text-gray w-fit block hover:text-burgundy"
+            >
+              {name}
+            </NavLink>
+          </li>
+        ))}
       </menu>
     </nav>
   );

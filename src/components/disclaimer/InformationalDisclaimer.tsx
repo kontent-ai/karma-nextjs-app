@@ -1,5 +1,5 @@
-import React from "react";
-import DisclaimerBase from "./DisclaimerBase";
+import type { FC } from "react";
+import DisclaimerBase from "./DisclaimerBase.tsx";
 
 type InformationalDisclaimerProps = Readonly<{
   title: string;
@@ -8,8 +8,19 @@ type InformationalDisclaimerProps = Readonly<{
   componentId: string | null;
 }>;
 
-const InformationalDisclaimer: React.FC<InformationalDisclaimerProps> = ({ title, text, parentId, componentId }) => (
-  <DisclaimerBase title={title} text={text} theme="base" parentId={parentId} componentId={componentId} />
+const InformationalDisclaimer: FC<InformationalDisclaimerProps> = ({
+  title,
+  text,
+  parentId,
+  componentId,
+}) => (
+  <DisclaimerBase
+    title={title}
+    text={text}
+    theme="base"
+    parentId={parentId}
+    componentId={componentId}
+  />
 );
 
 export default InformationalDisclaimer;

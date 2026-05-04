@@ -1,49 +1,45 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-h1, h2, h3 {
-  @apply font-libre;
-}
-
-:root {
+@theme {
+  /* Base palette */
   --color-burgundy: #993265;
   --color-azure: #009edb;
   --color-white: #ffffff;
-  --color-grey: #3b3b3b;
   --color-grey-light: #8e8e8e;
-  --color-grey-dark: #1D1D1B;
+  --color-grey: #3b3b3b;
+  --color-grey-dark: #1d1d1b;
   --color-creme: #fff7e7;
 
-  --color-primary: var(--color-burgundy); 
+  /* Theme aliases — overridable at runtime via theme classes below */
+  --color-primary: var(--color-burgundy);
   --color-secondary: var(--color-creme);
   --color-ternary: var(--color-azure);
 
-  --color-background: var(--color--white);
+  --color-heading-1-color: var(--color-burgundy);
+  --color-heading-2-color: var(--color-azure);
+  --color-heading-3-color: var(--color-azure);
+  --color-heading-4-color: var(--color-azure);
 
-  --color-heading-1: var(--color-burgundy);
-  --color-heading-2: var(--color-azure);
-  --color-heading-3: var(--color-azure);
-  --color-heading-4: var(--color-azure);
+  --color-body-large-color: var(--color-grey);
+  --color-body-color: var(--color-grey);
+  --color-body-small-color: var(--color-grey);
 
-  --color-body-large: var(--color-grey);
-  --color-body: var(--color-grey);
-  --color-small: var(--color-grey);
+  --color-border-color: var(--color-burgundy);
+  --color-link-color: var(--color-burgundy);
+  --color-link-hover-color: var(--color-azure);
+  --color-background-color: var(--color-white);
 
-  --color-border: var(--color-burgundy);
-  --color-link: var(--color-burgundy);
-  --color-link-hover: var(--color-azure);
+  --color-tag-border-color: var(--color-grey-dark);
+  --color-tag-text-color: var(--color-grey-dark);
 
-  --color-button-background: transparent;
-  --color-button-background-hover: var(--color-burgundy);
-  --color-button-border: var(--color-burgundy);
-  --color-button-border-hover: var(--color-burgundy);
-  --color-button-text: #000000;
-  --color-button-text-hover: var(--color-white);
+  --color-button-background-color: transparent;
+  --color-button-background-hover-color: var(--color-burgundy);
+  --color-button-border-color: var(--color-burgundy);
+  --color-button-border-hover-color: var(--color-burgundy);
+  --color-button-text-color: #000000;
+  --color-button-text-hover-color: var(--color-white);
 
-  --color-tag-border: var(--color-grey-dark);
-  --color-tag-text: var(--color-grey-dark);
-
+  /* Heading sizes (overridable via theme classes) */
   --size-heading-1: 94px;
   --size-heading-2: 48px;
   --size-heading-3: 32px;
@@ -58,56 +54,105 @@ h1, h2, h3 {
   --font-weight-heading-2: 800;
   --font-weight-heading-3: 800;
   --font-weight-heading-4: 800;
+
+  /* Heading text utilities reference the --size/--line-height/--font-weight vars above */
+  --text-heading-1: var(--size-heading-1);
+  --text-heading-1--line-height: var(--line-height-heading-1);
+  --text-heading-1--font-weight: var(--font-weight-heading-1);
+  --text-heading-2: var(--size-heading-2);
+  --text-heading-2--line-height: var(--line-height-heading-2);
+  --text-heading-2--font-weight: var(--font-weight-heading-2);
+  --text-heading-3: var(--size-heading-3);
+  --text-heading-3--line-height: var(--line-height-heading-3);
+  --text-heading-3--font-weight: var(--font-weight-heading-3);
+  --text-heading-4: var(--size-heading-4);
+  --text-heading-4--line-height: var(--line-height-heading-4);
+  --text-heading-4--font-weight: var(--font-weight-heading-4);
+
+  /* Body text utilities */
+  --text-body-xl: 24px;
+  --text-body-xl--line-height: 150%;
+  --text-body-lg: 20px;
+  --text-body-lg--line-height: 150%;
+  --text-body-md: 18px;
+  --text-body-md--line-height: 150%;
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 150%;
+  --text-body-xs: 12px;
+  --text-body-xs--line-height: 150%;
+
+  /* Fonts */
+  --font-sans: "Source Sans 3", Arial, sans-serif;
+  --font-libre: "Abhaya Libre", Arial;
+}
+
+@utility container {
+  margin-inline: auto;
+}
+
+@layer base {
+  /*
+   * Tailwind v4 default border color changed to currentColor; restore v3 default
+   * so existing borders (no explicit border-color utility) keep their look.
+   */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-grey-light, currentcolor);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-libre);
+  }
 }
 
 .burgundy-theme {
-    --color-background: var(--color-burgundy);
-    --color-heading-1: var(--color-creme);
-    --color-heading-2: var(--color-creme);
-    --color-heading-3: var(--color-creme);
-    --color-body: var(--color-creme);
-    --color-button-background-hover: var(--color-creme);
-    --color-button-text-hover: var(--color-gray);
-    --color-button-border-hover: var(--color-creme);
-    --color-tag-text: var(--color-creme);
-    --color-tag-border: var(--color-creme);
+  --color-background-color: var(--color-burgundy);
+  --color-heading-1-color: var(--color-creme);
+  --color-heading-2-color: var(--color-creme);
+  --color-heading-3-color: var(--color-creme);
+  --color-body-color: var(--color-creme);
+  --color-tag-text-color: var(--color-creme);
+  --color-tag-border-color: var(--color-creme);
 
-    @apply button-azure-on-burgundy;
+  /* Inlined from .button-azure-on-burgundy (button-azure base + burgundy hover overrides) */
+  --color-button-background-color: var(--color-azure);
+  --color-button-border-color: var(--color-azure);
+  --color-button-text-color: var(--color-white);
+  --color-button-background-hover-color: var(--color-creme);
+  --color-button-border-hover-color: var(--color-creme);
+  --color-button-text-hover-color: var(--color-grey);
 }
 
 .azure-theme {
-  --color-background: var(--color-azure);
-  --color-heading-1: var(--color-white);
-  --color-heading-2: var(--color-white);
-  --color-heading-3: var(--color-white);
-  --color-body: var(--color-white);
-  --color-tag-border: var(--color-white);
-  --color-tag-text: var(--color-white);
+  --color-background-color: var(--color-azure);
+  --color-heading-1-color: var(--color-white);
+  --color-heading-2-color: var(--color-white);
+  --color-heading-3-color: var(--color-white);
+  --color-body-color: var(--color-white);
+  --color-tag-border-color: var(--color-white);
+  --color-tag-text-color: var(--color-white);
 }
 
 .creme-theme {
-  --color-primary: var(--color-creme);     
+  --color-primary: var(--color-creme);
   --color-secondary: var(--color-burgundy);
-  --color-heading-1: var(--color-burgundy);
-  --color-heading-2: var(--color-burgundy);
-  --color-heading-3: var(--color-burgundy);
-  --color-text: var(--color-gray);
+  --color-heading-1-color: var(--color-burgundy);
+  --color-heading-2-color: var(--color-burgundy);
+  --color-heading-3-color: var(--color-burgundy);
 }
 
 .button-azure {
-  --color-button-background: var(--color-azure);
-  --color-button-background-hover: var(--color-burgundy);
-  --color-button-border: var(--color-azure);
-  --color-button-border-hover: var(--color-burgundy);
-  --color-button-text: var(--color-white);
-  --color-button-text-hover: var(--color-white);
-}
-
-.button-azure-on-burgundy {
-  @apply button-azure;
-  --color-button-background-hover: var(--color-creme);
-  --color-button-border-hover: var(--color-creme);
-  --color-button-text-hover: var(--color-grey);
+  --color-button-background-color: var(--color-azure);
+  --color-button-background-hover-color: var(--color-burgundy);
+  --color-button-border-color: var(--color-azure);
+  --color-button-border-hover-color: var(--color-burgundy);
+  --color-button-text-color: var(--color-white);
+  --color-button-text-hover-color: var(--color-white);
 }
 
 .rich-text-body {
@@ -116,10 +161,10 @@ h1, h2, h3 {
   --size-heading-3: 36px;
   --size-heading-4: 20px;
 
-  --color-heading-1: var(--color-grey);
-  --color-heading-2: var(--color-grey);
-  --color-heading-3: var(--color-grey);
-  --color-heading-4: var(--color-grey);
+  --color-heading-1-color: var(--color-grey);
+  --color-heading-2-color: var(--color-grey);
+  --color-heading-3-color: var(--color-grey);
+  --color-heading-4-color: var(--color-grey);
 
   --line-height-heading-1: 170%;
   --line-height-heading-2: 170%;

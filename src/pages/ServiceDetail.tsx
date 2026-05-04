@@ -1,21 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { createClient } from "../utils/client";
-import { useAppContext } from "../context/AppContext";
-import { Service, Person } from "../model";
-import { DeliveryError } from "@kontent-ai/delivery-sdk";
-import { PortableText } from "@portabletext/react";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
-import { defaultPortableRichTextResolvers } from "../utils/richtext";
-import PageSection from "../components/PageSection";
-import Tags from "../components/Tags";
-import { NavLink, useSearchParams } from "react-router";
-import { createPreviewLink } from "../utils/link";
-import { useCustomRefresh } from "../context/SmartLinkContext";
-import { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
+import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { type FC, useMemo } from "react";
+import { NavLink, useParams, useSearchParams } from "react-router";
+import KontentImage from "../components/KontentImage.tsx";
+import PageSection from "../components/PageSection.tsx";
+import Tags from "../components/Tags.tsx";
+import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
+import type { Person, Service } from "../model/index.ts";
+import { NotFoundError } from "../utils/errors.ts";
+import { createPreviewLink } from "../utils/link.ts";
+import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
-const TeamMemberCard: React.FC<{
+const TeamMemberCard: FC<{
   prefix?: string;
   firstName: string;
   lastName: string;
@@ -32,65 +30,56 @@ const TeamMemberCard: React.FC<{
 
   return (
     <div className="flex gap-4 items-center">
-      <img src={image.url} alt={image.alt} className="w-[95px] h-[95px] object-cover rounded-full" />
+      <KontentImage
+        src={image.url}
+        alt={image.alt}
+        width={95}
+        height={95}
+        className="w-[95px] h-[95px] object-cover rounded-full"
+      />
       <div className="flex flex-col gap-2 items-start">
         <NavLink
           to={createPreviewLink(`/our-team/${codename}`, isPreview)}
           className="text-heading-4 underline text-burgundy hover:text-azure"
         >
-          {prefix && <span>{prefix}</span>}
+          {prefix ? <span>{prefix}</span> : null}
           {firstName} {lastName}
-          {suffix && <span>, {suffix}</span>}
+          {suffix ? <span>, {suffix}</span> : null}
         </NavLink>
-        <p className="text-small text-grey text-center">
-          {jobTitle}
-        </p>
+        <p className="text-small text-grey text-center">{jobTitle}</p>
       </div>
     </div>
   );
 };
 
-const ServiceDetail: React.FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+const ServiceDetail: FC = () => {
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
 
-  const serviceData = useQuery({
-    queryKey: [`service-detail_${slug}`],
-    queryFn: () =>
-      createClient(environmentId, apiKey, isPreview)
+  const serviceData = useSuspenseQuery({
+    queryKey: ["service-detail", slug, environmentId, isPreviewEnabled],
+    queryFn: async () => {
+      const res = await client
         .items<Service>()
         .type("service")
         .equalsFilter("elements.url_slug", slug ?? "")
-        .toPromise()
-        .then((res) => res.data.items[0])
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
+        .toPromise();
+      const service = res.data.items[0];
+      if (!service) {
+        throw new NotFoundError(`Service '${slug}' not found`);
+      }
+      return service;
+    },
   });
 
-  const onRefresh = useCallback(
-    (_: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => {
-      if (metadata.manualRefresh) {
-        originalRefresh();
-      } else {
-        serviceData.refetch();
-      }
-    },
-    [serviceData],
-  );
-
-  useCustomRefresh(onRefresh);
-
-  if (!serviceData.data) {
-    return <div className="flex-grow" />;
-  }
+  useSmartLinkRefetch(serviceData.refetch);
 
   const service = serviceData.data;
+
+  const medicalSpecialtyNames = useMemo(
+    () => service.elements.medical_specialties.value.map((specialty) => specialty.name),
+    [service.elements.medical_specialties.value],
+  );
 
   return (
     <div className="flex flex-col gap-12">
@@ -108,12 +97,13 @@ const ServiceDetail: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
+            <KontentImage
+              src={service.elements.image.value[0]?.url}
+              alt={service.elements.image.value[0]?.description ?? ""}
               width={670}
               height={440}
-              src={service.elements.image.value[0]?.url ?? ""}
-              alt={service.elements.image.value[0]?.description ?? ""}
               className="rounded-lg w-[670px] h-[440px]"
+              isPriority={true}
             />
           </div>
         </div>
@@ -130,13 +120,8 @@ const ServiceDetail: React.FC = () => {
 
           <div className="flex flex-col gap-20">
             <div className="flex flex-col gap-10">
-              <h2 className="text-heading-2 text-burgundy">
-                Medical Specialties
-              </h2>
-              <Tags
-                tags={service.elements.medical_specialties.value.map(specialty => specialty.name)}
-                orientation="vertical"
-              />
+              <h2 className="text-heading-2 text-burgundy">Medical Specialties</h2>
+              <Tags tags={medicalSpecialtyNames} orientation="vertical" />
             </div>
 
             {service.elements.team?.value.length > 0 && (
@@ -152,9 +137,10 @@ const ServiceDetail: React.FC = () => {
                       suffix={person.elements.suffixes?.value}
                       jobTitle={person.elements.job_title?.value || ""}
                       image={{
-                        url: person.elements.image?.value[0]?.url || "",
-                        alt: person.elements.image?.value[0]?.description
-                          || `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`,
+                        url: person.elements.image?.value[0]?.url ?? "",
+                        alt:
+                          person.elements.image?.value[0]?.description ??
+                          `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`,
                       }}
                       codename={person.system.codename}
                     />

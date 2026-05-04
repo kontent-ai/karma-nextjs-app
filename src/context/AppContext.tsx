@@ -1,62 +1,82 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createContext, FC, PropsWithChildren, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { loadPreviewApiKey } from "../utils/api";
+import { createContext, type FC, type PropsWithChildren, useContext } from "react";
+import { useParams } from "react-router";
+import { loadPreviewApiKey } from "../utils/api.ts";
 
 type AppContext = {
   environmentId: string;
   apiKey: string;
 };
 
-const defaultAppContext: AppContext = {
-  environmentId: import.meta.env.VITE_ENVIRONMENT_ID!,
-  apiKey: import.meta.env.VITE_DELIVERY_API_KEY!,
+const { VITE_ENVIRONMENT_ID, VITE_DELIVERY_API_KEY } = import.meta.env;
+
+const AppContext = createContext<AppContext | null>(null);
+
+export const useAppContext = (): AppContext => {
+  const ctx = useContext(AppContext);
+  if (!ctx) {
+    throw new Error("useAppContext must be used inside AppContextComponent.");
+  }
+  return ctx;
 };
 
-const AppContext = createContext<AppContext>(defaultAppContext);
-
-export const useAppContext = () => useContext(AppContext);
-
 export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
+  if (!VITE_ENVIRONMENT_ID || !VITE_DELIVERY_API_KEY) {
+    const missing = [
+      !VITE_ENVIRONMENT_ID && "VITE_ENVIRONMENT_ID",
+      !VITE_DELIVERY_API_KEY && "VITE_DELIVERY_API_KEY",
+    ]
+      .filter(Boolean)
+      .join(", ");
+    throw new Error(`Missing required environment variables: ${missing}. See .env.template.`);
+  }
+
+  const defaultAppContext: AppContext = {
+    environmentId: VITE_ENVIRONMENT_ID,
+    apiKey: VITE_DELIVERY_API_KEY,
+  };
+
   const { envId } = useParams();
   const { getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
   const contextData = useSuspenseQuery({
-    queryKey: [`env-data${envId ? `-${envId}` : ""}`],
-    queryFn: () => {
+    queryKey: ["env-data", envId ?? null],
+    queryFn: async () => {
       if (!envId) {
         return defaultAppContext;
       }
-      return getAccessTokenSilently()
-        .then(res => {
-          return loadPreviewApiKey({
-            accessToken: res,
-            environmentId: envId,
-          });
-        })
-        .then(res => {
+      return await getAccessTokenSilently()
+        .then(
+          async (res) =>
+            await loadPreviewApiKey({
+              accessToken: res,
+              environmentId: envId,
+            }),
+        )
+        .then((res) => {
           if (!res) {
             throw new Error("Could not obtain preview API KEY");
           }
 
           return { environmentId: envId, apiKey: res };
         })
-        .catch(err => {
-          if (err.error === "login_required") {
-            loginWithRedirect();
-          }
-          if (err.error === "consent_required") {
-            loginWithRedirect();
+        .catch(async (err: unknown) => {
+          if (
+            typeof err === "object" &&
+            err !== null &&
+            "error" in err &&
+            (err.error === "login_required" || err.error === "consent_required")
+          ) {
+            await loginWithRedirect();
+            // Hold the Suspense fallback while the browser navigates to Auth0;
+            // resolving (or throwing) here would briefly render the error page.
+            return new Promise<AppContext>(() => {});
           }
           throw err;
         });
     },
   });
 
-  return (
-    <AppContext.Provider value={contextData.data}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextData.data}>{children}</AppContext.Provider>;
 };

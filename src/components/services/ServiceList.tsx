@@ -1,7 +1,6 @@
-import React from "react";
-import ServiceListItem from "./ServiceListItem";
+import type { FC } from "react";
+import ServiceListItem from "./ServiceListItem.tsx";
 
-// Define the ServiceData type with a flattened structure
 type ServiceData = Readonly<{
   image: {
     url: string;
@@ -17,13 +16,15 @@ type ServiceListProps = Readonly<{
   services: ReadonlyArray<ServiceData>;
 }>;
 
-const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
+const ServiceList: FC<ServiceListProps> = ({ services }) => {
   return (
     <div className="flex flex-col items-center gap-[104px]">
-      {services.length === 0 ? <p className="text-center text-grey text-xl">No services available</p> : (
-        services.map((service, index) => (
+      {services.length === 0 ? (
+        <p className="text-center text-grey text-xl">No services available</p>
+      ) : (
+        services.map((service) => (
           <ServiceListItem
-            key={index}
+            key={service.urlSlug}
             image={service.image}
             name={service.name}
             summary={service.summary}
