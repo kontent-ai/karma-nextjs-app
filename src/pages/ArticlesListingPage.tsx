@@ -111,6 +111,12 @@ const ArticlesListingPage: FC = () => {
       },
       {
         queryKey: ["articles_listing"],
+        // Disabled because articles can contain cyclic references through linked items
+        // (e.g. article A references article B which references A). React Query's default
+        // structural sharing walks the result to preserve referential equality with the
+        // previous cache entry, but on cyclic data it re-traverses the same nodes on every
+        // navigation, causing items to stack/duplicate across page transitions.
+        structuralSharing: false,
         queryFn: async () =>
           await createClient(environmentId, apiKey, isPreview)
             .items<Article>()
