@@ -14,7 +14,7 @@ export const defaultPortableRichTextResolvers = {
       <figure className="flex flex-col gap-4 items-center mb-10 relative w-full lg:w-[900px]">
         <KontentImage
           src={value.asset.url}
-          alt={value.asset.alt}
+          alt={value.asset.alt ?? ""}
           width={900}
           height={600}
           className="w-[900px] h-[600px] object-cover rounded-md"
