@@ -1,4 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
+import KontentImage from "../KontentImage.tsx";
 
 type FeaturedContentProps = PropsWithChildren<
   Readonly<{
@@ -27,11 +28,11 @@ const FeaturedComponentBase: FC<FeaturedContentProps> = ({
                 {type === "event" ? "FEATURED EVENT" : "FEATURED ARTICLE"}
               </span>
             ) : null}
-            <img
+            <KontentImage
+              src={image.url}
+              alt={image.alt ?? "image alt"}
               width={440}
               height={280}
-              src={image.url ? `${image.url}?auto=format&w=800` : ""}
-              alt={image.alt ?? "image alt"}
               className="object-cover rounded-lg static min-w-[440px] min-h-[280px]"
             />
           </>

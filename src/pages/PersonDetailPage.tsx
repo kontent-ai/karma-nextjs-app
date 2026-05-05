@@ -4,6 +4,7 @@ import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { FC } from "react";
 import { useParams } from "react-router";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import type { Person } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";
@@ -53,7 +54,7 @@ const PersonDetailPage: FC = () => {
           </div>
 
           <div className="flex-1 flex justify-end">
-            <img
+            <KontentImage
               src={person.elements.image?.value[0]?.url}
               alt={
                 person.elements.image?.value[0]?.description ??
@@ -62,6 +63,7 @@ const PersonDetailPage: FC = () => {
               width={550}
               height={440}
               className="rounded-lg w-[550px] h-[440px] object-cover"
+              isPriority={true}
             />
           </div>
         </div>

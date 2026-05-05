@@ -3,6 +3,7 @@ import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { FC } from "react";
 import { useParams } from "react-router";
+import KontentImage from "../components/KontentImage.tsx";
 import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { BlogPost } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";
@@ -48,12 +49,13 @@ const BlogDetail: FC = () => {
           </h1>
         </div>
         <div className="flex flex-col flex-1">
-          <img
-            width={670}
-            height={440}
+          <KontentImage
             src={blogPost.data.elements.image?.value[0]?.url}
             alt={blogPost.data.elements.image?.value[0]?.description ?? ""}
+            width={670}
+            height={440}
             className="rounded-lg"
+            isPriority={true}
           />
         </div>
       </div>

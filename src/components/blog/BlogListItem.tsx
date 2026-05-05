@@ -1,6 +1,7 @@
 import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { FC } from "react";
+import KontentImage from "../KontentImage.tsx";
 import Link from "../Link.tsx";
 
 type BlogListItemProps = Readonly<{
@@ -21,11 +22,11 @@ const BlogListItem: FC<BlogListItemProps> = ({
   return (
     <div className={`flex flex-col md:flex-row gap-16 w-full ${className}`}>
       <div className="">
-        <img
-          width={440}
-          height={288}
+        <KontentImage
           src={imageSrc}
           alt={title}
+          width={440}
+          height={288}
           className=" w-[440px] h-[288px] object-cover rounded-md"
         />
       </div>

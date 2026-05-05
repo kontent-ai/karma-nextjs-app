@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import ButtonLink from "../ButtonLink.tsx";
+import KontentImage from "../KontentImage.tsx";
 import Tags from "../Tags.tsx";
 
 type ServiceListItemProps = Readonly<{
@@ -17,11 +18,11 @@ const ServiceListItem: FC<ServiceListItemProps> = ({ image, name, summary, tags,
   return (
     <div className="flex flex-col lg:flex-row gap-16 justify-center items-center">
       <div className="flex-1 flex flex-col">
-        <img
+        <KontentImage
+          src={image.url}
+          alt={image.alt}
           width={440}
           height={300}
-          src={image.url ? `${image.url}?auto=format&w=600` : undefined}
-          alt={image.alt}
           className="object-cover rounded-lg self-end w-[440px] h-[300px]"
         />
       </div>

@@ -4,6 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useMemo } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router";
 import ArticleList from "../components/articles/ArticleList.tsx";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import PersonCard from "../components/PersonCard.tsx";
 import Tags from "../components/Tags.tsx";
@@ -33,9 +34,11 @@ const HeroImageAuthorCard: FC<{
 
   return (
     <div className="flex items-center gap-4">
-      <img
+      <KontentImage
         src={image.url}
         alt={image.alt}
+        width={50}
+        height={50}
         className="w-[50px] h-[50px] object-cover rounded-full"
       />
       <div className="flex flex-col">
@@ -188,12 +191,13 @@ const ArticleDetailPage: FC = () => {
             ) : null}
           </div>
           <div className="flex-1">
-            <img
+            <KontentImage
+              src={article.elements.image.value[0]?.url}
+              alt={article.elements.image.value[0]?.description ?? ""}
               width={670}
               height={440}
-              src={article.elements.image.value[0]?.url ?? ""}
-              alt={article.elements.image.value[0]?.description ?? ""}
               className="rounded-lg w-[670px] h-[440px] object-cover"
+              isPriority={true}
             />
           </div>
         </div>

@@ -3,6 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import type { FC } from "react";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import ServiceList from "../components/services/ServiceList.tsx";
 import type { Page, Service } from "../model/index.ts";
@@ -70,12 +71,13 @@ const ServicesListingPage: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
-              width={670}
-              height={440}
+            <KontentImage
               src={servicesPage.data.item.elements.hero_image?.value[0]?.url}
               alt={servicesPage.data.item.elements.hero_image?.value[0]?.description ?? ""}
+              width={670}
+              height={440}
               className="rounded-lg"
+              isPriority={true}
             />
           </div>
         </div>

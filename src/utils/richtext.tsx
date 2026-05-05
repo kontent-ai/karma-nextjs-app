@@ -1,4 +1,5 @@
 import type { PortableTextReactResolvers } from "@kontent-ai/rich-text-resolver-react";
+import KontentImage from "../components/KontentImage.tsx";
 import Link from "../components/Link.tsx";
 
 export const defaultPortableRichTextResolvers = {
@@ -11,7 +12,7 @@ export const defaultPortableRichTextResolvers = {
   types: {
     image: ({ value }) => (
       <figure className="flex flex-col gap-4 items-center mb-10 relative w-full lg:w-[900px]">
-        <img
+        <KontentImage
           src={value.asset.url}
           alt={value.asset.alt}
           width={900}

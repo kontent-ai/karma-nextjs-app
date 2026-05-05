@@ -5,6 +5,7 @@ import {
   createItemSmartLink,
 } from "../utils/smartlink.ts";
 import ButtonLink from "./ButtonLink.tsx";
+import KontentImage from "./KontentImage.tsx";
 
 type CallToActionProps = Readonly<{
   title: string;
@@ -47,11 +48,11 @@ const CallToAction: FC<CallToActionProps> = ({
       )} items-center gap-16`}
     >
       <div className="rounded-lg xl:w-[560px] lg:w-[420px]">
-        <img
+        <KontentImage
           src={imageSrc}
+          alt={imageAlt}
           width={560}
           height={420}
-          alt={imageAlt}
           className="rounded object-fit"
         />
       </div>

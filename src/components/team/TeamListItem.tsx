@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import ButtonLink from "../ButtonLink.tsx";
+import KontentImage from "../KontentImage.tsx";
 
 type TeamListItemProps = {
   image: {
@@ -26,7 +27,13 @@ export const TeamListItem: FC<TeamListItemProps> = ({
   return (
     <div className="flex flex-col items-center text-center gap-6">
       <div className="w-[300px] h-[300px] rounded-full overflow-hidden">
-        <img src={image.url} alt={image.alt} className="w-full h-full object-cover" />
+        <KontentImage
+          src={image.url}
+          alt={image.alt}
+          width={300}
+          height={300}
+          className="w-full h-full object-cover"
+        />
       </div>
       <h3 className="flex-none text-heading-3 text-burgundy">
         {prefix} {firstName} {lastName}

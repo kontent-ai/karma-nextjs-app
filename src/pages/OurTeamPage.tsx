@@ -3,6 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import type { FC } from "react";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import TeamMemberList from "../components/team/TeamMemberList.tsx";
 import type { Page, Person } from "../model/content-types/index.ts";
@@ -74,12 +75,13 @@ const OurTeamPage: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
-              width={670}
-              height={440}
+            <KontentImage
               src={teamPage.data.item.elements.hero_image?.value[0]?.url}
               alt={teamPage.data.item.elements.hero_image?.value[0]?.description ?? ""}
+              width={670}
+              height={440}
               className="rounded-lg"
+              isPriority={true}
             />
           </div>
         </div>

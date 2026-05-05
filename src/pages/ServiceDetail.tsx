@@ -3,6 +3,7 @@ import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useMemo } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import Tags from "../components/Tags.tsx";
 import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
@@ -29,9 +30,11 @@ const TeamMemberCard: FC<{
 
   return (
     <div className="flex gap-4 items-center">
-      <img
+      <KontentImage
         src={image.url}
         alt={image.alt}
+        width={95}
+        height={95}
         className="w-[95px] h-[95px] object-cover rounded-full"
       />
       <div className="flex flex-col gap-2 items-start">
@@ -94,12 +97,13 @@ const ServiceDetail: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
+            <KontentImage
+              src={service.elements.image.value[0]?.url}
+              alt={service.elements.image.value[0]?.description ?? ""}
               width={670}
               height={440}
-              src={service.elements.image.value[0]?.url ?? ""}
-              alt={service.elements.image.value[0]?.description ?? ""}
               className="rounded-lg w-[670px] h-[440px]"
+              isPriority={true}
             />
           </div>
         </div>

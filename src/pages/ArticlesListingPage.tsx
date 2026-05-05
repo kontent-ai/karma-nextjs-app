@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router";
 import ArticleList from "../components/articles/ArticleList.tsx";
 import ButtonLink from "../components/ButtonLink.tsx";
 import ImageWithTag from "../components/ImageWithTag.tsx";
+import KontentImage from "../components/KontentImage.tsx";
 import PageSection from "../components/PageSection.tsx";
 import Selector, { type SelectorOption } from "../components/Selector.tsx";
 import Tags from "../components/Tags.tsx";
@@ -240,12 +241,13 @@ const ArticlesListingPage: FC = () => {
             </p>
           </div>
           <div className="flex flex-col flex-1">
-            <img
-              width={670}
-              height={440}
+            <KontentImage
               src={articlesPage.data.item.elements.hero_image?.value[0]?.url}
               alt={articlesPage.data.item.elements.hero_image?.value[0]?.description ?? ""}
+              width={670}
+              height={440}
               className="rounded-lg"
+              isPriority={true}
             />
           </div>
         </div>

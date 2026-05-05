@@ -2,6 +2,7 @@ import type { Elements } from "@kontent-ai/delivery-sdk";
 import type { FC } from "react";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
 import ButtonLink from "./ButtonLink.tsx";
+import KontentImage from "./KontentImage.tsx";
 
 type HeroImageProps = Readonly<{
   data: {
@@ -42,12 +43,13 @@ const HeroImage: FC<HeroImageProps> = ({ data, buttonLink }) => {
         {...createElementSmartLink("hero_image")}
       >
         {data.heroImage?.value[0] ? (
-          <img
-            className="object-cover h-full mx-auto"
+          <KontentImage
+            src={data.heroImage.value[0].url}
+            alt={data.heroImage.value[0].description ?? "image-alt"}
             width={660}
             height={770}
-            src={`${data.heroImage.value[0].url}?auto=format&w=800`}
-            alt={data.heroImage.value[0].description ?? "image-alt"}
+            className="object-cover h-full mx-auto"
+            isPriority={true}
           />
         ) : null}
       </div>
