@@ -23,7 +23,7 @@ const LandingPage: FC = () => {
   const [landingPage] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["landing_page"],
+        queryKey: ["landing_page", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items()

@@ -35,7 +35,7 @@ const OurTeamPage: FC = () => {
   const [teamPage, teamMembers] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["team_page"],
+        queryKey: ["team_page", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("our_team")
@@ -49,7 +49,7 @@ const OurTeamPage: FC = () => {
             }),
       },
       {
-        queryKey: ["team_members"],
+        queryKey: ["team_members", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<Person>()

@@ -25,7 +25,7 @@ const BlogDetail: FC = () => {
   );
 
   const blogPost = useSuspenseQuery({
-    queryKey: [`blog-post_${slug}`],
+    queryKey: ["blog-post", slug, environmentId, isPreview],
     queryFn: async () => {
       const res = await createClient(environmentId, apiKey, isPreview)
         .items<BlogPost>()

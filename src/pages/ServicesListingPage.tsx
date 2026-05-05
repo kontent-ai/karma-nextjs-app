@@ -31,7 +31,7 @@ const ServicesListingPage: FC = () => {
   const [servicesPage, services] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["services_page"],
+        queryKey: ["services_page", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("services")
@@ -45,7 +45,7 @@ const ServicesListingPage: FC = () => {
             }),
       },
       {
-        queryKey: ["services_listing"],
+        queryKey: ["services_listing", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<Service>()

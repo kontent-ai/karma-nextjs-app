@@ -59,7 +59,7 @@ const ServiceDetail: FC = () => {
   const isPreview = searchParams.get("preview") === "true";
 
   const serviceData = useSuspenseQuery({
-    queryKey: [`service-detail_${slug}`],
+    queryKey: ["service-detail", slug, environmentId, isPreview],
     queryFn: async () => {
       const res = await createClient(environmentId, apiKey, isPreview)
         .items<Service>()

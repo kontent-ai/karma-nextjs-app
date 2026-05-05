@@ -75,7 +75,7 @@ const ArticleDetailPage: FC = () => {
   const isPreview = searchParams.get("preview") === "true";
 
   const articleData = useSuspenseQuery({
-    queryKey: ["article-detail", slug, lang],
+    queryKey: ["article-detail", slug, lang, environmentId, isPreview],
     queryFn: async () => {
       const client = createClient(environmentId, apiKey, isPreview);
       const systemRes = await client

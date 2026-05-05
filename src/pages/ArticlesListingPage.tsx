@@ -80,7 +80,7 @@ const ArticlesListingPage: FC = () => {
   const [articlesPage, articlesTypes, articlesTopics, articles] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["articles_page"],
+        queryKey: ["articles_page", environmentId, isPreview],
         queryFn: async () =>
           await createClient(environmentId, apiKey, isPreview)
             .item<Page>("research")
@@ -94,7 +94,7 @@ const ArticlesListingPage: FC = () => {
             }),
       },
       {
-        queryKey: ["articles_types"],
+        queryKey: ["articles_types", environmentId, isPreview],
         queryFn: async () =>
           await createClient(environmentId, apiKey, isPreview)
             .taxonomy("article_type")
@@ -102,7 +102,7 @@ const ArticlesListingPage: FC = () => {
             .then((res) => res.data.taxonomy),
       },
       {
-        queryKey: ["articles_topics"],
+        queryKey: ["articles_topics", environmentId, isPreview],
         queryFn: async () =>
           await createClient(environmentId, apiKey, isPreview)
             .taxonomy("general_healthcare_topics")
@@ -110,7 +110,7 @@ const ArticlesListingPage: FC = () => {
             .then((res) => res.data.taxonomy),
       },
       {
-        queryKey: ["articles_listing"],
+        queryKey: ["articles_listing", environmentId, isPreview],
         // Disabled because articles can contain cyclic references through linked items
         // (e.g. article A references article B which references A). React Query's default
         // structural sharing walks the result to preserve referential equality with the

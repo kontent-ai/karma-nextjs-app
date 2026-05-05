@@ -18,7 +18,7 @@ const PersonDetailPage: React.FC = () => {
   const isPreview = searchParams.get("preview") === "true";
 
   const personData = useSuspenseQuery({
-    queryKey: [`person-detail_${slug}`],
+    queryKey: ["person-detail", slug, environmentId, isPreview],
     queryFn: async () => {
       try {
         const res = await createClient(environmentId, apiKey, isPreview)

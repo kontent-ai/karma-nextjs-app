@@ -28,7 +28,7 @@ const BlogPage: React.FC = () => {
   const [blogPage, blogs] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["blog_page"],
+        queryKey: ["blog_page", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("blog")
@@ -42,7 +42,7 @@ const BlogPage: React.FC = () => {
             }),
       },
       {
-        queryKey: ["blog_posts"],
+        queryKey: ["blog_posts", environmentId, isPreview],
         queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<BlogPost>()

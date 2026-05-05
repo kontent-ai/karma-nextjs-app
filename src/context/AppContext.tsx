@@ -35,7 +35,7 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
   const { getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
   const contextData = useSuspenseQuery({
-    queryKey: [`env-data${envId ? `-${envId}` : ""}`],
+    queryKey: ["env-data", envId ?? null],
     queryFn: async () => {
       if (!envId) {
         return defaultAppContext;
