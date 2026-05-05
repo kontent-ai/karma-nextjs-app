@@ -70,7 +70,6 @@ const BlogPage: React.FC = () => {
           </p>
         </div>
       </PageSection>
-      =
       {!isEmptyRichText(blogPage.data.item.elements.body.value) && (
         <PageSection color="bg-white">
           <div className="flex flex-col pt-16 mx-auto gap-6">
