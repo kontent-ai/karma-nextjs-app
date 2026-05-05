@@ -3,7 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useQuery } from "@tanstack/react-query";
-import { type FC, useCallback } from "react";
+import { type FC, useCallback, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
@@ -88,6 +88,12 @@ const ServiceDetail: FC = () => {
 
   useCustomRefresh(onRefresh);
 
+  const medicalSpecialtyNames = useMemo(
+    () =>
+      serviceData.data?.elements.medical_specialties.value.map((specialty) => specialty.name) ?? [],
+    [serviceData.data?.elements.medical_specialties.value],
+  );
+
   if (!serviceData.data) {
     return <div className="flex-grow" />;
   }
@@ -133,10 +139,7 @@ const ServiceDetail: FC = () => {
           <div className="flex flex-col gap-20">
             <div className="flex flex-col gap-10">
               <h2 className="text-heading-2 text-burgundy">Medical Specialties</h2>
-              <Tags
-                tags={service.elements.medical_specialties.value.map((specialty) => specialty.name)}
-                orientation="vertical"
-              />
+              <Tags tags={medicalSpecialtyNames} orientation="vertical" />
             </div>
 
             {service.elements.team?.value.length > 0 && (

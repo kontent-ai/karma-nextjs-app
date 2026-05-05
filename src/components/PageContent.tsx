@@ -3,7 +3,7 @@ import {
   PortableText,
   type PortableTextReactResolvers,
 } from "@kontent-ai/rich-text-resolver-react";
-import type { FC } from "react";
+import { type FC, useMemo } from "react";
 import { isDisclaimer, isVideo, type LandingPage } from "../model/index.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
@@ -18,7 +18,11 @@ type PageContentProps = {
 };
 
 const PageContent: FC<PageContentProps> = ({ body, itemId }) => {
-  const portableText = transformToPortableText(body.value);
+  const portableText = useMemo(() => transformToPortableText(body.value), [body.value]);
+  const portableTextComponents = useMemo(
+    () => createPortableTextComponents(body, itemId),
+    [body, itemId],
+  );
 
   return (
     <div
@@ -26,7 +30,7 @@ const PageContent: FC<PageContentProps> = ({ body, itemId }) => {
       {...createItemSmartLink(itemId)}
       {...createElementSmartLink("body_copy")}
     >
-      <PortableText value={portableText} components={createPortableTextComponents(body, itemId)} />
+      <PortableText value={portableText} components={portableTextComponents} />
     </div>
   );
 };

@@ -11,6 +11,22 @@ import type { Page, Person } from "../model/content-types/index.ts";
 import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
+const selectTeamMembers = (data: ReadonlyArray<Person> | null) =>
+  data?.map((member) => ({
+    image: {
+      url: member.elements.image.value[0]?.url ?? "",
+      alt:
+        member.elements.image.value[0]?.description ??
+        `${member.elements.first_name.value} ${member.elements.last_name.value}`,
+    },
+    prefix: member.elements.prefix.value,
+    suffix: member.elements.suffixes.value,
+    firstName: member.elements.first_name.value,
+    lastName: member.elements.last_name.value,
+    position: member.elements.job_title.value,
+    link: member.system.codename,
+  })) ?? null;
+
 const OurTeamPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const [searchParams] = useSearchParams();
@@ -46,6 +62,7 @@ const OurTeamPage: FC = () => {
               }
               throw err;
             }),
+        select: selectTeamMembers,
       },
     ],
   });
@@ -90,22 +107,7 @@ const OurTeamPage: FC = () => {
       )}
       <PageSection color="bg-white">
         <div className="pb-[160px] pt-[104px]">
-          <TeamMemberList
-            teamMembers={teamMembers.data.map((member) => ({
-              image: {
-                url: member.elements.image.value[0]?.url ?? "",
-                alt:
-                  member.elements.image.value[0]?.description ??
-                  `${member.elements.first_name.value} ${member.elements.last_name.value}`,
-              },
-              prefix: member.elements.prefix.value,
-              suffix: member.elements.suffixes.value,
-              firstName: member.elements.first_name.value,
-              lastName: member.elements.last_name.value,
-              position: member.elements.job_title.value,
-              link: member.system.codename,
-            }))}
-          />
+          <TeamMemberList teamMembers={teamMembers.data} />
         </div>
       </PageSection>
     </div>

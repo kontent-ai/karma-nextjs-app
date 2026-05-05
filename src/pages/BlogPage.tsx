@@ -11,6 +11,15 @@ import type { BlogPost, Page } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
+const selectBlogList = (data: ReadonlyArray<BlogPost>) =>
+  data.map((b) => ({
+    id: b.system.id,
+    imageSrc: b.elements.image?.value[0]?.url,
+    title: b.elements.title?.value,
+    description: transformToPortableText(b.elements.body?.value),
+    readMoreLink: b.elements.url_slug.value,
+  }));
+
 const BlogPage: React.FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const [searchParams] = useSearchParams();
@@ -46,6 +55,7 @@ const BlogPage: React.FC = () => {
               }
               throw err;
             }),
+        select: selectBlogList,
       },
     ],
   });
@@ -78,15 +88,7 @@ const BlogPage: React.FC = () => {
         </PageSection>
       )}
       <div className="pt-[72px]">
-        <BlogList
-          blogs={blogs.data.map((b) => ({
-            id: b.system.id,
-            imageSrc: b.elements.image?.value[0]?.url,
-            title: b.elements.title?.value,
-            description: transformToPortableText(b.elements.body?.value),
-            readMoreLink: b.elements.url_slug.value,
-          }))}
-        />
+        <BlogList blogs={blogs.data} />
       </div>
     </div>
   );

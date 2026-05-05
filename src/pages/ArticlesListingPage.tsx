@@ -2,7 +2,7 @@ import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { type FC, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ArticleList from "../components/articles/ArticleList.tsx";
 import ButtonLink from "../components/ButtonLink.tsx";
@@ -163,11 +163,84 @@ const ArticlesListingPage: FC = () => {
     }
   };
 
+  const articleTypeOptions = useMemo<ReadonlyArray<SelectorOption>>(
+    () => [
+      { label: "All", codename: "all" },
+      ...articlesTypes.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
+    ],
+    [articlesTypes.data.terms],
+  );
+
+  const articleTopicOptions = useMemo<ReadonlyArray<SelectorOption>>(
+    () => [
+      { label: "All", codename: "all" },
+      ...articlesTopics.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
+    ],
+    [articlesTopics.data.terms],
+  );
+
+  const featuredArticle = useMemo(() => {
+    const featured = articles.data?.[0];
+    if (!featured) {
+      return null;
+    }
+    return {
+      image: {
+        url: featured.elements.image.value[0]?.url ?? "",
+        alt: featured.elements.image.value[0]?.description ?? "",
+        width: 670,
+        height: 440,
+      },
+      title: featured.elements.title.value,
+      published: `Published on ${new Date(
+        featured.elements.publish_date.value ?? "",
+      ).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+        day: "numeric",
+      })}`,
+      tags: featured.elements.topics.value.map((t) => t.name),
+      description: featured.elements.introduction.value,
+      urlSlug: featured.elements.url_slug.value,
+    };
+  }, [articles.data]);
+
+  const articleListItems = useMemo(
+    () =>
+      articles.data
+        ?.filter((a) =>
+          isArticleType(articleTypeCodename)
+            ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
+            : true,
+        )
+        .filter((a) =>
+          isGeneralHealthcareTopics(articleTopicCodename)
+            ? a.elements.topics.value.find((t) => t.codename === articleTopicCodename)
+            : true,
+        )
+        .map((article) => ({
+          image: {
+            url: article.elements.image.value[0]?.url ?? "",
+            alt: article.elements.image.value[0]?.description ?? "",
+          },
+          title: article.elements.title.value,
+          introduction: article.elements.introduction.value,
+          publishDate: article.elements.publish_date.value
+            ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "No date",
+          topics: article.elements.topics.value.map((topic) => topic.name),
+          urlSlug: article.elements.url_slug.value,
+        })) ?? [],
+    [articles.data, articleTypeCodename, articleTopicCodename],
+  );
+
   if (!articlesPage.data || !articles.data) {
     return <div className="flex-grow" />;
   }
-
-  const featuredArticle = articles.data[0];
 
   return (
     <div className="flex flex-col">
@@ -195,25 +268,7 @@ const ArticlesListingPage: FC = () => {
       <PageSection color="bg-burgundy">
         {featuredArticle ? (
           <div className="burgundy-theme">
-            <FeaturedArticle
-              image={{
-                url: featuredArticle.elements.image.value[0]?.url ?? "",
-                alt: featuredArticle.elements.image.value[0]?.description ?? "",
-                width: 670,
-                height: 440,
-              }}
-              title={featuredArticle.elements.title.value}
-              published={`Published on ${new Date(
-                featuredArticle.elements.publish_date.value ?? "",
-              ).toLocaleDateString("en-US", {
-                month: "short",
-                year: "numeric",
-                day: "numeric",
-              })}`}
-              tags={featuredArticle.elements.topics.value.map((t) => t.name)}
-              description={featuredArticle.elements.introduction.value}
-              urlSlug={featuredArticle.elements.url_slug.value}
-            />
+            <FeaturedArticle {...featuredArticle} />
           </div>
         ) : null}
       </PageSection>
@@ -231,54 +286,19 @@ const ArticlesListingPage: FC = () => {
         <div className="flex flex-row gap-6 pt-16">
           <Selector
             label="Article Type"
-            options={[
-              { label: "All", codename: "all" },
-              ...articlesTypes.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
-            ]}
+            options={articleTypeOptions}
             selectedOption={articleType}
             onChange={handleArticleTypeChange}
           />
           <Selector
             label="Article Topic"
-            options={[
-              { label: "All", codename: "all" },
-              ...articlesTopics.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
-            ]}
+            options={articleTopicOptions}
             selectedOption={articleTopic}
             onChange={handleArticleTopicChange}
           />
         </div>
       </PageSection>
-      <ArticleList
-        articles={articles.data
-          .filter((a) =>
-            isArticleType(articleTypeCodename)
-              ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
-              : true,
-          )
-          .filter((a) =>
-            isGeneralHealthcareTopics(articleTopicCodename)
-              ? a.elements.topics.value.find((t) => t.codename === articleTopicCodename)
-              : true,
-          )
-          .map((article) => ({
-            image: {
-              url: article.elements.image.value[0]?.url ?? "",
-              alt: article.elements.image.value[0]?.description ?? "",
-            },
-            title: article.elements.title.value,
-            introduction: article.elements.introduction.value,
-            publishDate: article.elements.publish_date.value
-              ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })
-              : "No date",
-            topics: article.elements.topics.value.map((topic) => topic.name),
-            urlSlug: article.elements.url_slug.value,
-          }))}
-      />
+      <ArticleList articles={articleListItems} />
     </div>
   );
 };

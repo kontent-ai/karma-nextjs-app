@@ -11,6 +11,18 @@ import type { Page, Service } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
+const selectServiceList = (data: ReadonlyArray<Service> | null) =>
+  data?.map((service) => ({
+    image: {
+      url: service.elements.image.value[0]?.url ?? "",
+      alt: service.elements.image.value[0]?.description ?? "",
+    },
+    name: service.elements.name.value,
+    summary: service.elements.summary.value,
+    tags: service.elements.medical_specialties.value.map((specialty) => specialty.name),
+    urlSlug: service.elements.url_slug.value,
+  })) ?? null;
+
 const ServicesListingPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const [searchParams] = useSearchParams();
@@ -46,6 +58,7 @@ const ServicesListingPage: FC = () => {
               }
               throw err;
             }),
+        select: selectServiceList,
       },
     ],
   });
@@ -88,18 +101,7 @@ const ServicesListingPage: FC = () => {
         </PageSection>
       )}
       <PageSection color="bg-white">
-        <ServiceList
-          services={services.data.map((service) => ({
-            image: {
-              url: service.elements.image.value[0]?.url ?? "",
-              alt: service.elements.image.value[0]?.description ?? "",
-            },
-            name: service.elements.name.value,
-            summary: service.elements.summary.value,
-            tags: service.elements.medical_specialties.value.map((specialty) => specialty.name),
-            urlSlug: service.elements.url_slug.value,
-          }))}
-        />
+        <ServiceList services={services.data} />
       </PageSection>
     </div>
   );

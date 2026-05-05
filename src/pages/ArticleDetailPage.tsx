@@ -3,7 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useQuery } from "@tanstack/react-query";
-import { type FC, useCallback } from "react";
+import { type FC, useCallback, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import ArticleList from "../components/articles/ArticleList.tsx";
@@ -128,22 +128,61 @@ const ArticleDetailPage: FC = () => {
 
   useCustomRefresh(onRefresh);
 
-  if (!articleData.data) {
-    return <div className="flex-grow" />;
-  }
-
   const article = articleData.data;
 
-  const formattedDate = article.elements.publish_date.value
-    ? new Date(article.elements.publish_date.value).toLocaleDateString(
-        article.system.language === "es-ES" ? "es-ES" : "en-US",
-        {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
+  const formattedDate = useMemo(() => {
+    if (!article?.elements.publish_date.value) {
+      return "";
+    }
+    return new Date(article.elements.publish_date.value).toLocaleDateString(
+      article.system.language === "es-ES" ? "es-ES" : "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      },
+    );
+  }, [article?.elements.publish_date.value, article?.system.language]);
+
+  const author = article?.elements.author?.linkedItems[0];
+
+  const authorImage = useMemo(
+    () =>
+      author
+        ? {
+            url: author.elements.image?.value[0]?.url ?? "",
+            alt:
+              author.elements.image?.value[0]?.description ??
+              `Photo of ${author.elements.first_name?.value} ${author.elements.last_name?.value}`,
+          }
+        : null,
+    [author],
+  );
+
+  const topicNames = useMemo(
+    () => article?.elements.topics.value.map((topic) => topic.name) ?? [],
+    [article?.elements.topics.value],
+  );
+
+  const relatedArticleItems = useMemo(
+    () =>
+      article?.elements.related_articles.linkedItems.map((relatedArticle) => ({
+        title: relatedArticle.elements.title.value,
+        image: {
+          url: relatedArticle.elements.image.value[0]?.url ?? "",
+          alt: relatedArticle.elements.image.value[0]?.description ?? "",
         },
-      )
-    : "";
+        urlSlug: relatedArticle.elements.url_slug.value,
+        introduction: relatedArticle.elements.introduction.value,
+        publishDate: relatedArticle.elements.publish_date.value ?? "",
+        topics: relatedArticle.elements.topics.value.map((topic) => topic.name),
+      })) ?? [],
+    [article?.elements.related_articles.linkedItems],
+  );
+
+  if (!article) {
+    return <div className="flex-grow" />;
+  }
 
   return (
     <div className="flex flex-col gap-12">
@@ -160,28 +199,21 @@ const ArticleDetailPage: FC = () => {
             >
               {article.elements.title.value}
             </h1>
-            {article.elements.author?.linkedItems[0] ? (
+            {author && authorImage ? (
               <HeroImageAuthorCard
-                prefix={article.elements.author.linkedItems[0].elements.prefix?.value}
-                firstName={article.elements.author.linkedItems[0].elements.first_name?.value || ""}
-                lastName={article.elements.author.linkedItems[0].elements.last_name?.value || ""}
-                suffix={article.elements.author.linkedItems[0].elements.suffixes?.value}
+                prefix={author.elements.prefix?.value}
+                firstName={author.elements.first_name?.value || ""}
+                lastName={author.elements.last_name?.value || ""}
+                suffix={author.elements.suffixes?.value}
                 publishDate={formattedDate}
-                image={{
-                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url ?? "",
-                  alt:
-                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ??
-                    `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
-                      article.elements.author.linkedItems[0].elements.last_name?.value
-                    }`,
-                }}
-                codename={article.elements.author.linkedItems[0].system.codename}
+                image={authorImage}
+                codename={author.system.codename}
                 language={article.system.language}
               />
             ) : null}
-            {article.elements.topics.value.length > 0 && article.system.language === "default" ? (
+            {topicNames.length > 0 && article.system.language === "default" ? (
               <Tags
-                tags={article.elements.topics.value.map((topic) => topic.name)}
+                tags={topicNames}
                 orientation="horizontal"
                 className="mt-4"
                 itemId={article.system.id}
@@ -223,48 +255,29 @@ const ArticleDetailPage: FC = () => {
         </div>
       </PageSection>
 
-      {article.elements.author?.linkedItems[0] ? (
+      {author && authorImage ? (
         <PageSection color="bg-creme">
           <div className="creme-theme flex gap-24 max-w-[728px] mx-auto py-[104px] items-center ">
             <h2 className="text-heading-2 text-heading-2-color">Author</h2>
             <div className="text-body-lg text-body-color">
               <PersonCard
-                prefix={article.elements.author.linkedItems[0].elements.prefix?.value}
-                firstName={article.elements.author.linkedItems[0].elements.first_name?.value || ""}
-                lastName={article.elements.author.linkedItems[0].elements.last_name?.value || ""}
-                suffix={article.elements.author.linkedItems[0].elements.suffixes?.value}
-                jobTitle={article.elements.author.linkedItems[0].elements.job_title?.value || ""}
-                image={{
-                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url ?? "",
-                  alt:
-                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ??
-                    `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
-                      article.elements.author.linkedItems[0].elements.last_name?.value
-                    }`,
-                }}
+                prefix={author.elements.prefix?.value}
+                firstName={author.elements.first_name?.value || ""}
+                lastName={author.elements.last_name?.value || ""}
+                suffix={author.elements.suffixes?.value}
+                jobTitle={author.elements.job_title?.value || ""}
+                image={authorImage}
               />
             </div>
           </div>
         </PageSection>
       ) : null}
 
-      {article.elements.related_articles.linkedItems.length > 0 ? (
+      {relatedArticleItems.length > 0 ? (
         <PageSection color="bg-white">
           <div className="flex flex-col max-w-6xl mx-auto py-[104px]">
             <h2 className="text-heading-2 text-heading-2-color">Related articles</h2>
-            <ArticleList
-              articles={article.elements.related_articles.linkedItems.map((article) => ({
-                title: article.elements.title.value,
-                image: {
-                  url: article.elements.image.value[0]?.url ?? "",
-                  alt: article.elements.image.value[0]?.description ?? "",
-                },
-                urlSlug: article.elements.url_slug.value,
-                introduction: article.elements.introduction.value,
-                publishDate: article.elements.publish_date.value ?? "",
-                topics: article.elements.topics.value.map((topic) => topic.name),
-              }))}
-            />
+            <ArticleList articles={relatedArticleItems} />
           </div>
         </PageSection>
       ) : null}
