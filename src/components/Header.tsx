@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router";
 import { IconButton } from "../icons/IconButton.tsx";
 import IconSpain from "../icons/IconSpain.tsx";
 import IconUnitedStates from "../icons/IconUnitedStates.tsx";

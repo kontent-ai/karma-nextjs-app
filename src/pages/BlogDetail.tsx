@@ -2,7 +2,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { BlogPost } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";

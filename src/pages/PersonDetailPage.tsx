@@ -3,7 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type React from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import PageSection from "../components/PageSection.tsx";
 import type { Person } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";

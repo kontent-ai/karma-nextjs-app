@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useAppContext } from "../context/AppContext.tsx";
 import { createClient } from "./client.ts";
 

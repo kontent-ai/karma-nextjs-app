@@ -1,4 +1,4 @@
-import { NavLink, useSearchParams } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router";
 import { createPreviewLink } from "../utils/link.ts";
 
 const PersonCard: React.FC<{

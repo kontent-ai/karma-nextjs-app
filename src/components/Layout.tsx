@@ -1,6 +1,6 @@
 import { type FC, type PropsWithChildren, Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
+import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import { AppContextComponent } from "../context/AppContext.tsx";
 import { SmartLinkContextComponent } from "../context/SmartLinkContext.tsx";
 import { NotFoundError } from "../utils/errors.ts";

@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
-import { createBrowserRouter, type RouteObject, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, type RouteObject, RouterProvider } from "react-router";
 import Auth0ProviderWithRedirect from "./components/auth/AuthProviderWithRedirect.tsx";
 import Layout from "./components/Layout.tsx";
 import NotFound from "./components/NotFound.tsx";

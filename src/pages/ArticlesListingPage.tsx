@@ -3,7 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { type FC, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import ArticleList from "../components/articles/ArticleList.tsx";
 import ButtonLink from "../components/ButtonLink.tsx";
 import ImageWithTag from "../components/ImageWithTag.tsx";
