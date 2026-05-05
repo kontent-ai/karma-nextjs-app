@@ -37,7 +37,7 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
                     itemId: item.system.id,
                   }}
                   displayFeatured={true}
-                  urlSlug={`articles/${item.elements.url_slug.value}`}
+                  urlSlug={`/research/${item.elements.url_slug.value}`}
                 />
               </PageSection>
             );

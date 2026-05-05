@@ -250,6 +250,7 @@ const ArticleDetailPage: FC = () => {
                 suffix={author.elements.suffixes?.value}
                 jobTitle={author.elements.job_title?.value || ""}
                 image={authorImage}
+                codename={author.system.codename}
               />
             </div>
           </div>

@@ -6,7 +6,6 @@ import { formatDate } from "../../utils/date.ts";
 import { defaultPortableRichTextResolvers } from "../../utils/richtext.tsx";
 import { createItemSmartLink } from "../../utils/smartlink.ts";
 import type { Replace } from "../../utils/types.ts";
-import Link from "../Link.tsx";
 import Tags from "../Tags.tsx";
 import FeaturedComponentBase from "./FeaturedComponentBase.tsx";
 
@@ -55,9 +54,6 @@ const FeaturedEvent: FC<FeaturedEventProps> = ({ event }) => {
           />
         </div>
       </div>
-      {event.elements.description?.value !== "<p><br></p>" && (
-        <Link href="#" text="Read more" className="mt-6" />
-      )}
     </FeaturedComponentBase>
   ) : null;
 };
