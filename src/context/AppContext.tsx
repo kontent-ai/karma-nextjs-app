@@ -11,26 +11,32 @@ type AppContext = {
 
 const { VITE_ENVIRONMENT_ID, VITE_DELIVERY_API_KEY } = import.meta.env;
 
-if (!VITE_ENVIRONMENT_ID || !VITE_DELIVERY_API_KEY) {
-  const missing = [
-    !VITE_ENVIRONMENT_ID && "VITE_ENVIRONMENT_ID",
-    !VITE_DELIVERY_API_KEY && "VITE_DELIVERY_API_KEY",
-  ]
-    .filter(Boolean)
-    .join(", ");
-  throw new Error(`Missing required environment variables: ${missing}. See .env.template.`);
-}
+const AppContext = createContext<AppContext | null>(null);
 
-const defaultAppContext: AppContext = {
-  environmentId: VITE_ENVIRONMENT_ID,
-  apiKey: VITE_DELIVERY_API_KEY,
+export const useAppContext = (): AppContext => {
+  const ctx = useContext(AppContext);
+  if (!ctx) {
+    throw new Error("useAppContext must be used inside AppContextComponent.");
+  }
+  return ctx;
 };
 
-const AppContext = createContext<AppContext>(defaultAppContext);
-
-export const useAppContext = () => useContext(AppContext);
-
 export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
+  if (!VITE_ENVIRONMENT_ID || !VITE_DELIVERY_API_KEY) {
+    const missing = [
+      !VITE_ENVIRONMENT_ID && "VITE_ENVIRONMENT_ID",
+      !VITE_DELIVERY_API_KEY && "VITE_DELIVERY_API_KEY",
+    ]
+      .filter(Boolean)
+      .join(", ");
+    throw new Error(`Missing required environment variables: ${missing}. See .env.template.`);
+  }
+
+  const defaultAppContext: AppContext = {
+    environmentId: VITE_ENVIRONMENT_ID,
+    apiKey: VITE_DELIVERY_API_KEY,
+  };
+
   const { envId } = useParams();
   const { getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
@@ -55,14 +61,17 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
 
           return { environmentId: envId, apiKey: res };
         })
-        .catch((err: unknown) => {
+        .catch(async (err: unknown) => {
           if (
             typeof err === "object" &&
             err !== null &&
             "error" in err &&
             (err.error === "login_required" || err.error === "consent_required")
           ) {
-            void loginWithRedirect();
+            await loginWithRedirect();
+            // Hold the Suspense fallback while the browser navigates to Auth0;
+            // resolving (or throwing) here would briefly render the error page.
+            return new Promise<AppContext>(() => {});
           }
           throw err;
         });

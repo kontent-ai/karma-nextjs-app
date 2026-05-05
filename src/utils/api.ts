@@ -37,9 +37,9 @@ export const loadPreviewApiKey = async ({ accessToken, environmentId }: LoadPrev
     return null;
   }
 
-  return getKeyForTokenSeed(accessToken, projectContainerId, tokenSeed)
-    .then((response) => response.api_key)
-    .catch(() => null);
+  return getKeyForTokenSeed(accessToken, projectContainerId, tokenSeed).then(
+    (response) => response.api_key,
+  );
 };
 
 export const getProjectContainerForEnvironment = async (
