@@ -3,7 +3,6 @@ import Divider from "../Divider.tsx";
 import FeaturedArticle from "../landingPage/FeaturedArticle.tsx";
 import PageSection from "../PageSection.tsx";
 
-// Define the ArticleData type with a flattened structure
 type ArticleData = Readonly<{
   image: Readonly<{
     url: string;

@@ -1,7 +1,6 @@
 import type React from "react";
 import ServiceListItem from "./ServiceListItem.tsx";
 
-// Define the ServiceData type with a flattened structure
 type ServiceData = Readonly<{
   image: {
     url: string;
