@@ -14,12 +14,6 @@ const BlogDetail: FC = () => {
   const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
 
-  const createTag = (tag: string) => (
-    <div className="w-fit text-small border tracking-wider font-[700] text-grey border-azure px-4 py-2 rounded-lg uppercase">
-      {tag}
-    </div>
-  );
-
   const blogPost = useSuspenseQuery({
     queryKey: ["blog-post", slug, environmentId, isPreviewEnabled],
     queryFn: async () => {
@@ -42,7 +36,9 @@ const BlogDetail: FC = () => {
     <div className="container flex flex-col gap-12">
       <div className="flex flex-row items-center pt-[104px] pb-[160px]">
         <div className="flex flex-col flex-1 gap-6 ">
-          {createTag("Blog Post")}
+          <div className="w-fit text-small border tracking-wider font-[700] text-grey border-azure px-4 py-2 rounded-lg uppercase">
+            Blog Post
+          </div>
           <h1
             className="text-heading-1 text-heading-1-color mb-6 max-w-[12ch]"
             {...createItemSmartLink(blogPost.data.system.id)}

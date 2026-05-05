@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import {
   createComponentSmartLink,
   createElementSmartLink,
@@ -19,7 +19,7 @@ type CallToActionProps = Readonly<{
   componentId: string | null;
 }>;
 
-const CallToAction: React.FC<CallToActionProps> = ({
+const CallToAction: FC<CallToActionProps> = ({
   title,
   description,
   buttonText,

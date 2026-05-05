@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import ButtonLink from "../ButtonLink.tsx";
 import Tags from "../Tags.tsx";
 
@@ -13,7 +13,7 @@ type ServiceListItemProps = Readonly<{
   slug: string;
 }>;
 
-const ServiceListItem: React.FC<ServiceListItemProps> = ({ image, name, summary, tags, slug }) => {
+const ServiceListItem: FC<ServiceListItemProps> = ({ image, name, summary, tags, slug }) => {
   return (
     <div className="flex flex-col lg:flex-row gap-16 justify-center items-center">
       <div className="flex-1 flex flex-col">

@@ -1,3 +1,4 @@
+import type { FC } from "react";
 import { useLocation, useSearchParams } from "react-router";
 import { IconButton } from "../icons/IconButton.tsx";
 import IconSpain from "../icons/IconSpain.tsx";
@@ -6,7 +7,7 @@ import Container from "./Container.tsx";
 import Logo from "./Logo.tsx";
 import Navigation from "./Navigation.tsx";
 
-const Header: React.FC = () => {
+const Header: FC = () => {
   const location = useLocation();
   const isResearchPage = location.pathname.match(/^\/research\/[\w-]+$/);
   const [searchParams, setSearchParams] = useSearchParams();

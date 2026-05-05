@@ -11,7 +11,7 @@ const Footer: FC = () => (
     </div>
     <Divider />
     <p className="text-[16px] text-gray-light mx-auto w-fit py-[60px]">
-      ©2024 Karma Health, LLC. All Rights Reserved.
+      ©{new Date().getFullYear()} Karma Health, LLC. All Rights Reserved.
     </p>
   </footer>
 );

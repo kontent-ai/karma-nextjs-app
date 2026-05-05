@@ -1,6 +1,6 @@
 import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import type React from "react";
+import type { FC } from "react";
 import Link from "../Link.tsx";
 
 type BlogListItemProps = Readonly<{
@@ -11,7 +11,7 @@ type BlogListItemProps = Readonly<{
   className?: string;
 }>;
 
-const BlogListItem: React.FC<BlogListItemProps> = ({
+const BlogListItem: FC<BlogListItemProps> = ({
   imageSrc,
   title,
   description,

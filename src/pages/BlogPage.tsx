@@ -2,7 +2,7 @@ import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import type React from "react";
+import type { FC } from "react";
 import BlogList from "../components/blog/BlogList.tsx";
 import PageSection from "../components/PageSection.tsx";
 import type { BlogPost, Page } from "../model/index.ts";
@@ -18,7 +18,7 @@ const selectBlogList = (data: ReadonlyArray<BlogPost>) =>
     readMoreLink: b.elements.url_slug.value,
   }));
 
-const BlogPage: React.FC = () => {
+const BlogPage: FC = () => {
   const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [blogPage, blogs] = useSuspenseQueries({

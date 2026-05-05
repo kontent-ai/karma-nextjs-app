@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import { createItemSmartLink } from "../../utils/smartlink.ts";
 import Link from "../Link.tsx";
 import Tags from "../Tags.tsx";
@@ -20,11 +20,7 @@ type FeaturedArticleProps = Readonly<{
   urlSlug: string;
 }>;
 
-const FeaturedArticle: React.FC<FeaturedArticleProps> = ({
-  article,
-  isFeatured = false,
-  urlSlug,
-}) => {
+const FeaturedArticle: FC<FeaturedArticleProps> = ({ article, isFeatured = false, urlSlug }) => {
   return (
     <FeaturedComponentBase
       type="article"

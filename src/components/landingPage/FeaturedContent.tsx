@@ -87,7 +87,7 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
       {...createElementSmartLink("featured_content")}
       {...createFixedAddSmartLink("end", "bottom")}
     >
-      {featuredSections.map((item) => item)}
+      {featuredSections}
     </div>
   );
 };

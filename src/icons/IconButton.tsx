@@ -1,11 +1,13 @@
+import type { FC, MouseEvent, ReactNode } from "react";
+
 type IconButtonProps = {
-  onClick: (e: React.MouseEvent) => void;
-  icon: React.ReactNode;
+  onClick: (e: MouseEvent) => void;
+  icon: ReactNode;
   className?: string;
   isSelected?: boolean;
 };
 
-export const IconButton: React.FC<IconButtonProps> = ({ onClick, icon, className, isSelected }) => (
+export const IconButton: FC<IconButtonProps> = ({ onClick, icon, className, isSelected }) => (
   <button
     type="button"
     onClick={onClick}

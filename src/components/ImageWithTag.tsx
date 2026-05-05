@@ -22,7 +22,8 @@ const ImageWithTag: FC<ImageWithTagProps> = ({ image, tagText, className }) => {
         height={image.height}
         src={image.url}
         alt={image.alt}
-        className={`object-cover static rounded-lg w-[${image.width}px] h-[${image.height}px]`}
+        style={{ width: image.width, height: image.height }}
+        className="object-cover static rounded-lg"
       />
     </div>
   );

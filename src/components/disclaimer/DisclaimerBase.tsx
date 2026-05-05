@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import {
   createComponentSmartLink,
   createElementSmartLink,
@@ -13,13 +13,7 @@ type DisclaimerBaseProps = Readonly<{
   theme: "burgundy" | "base";
 }>;
 
-const DisclaimerBase: React.FC<DisclaimerBaseProps> = ({
-  title,
-  text,
-  parentId,
-  componentId,
-  theme,
-}) => {
+const DisclaimerBase: FC<DisclaimerBaseProps> = ({ title, text, parentId, componentId, theme }) => {
   return (
     <div
       className={`${theme === "burgundy" ? "burgundy-theme" : ""} bg-background-color pt-16 pb-20 rounded-lg`}

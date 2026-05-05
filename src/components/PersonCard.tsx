@@ -1,7 +1,8 @@
+import type { FC } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { createPreviewLink } from "../utils/link.ts";
 
-const PersonCard: React.FC<{
+const PersonCard: FC<{
   prefix?: string;
   firstName: string;
   lastName: string;

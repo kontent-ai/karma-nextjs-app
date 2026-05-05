@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import DisclaimerBase from "./DisclaimerBase.tsx";
 
 type PromotionalDisclaimerProps = Readonly<{
@@ -8,7 +8,7 @@ type PromotionalDisclaimerProps = Readonly<{
   componentId: string | null;
 }>;
 
-const PromotionalDisclaimer: React.FC<PromotionalDisclaimerProps> = ({
+const PromotionalDisclaimer: FC<PromotionalDisclaimerProps> = ({
   title,
   text,
   parentId,

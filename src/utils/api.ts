@@ -65,9 +65,7 @@ export const getPreviewApiTokenSeed = async (
   projectContainerId: string,
   environmentId: string,
 ): Promise<ReadonlyArray<TokenSeedResponse> | null> => {
-  const requestContext: RequestContext = {
-    authToken: authToken,
-  };
+  const requestContext: RequestContext = { authToken };
   const url = `https://app.${import.meta.env.VITE_KONTENT_URL}/api/project-container/${projectContainerId}/keys/listing`;
   const data = {
     query: "",
@@ -98,9 +96,7 @@ export const getKeyForTokenSeed = async (
   projectContainerId: string,
   tokenSeed: string,
 ): Promise<KeyFromSeedResponse> => {
-  const requestContext: RequestContext = {
-    authToken: authToken,
-  };
+  const requestContext: RequestContext = { authToken };
   const url = `https://app.${import.meta.env.VITE_KONTENT_URL}/api/project-container/${projectContainerId}/keys/${tokenSeed}`;
 
   return await get(url, requestContext).then(

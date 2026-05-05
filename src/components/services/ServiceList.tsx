@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import ServiceListItem from "./ServiceListItem.tsx";
 
 type ServiceData = Readonly<{
@@ -16,7 +16,7 @@ type ServiceListProps = Readonly<{
   services: ReadonlyArray<ServiceData>;
 }>;
 
-const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
+const ServiceList: FC<ServiceListProps> = ({ services }) => {
   return (
     <div className="flex flex-col items-center gap-[104px]">
       {services.length === 0 ? (

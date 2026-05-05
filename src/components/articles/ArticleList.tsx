@@ -1,4 +1,4 @@
-import type React from "react";
+import type { FC } from "react";
 import Divider from "../Divider.tsx";
 import FeaturedArticle from "../landingPage/FeaturedArticle.tsx";
 import PageSection from "../PageSection.tsx";
@@ -19,7 +19,7 @@ type ArticleListProps = Readonly<{
   articles: ReadonlyArray<ArticleData>;
 }>;
 
-const ArticleList: React.FC<ArticleListProps> = ({ articles }) => {
+const ArticleList: FC<ArticleListProps> = ({ articles }) => {
   return (
     <div className="flex flex-col items-center ">
       {articles.length === 0 ? (

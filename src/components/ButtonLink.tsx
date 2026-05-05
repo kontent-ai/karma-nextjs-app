@@ -1,15 +1,15 @@
-import type React from "react";
+import type { FC, ReactNode } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { createPreviewLink } from "../utils/link.ts";
 
 interface ButtonLinkProps {
   href: string;
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: "azure" | "transparent";
   className?: string;
 }
 
-const ButtonLink: React.FC<ButtonLinkProps> = ({
+const ButtonLink: FC<ButtonLinkProps> = ({
   href,
   children,
   variant = "transparent",
