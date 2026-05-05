@@ -43,7 +43,7 @@ export const SmartLinkContextComponent: FC<PropsWithChildren> = ({ children }) =
       // instance?.destroy();
       setSmartLink(null);
     };
-  }, [environmentId, smartLink]);
+  }, [environmentId]);
 
   const value = useMemo(() => ({ smartLink }), [smartLink]);
 

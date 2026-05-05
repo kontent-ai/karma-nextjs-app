@@ -19,8 +19,9 @@ const IconGermany = React.forwardRef<SVGSVGElement, IconGermanyProps>(
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           ref={ref}
+          aria-hidden="true"
         >
-          <g clip-path="url(#clip0_250_634)">
+          <g clipPath="url(#clip0_250_634)">
             <path
               d="M0.746094 16.1739C2.44161 20.7435 6.84012 24 11.9997 24C17.1593 24 21.5578 20.7435 23.2533 16.1739L11.9997 15.1305L0.746094 16.1739Z"
               fill="#FFDA44"

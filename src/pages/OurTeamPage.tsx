@@ -20,7 +20,7 @@ const OurTeamPage: FC = () => {
     queries: [
       {
         queryKey: ["team_page"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("our_team")
             .toPromise()
@@ -34,7 +34,7 @@ const OurTeamPage: FC = () => {
       },
       {
         queryKey: ["team_members"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<Person>()
             .type("person")
@@ -96,7 +96,7 @@ const OurTeamPage: FC = () => {
                 url: member.elements.image.value[0]?.url ?? "",
                 alt:
                   member.elements.image.value[0]?.description ??
-                  member.elements.first_name.value + " " + member.elements.last_name.value,
+                  `${member.elements.first_name.value} ${member.elements.last_name.value}`,
               },
               prefix: member.elements.prefix.value,
               suffix: member.elements.suffixes.value,

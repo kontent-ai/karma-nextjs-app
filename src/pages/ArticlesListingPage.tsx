@@ -81,8 +81,8 @@ const ArticlesListingPage: FC = () => {
     queries: [
       {
         queryKey: ["articles_page"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryFn: async () =>
+          await createClient(environmentId, apiKey, isPreview)
             .item<Page>("research")
             .toPromise()
             .then((res) => res.data)
@@ -95,24 +95,24 @@ const ArticlesListingPage: FC = () => {
       },
       {
         queryKey: ["articles_types"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryFn: async () =>
+          await createClient(environmentId, apiKey, isPreview)
             .taxonomy("article_type")
             .toPromise()
             .then((res) => res.data.taxonomy),
       },
       {
         queryKey: ["articles_topics"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryFn: async () =>
+          await createClient(environmentId, apiKey, isPreview)
             .taxonomy("general_healthcare_topics")
             .toPromise()
             .then((res) => res.data.taxonomy),
       },
       {
         queryKey: ["articles_listing"],
-        queryFn: () =>
-          createClient(environmentId, apiKey, isPreview)
+        queryFn: async () =>
+          await createClient(environmentId, apiKey, isPreview)
             .items<Article>()
             .type("article")
             .orderByDescending("elements.publish_date")
@@ -187,7 +187,7 @@ const ArticlesListingPage: FC = () => {
         </div>
       </PageSection>
       <PageSection color="bg-burgundy">
-        {featuredArticle && (
+        {featuredArticle ? (
           <div className="burgundy-theme">
             <FeaturedArticle
               image={{
@@ -209,7 +209,7 @@ const ArticlesListingPage: FC = () => {
               urlSlug={featuredArticle.elements.url_slug.value}
             />
           </div>
-        )}
+        ) : null}
       </PageSection>
       {!isEmptyRichText(articlesPage.data.item.elements.body.value) && (
         <PageSection color="bg-white">
@@ -246,7 +246,6 @@ const ArticlesListingPage: FC = () => {
       <ArticleList
         articles={articles.data
           .filter((a) =>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             isArticleType(articleTypeCodename)
               ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
               : true,

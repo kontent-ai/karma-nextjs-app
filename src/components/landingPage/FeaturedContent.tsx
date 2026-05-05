@@ -60,7 +60,7 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
               imageSrc={item.elements.image.value[0]?.url}
               imageAlt={item.elements.image.value[0]?.description ?? "alt"}
               imagePosition={item.elements.image_position.value[0]?.codename ?? "left"}
-              style="burgundy"
+              variant="burgundy"
               parentId={item.system.id}
               componentId={null}
             />
@@ -71,7 +71,10 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
     .flatMap((item, index) =>
       index === featuredContent.linkedItems.length - 1
         ? [item]
-        : [item, <Divider key={`divider-${index}`} />],
+        : [
+            item,
+            <Divider key={`divider-${featuredContent.linkedItems[index]?.system.codename}`} />,
+          ],
     );
 
   return (

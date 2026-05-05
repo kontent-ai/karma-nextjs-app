@@ -18,7 +18,7 @@ const PersonDetailPage: React.FC = () => {
 
   const personData = useQuery({
     queryKey: [`person-detail_${slug}`],
-    queryFn: () =>
+    queryFn: async () =>
       createClient(environmentId, apiKey, isPreview)
         .item<Person>(slug ?? "")
         .toPromise()
@@ -46,10 +46,12 @@ const PersonDetailPage: React.FC = () => {
               Person
             </div>
             <h1 className="text-heading-1 text-heading-1-color">
-              {person.elements.prefix?.value && <span>{person.elements.prefix.value}</span>}
+              {person.elements.prefix?.value ? <span>{person.elements.prefix.value}</span> : null}
               &nbsp;
               {person.elements.first_name?.value} {person.elements.last_name?.value}
-              {person.elements.suffixes?.value && <span>, {person.elements.suffixes.value}</span>}
+              {person.elements.suffixes?.value ? (
+                <span>, {person.elements.suffixes.value}</span>
+              ) : null}
             </h1>
             <p className="text-[32px] leading-[130%] text-body-color">
               {person.elements.job_title?.value}
@@ -80,22 +82,22 @@ const PersonDetailPage: React.FC = () => {
             />
           </div>
 
-          {(person.elements.phone?.value ||
-            person.elements.email?.value ||
-            person.elements.website?.value) && (
+          {person.elements.phone?.value ||
+          person.elements.email?.value ||
+          person.elements.website?.value ? (
             <div className="flex-1 flex flex-col gap-10">
               <h2 className="text-heading-2 text-burgundy">Contact</h2>
 
               <div className="flex flex-col gap">
-                {person.elements.phone?.value && (
+                {person.elements.phone?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Phone:</span> {person.elements.phone.value}
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {person.elements.email?.value && (
+                {person.elements.email?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Email:</span>&nbsp;
@@ -107,9 +109,9 @@ const PersonDetailPage: React.FC = () => {
                       </a>
                     </p>
                   </div>
-                )}
+                ) : null}
 
-                {person.elements.website?.value && (
+                {person.elements.website?.value ? (
                   <div>
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-[700]">Website:</span>&nbsp;
@@ -123,10 +125,10 @@ const PersonDetailPage: React.FC = () => {
                       </a>
                     </p>
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </PageSection>
     </div>

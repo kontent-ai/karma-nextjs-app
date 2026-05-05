@@ -23,9 +23,9 @@ const ServiceList: React.FC<ServiceListProps> = ({ services }) => {
       {services.length === 0 ? (
         <p className="text-center text-grey text-xl">No services available</p>
       ) : (
-        services.map((service, index) => (
+        services.map((service) => (
           <ServiceListItem
-            key={index}
+            key={service.urlSlug}
             image={service.image}
             name={service.name}
             summary={service.summary}

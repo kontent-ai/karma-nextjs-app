@@ -20,7 +20,7 @@ const BlogPage: React.FC = () => {
     queries: [
       {
         queryKey: ["blog_page"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("blog")
             .toPromise()
@@ -34,7 +34,7 @@ const BlogPage: React.FC = () => {
       },
       {
         queryKey: ["blog_posts"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<BlogPost>()
             .type("blog_post")
@@ -80,6 +80,7 @@ const BlogPage: React.FC = () => {
       <div className="pt-[72px]">
         <BlogList
           blogs={blogs.data.map((b) => ({
+            id: b.system.id,
             imageSrc: b.elements.image?.value[0]?.url,
             title: b.elements.title?.value,
             description: transformToPortableText(b.elements.body?.value),

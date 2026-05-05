@@ -17,8 +17,8 @@ const makeHeaders = (requestContext?: RequestContext): CustomHeaders =>
       }
     : {};
 
-export const get = (url: string, requestContext: RequestContext) => {
-  return fetch(url, {
+export const get = async (url: string, requestContext: RequestContext) =>
+  await fetch(url, {
     method: "get",
     headers: {
       "Content-Type": "application/json",
@@ -26,10 +26,9 @@ export const get = (url: string, requestContext: RequestContext) => {
     },
     credentials: "same-origin",
   });
-};
 
-export const post = (url: string, data: object, requestContext: RequestContext) => {
-  return fetch(url, {
+export const post = async (url: string, data: object, requestContext: RequestContext) =>
+  await fetch(url, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -38,4 +37,3 @@ export const post = (url: string, data: object, requestContext: RequestContext) 
     body: JSON.stringify(data),
     credentials: "same-origin",
   });
-};

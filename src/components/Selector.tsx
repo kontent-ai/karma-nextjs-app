@@ -1,5 +1,4 @@
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { type FC, useEffect, useRef, useState } from "react";
 
 export type SelectorOption = {
   label: string;
@@ -14,7 +13,7 @@ type SelectorProps = {
   className?: string;
 };
 
-const Selector: React.FC<SelectorProps> = ({
+const Selector: FC<SelectorProps> = ({
   label,
   options,
   selectedOption,
@@ -48,40 +47,44 @@ const Selector: React.FC<SelectorProps> = ({
 
   return (
     <div className={`relative ${className} w-[30ch]`} ref={dropdownRef}>
-      <label className="block text-grey text-body-md pb-4">{label}</label>
-      <div
-        className={`flex items-center justify-between border rounded-lg px-4 py-3 cursor-pointer ${
+      <span className="block text-grey text-body-md pb-4">{label}</span>
+      <button
+        type="button"
+        className={`flex w-full items-center justify-between border rounded-lg px-4 py-3 cursor-pointer ${
           isOpen ? "border-azure" : "border-black"
         }`}
         onClick={toggleDropdown}
       >
         <span className="text-body-lg text-grey line-clamp-1">{selectedOption}</span>
         <svg
-          className={"w-5 h-5"}
+          className="w-5 h-5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-      </div>
+      </button>
 
-      {isOpen && (
+      {isOpen ? (
         <div className="absolute z-10 w-full mt-1 bg-white shadow-2xl rounded">
           <ul className="flex flex-col gap-6 py-6 px-1">
             {options.map((option) => (
-              <li
-                key={option.codename}
-                className={`px-4 py-2 cursor-pointer text-body-lg text-grey hover:text-azure`}
-                onClick={() => handleSelect(option)}
-              >
-                {option.label}
+              <li key={option.codename}>
+                <button
+                  type="button"
+                  className="block w-full text-left px-4 py-2 cursor-pointer text-body-lg text-grey hover:text-azure"
+                  onClick={() => handleSelect(option)}
+                >
+                  {option.label}
+                </button>
               </li>
             ))}
           </ul>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

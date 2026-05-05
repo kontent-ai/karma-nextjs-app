@@ -20,7 +20,7 @@
     "@kontent-ai/rich-text-resolver": "^3.0.2",
     "@kontent-ai/rich-text-resolver-react": "^3.0.2",
     "@kontent-ai/smart-link": "^5.0.5",
-    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-query": "^5.100.9",
     "dotenv": "^17.2.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

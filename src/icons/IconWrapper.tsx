@@ -28,7 +28,7 @@ export const IconWrapper: FC<IconProps> = ({
   return (
     <span className={`${className}`} style={style}>
       {children}
-      {screenReaderText && <span className="sr-only">{screenReaderText}</span>}
+      {screenReaderText ? <span className="sr-only">{screenReaderText}</span> : null}
     </span>
   );
 };

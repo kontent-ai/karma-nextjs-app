@@ -42,24 +42,25 @@ export const loadPreviewApiKey = async ({ accessToken, environmentId }: LoadPrev
     .catch(() => null);
 };
 
-export const getProjectContainerForEnvironment = (
+export const getProjectContainerForEnvironment = async (
   authToken: string,
   environmentId: string,
 ): Promise<ProjectContainer | null> => {
   const requestContext: RequestContext = { authToken };
   const url = `https://app.${import.meta.env.VITE_KONTENT_URL}/api/project-management/${environmentId}`;
 
-  return get(url, requestContext).then(async (res) => {
+  return await get(url, requestContext).then(async (res) => {
     if (res.ok) {
       return (await res.json()) as ProjectContainer;
     }
 
-    console.error((await res.json()).description);
+    const error = (await res.json()) as { description?: string };
+    console.error(error.description);
     return null;
   });
 };
 
-export const getPreviewApiTokenSeed = (
+export const getPreviewApiTokenSeed = async (
   authToken: string,
   projectContainerId: string,
   environmentId: string,
@@ -74,9 +75,10 @@ export const getPreviewApiTokenSeed = (
     environments: [environmentId],
   };
 
-  return post(url, data, requestContext).then(async (res) => {
+  return await post(url, data, requestContext).then(async (res) => {
     if (!res.ok) {
-      console.error((await res.json()).description);
+      const error = (await res.json()) as { description?: string };
+      console.error(error.description);
       return null;
     }
 
@@ -91,7 +93,7 @@ export const getPreviewApiTokenSeed = (
   });
 };
 
-export const getKeyForTokenSeed = (
+export const getKeyForTokenSeed = async (
   authToken: string,
   projectContainerId: string,
   tokenSeed: string,
@@ -101,5 +103,7 @@ export const getKeyForTokenSeed = (
   };
   const url = `https://app.${import.meta.env.VITE_KONTENT_URL}/api/project-container/${projectContainerId}/keys/${tokenSeed}`;
 
-  return get(url, requestContext).then((res) => res.json());
+  return await get(url, requestContext).then(
+    async (res) => (await res.json()) as KeyFromSeedResponse,
+  );
 };

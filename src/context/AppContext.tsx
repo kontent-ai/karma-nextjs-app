@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createContext, type FC, type PropsWithChildren, useContext } from "react";
+import { createContext, type FC, type PropsWithChildren, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { loadPreviewApiKey } from "../utils/api.ts";
 
@@ -9,9 +9,21 @@ type AppContext = {
   apiKey: string;
 };
 
+const { VITE_ENVIRONMENT_ID, VITE_DELIVERY_API_KEY } = import.meta.env;
+
+if (!VITE_ENVIRONMENT_ID || !VITE_DELIVERY_API_KEY) {
+  const missing = [
+    !VITE_ENVIRONMENT_ID && "VITE_ENVIRONMENT_ID",
+    !VITE_DELIVERY_API_KEY && "VITE_DELIVERY_API_KEY",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  throw new Error(`Missing required environment variables: ${missing}. See .env.template.`);
+}
+
 const defaultAppContext: AppContext = {
-  environmentId: import.meta.env.VITE_ENVIRONMENT_ID!,
-  apiKey: import.meta.env.VITE_DELIVERY_API_KEY!,
+  environmentId: VITE_ENVIRONMENT_ID,
+  apiKey: VITE_DELIVERY_API_KEY,
 };
 
 const AppContext = createContext<AppContext>(defaultAppContext);
@@ -24,17 +36,18 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
 
   const contextData = useSuspenseQuery({
     queryKey: [`env-data${envId ? `-${envId}` : ""}`],
-    queryFn: () => {
+    queryFn: async () => {
       if (!envId) {
         return defaultAppContext;
       }
-      return getAccessTokenSilently()
-        .then((res) => {
-          return loadPreviewApiKey({
-            accessToken: res,
-            environmentId: envId,
-          });
-        })
+      return await getAccessTokenSilently()
+        .then(
+          async (res) =>
+            await loadPreviewApiKey({
+              accessToken: res,
+              environmentId: envId,
+            }),
+        )
         .then((res) => {
           if (!res) {
             throw new Error("Could not obtain preview API KEY");
@@ -42,17 +55,27 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
 
           return { environmentId: envId, apiKey: res };
         })
-        .catch((err) => {
-          if (err.error === "login_required") {
-            loginWithRedirect();
-          }
-          if (err.error === "consent_required") {
-            loginWithRedirect();
+        .catch((err: unknown) => {
+          if (
+            typeof err === "object" &&
+            err !== null &&
+            "error" in err &&
+            (err.error === "login_required" || err.error === "consent_required")
+          ) {
+            void loginWithRedirect();
           }
           throw err;
         });
     },
   });
 
-  return <AppContext.Provider value={contextData.data}>{children}</AppContext.Provider>;
+  const value = useMemo(
+    () => ({
+      environmentId: contextData.data.environmentId,
+      apiKey: contextData.data.apiKey,
+    }),
+    [contextData.data.environmentId, contextData.data.apiKey],
+  );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

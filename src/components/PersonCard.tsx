@@ -27,9 +27,9 @@ const PersonCard: React.FC<{
           to={createPreviewLink(`/team/${firstName}-${lastName}`, isPreview)}
           className="text-heading-4 underline text-burgundy hover:text-azure"
         >
-          {prefix && <span>{prefix}</span>}
+          {prefix ? <span>{prefix}</span> : null}
           {firstName} {lastName}
-          {suffix && <span>, {suffix}</span>}
+          {suffix ? <span>, {suffix}</span> : null}
         </NavLink>
         <p className="text-small text-grey">{jobTitle}</p>
       </div>

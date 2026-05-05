@@ -30,10 +30,10 @@ export const TeamListItem: FC<TeamListItemProps> = ({
       </div>
       <h3 className="flex-none text-heading-3 text-burgundy">
         {prefix} {firstName} {lastName}
-        {suffix && `, ${suffix}`}
+        {suffix ? `, ${suffix}` : null}
       </h3>
       <p className="text-grey-600 text-body-lg mt-auto">{title}</p>
-      <ButtonLink href={link} style="transparent" className="mt-auto">
+      <ButtonLink href={link} variant="transparent" className="mt-auto">
         Show bio
       </ButtonLink>
     </div>

@@ -20,7 +20,7 @@ const ServicesListingPage: FC = () => {
     queries: [
       {
         queryKey: ["services_page"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .item<Page>("services")
             .toPromise()
@@ -34,7 +34,7 @@ const ServicesListingPage: FC = () => {
       },
       {
         queryKey: ["services_listing"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items<Service>()
             .type("service")

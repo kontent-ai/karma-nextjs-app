@@ -3,8 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useQuery } from "@tanstack/react-query";
-import type React from "react";
-import { useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
@@ -16,7 +15,7 @@ import { createClient } from "../utils/client.ts";
 import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 
-const TeamMemberCard: React.FC<{
+const TeamMemberCard: FC<{
   prefix?: string;
   firstName: string;
   lastName: string;
@@ -43,9 +42,9 @@ const TeamMemberCard: React.FC<{
           to={createPreviewLink(`/our-team/${codename}`, isPreview)}
           className="text-heading-4 underline text-burgundy hover:text-azure"
         >
-          {prefix && <span>{prefix}</span>}
+          {prefix ? <span>{prefix}</span> : null}
           {firstName} {lastName}
-          {suffix && <span>, {suffix}</span>}
+          {suffix ? <span>, {suffix}</span> : null}
         </NavLink>
         <p className="text-small text-grey text-center">{jobTitle}</p>
       </div>
@@ -53,7 +52,7 @@ const TeamMemberCard: React.FC<{
   );
 };
 
-const ServiceDetail: React.FC = () => {
+const ServiceDetail: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
@@ -61,7 +60,7 @@ const ServiceDetail: React.FC = () => {
 
   const serviceData = useQuery({
     queryKey: [`service-detail_${slug}`],
-    queryFn: () =>
+    queryFn: async () =>
       createClient(environmentId, apiKey, isPreview)
         .items<Service>()
         .type("service")
@@ -153,9 +152,9 @@ const ServiceDetail: React.FC = () => {
                       suffix={person.elements.suffixes?.value}
                       jobTitle={person.elements.job_title?.value || ""}
                       image={{
-                        url: person.elements.image?.value[0]?.url || "",
+                        url: person.elements.image?.value[0]?.url ?? "",
                         alt:
-                          person.elements.image?.value[0]?.description ||
+                          person.elements.image?.value[0]?.description ??
                           `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`,
                       }}
                       codename={person.system.codename}

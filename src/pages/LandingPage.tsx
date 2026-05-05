@@ -11,7 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import FeaturedContent from "../components/landingPage/FeaturedContent.tsx";
 import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
-import type { LandingPage } from "../model/index.ts";
+import type { LandingPage as LandingPageType } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
 import type { Replace } from "../utils/types.ts";
 
@@ -24,7 +24,7 @@ const LandingPage: FC = () => {
     queries: [
       {
         queryKey: ["landing_page"],
-        queryFn: () =>
+        queryFn: async () =>
           createClient(environmentId, apiKey, isPreview)
             .items()
             .type("landing_page")
@@ -33,8 +33,8 @@ const LandingPage: FC = () => {
             .then(
               (res) =>
                 (res.data.items[0] as Replace<
-                  LandingPage,
-                  { elements: Partial<LandingPage["elements"]> }
+                  LandingPageType,
+                  { elements: Partial<LandingPageType["elements"]> }
                 >) ?? null,
             )
             .catch((err) => {
@@ -76,16 +76,20 @@ const LandingPage: FC = () => {
           }}
         />
       </PageSection>
-      <PageSection color="bg-white">
-        <PageContent
-          body={landingPage.data.elements.body_copy!}
-          itemId={landingPage.data.system.id}
+      {landingPage.data.elements.body_copy ? (
+        <PageSection color="bg-white">
+          <PageContent
+            body={landingPage.data.elements.body_copy}
+            itemId={landingPage.data.system.id}
+          />
+        </PageSection>
+      ) : null}
+      {landingPage.data.elements.featured_content ? (
+        <FeaturedContent
+          featuredContent={landingPage.data.elements.featured_content}
+          parentId={landingPage.data.system.id}
         />
-      </PageSection>
-      <FeaturedContent
-        featuredContent={landingPage.data.elements.featured_content!}
-        parentId={landingPage.data.system.id}
-      />
+      ) : null}
     </div>
   );
 };

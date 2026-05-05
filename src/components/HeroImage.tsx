@@ -48,10 +48,8 @@ const HeroImage: FC<HeroImageProps> = ({ data, buttonLink }) => {
             height={770}
             src={`${data.heroImage.value[0].url}?auto=format&w=800`}
             alt={data.heroImage.value[0].description ?? "image-alt"}
-          ></img>
-        ) : (
-          <></>
-        )}
+          />
+        ) : null}
       </div>
     </div>
   );

@@ -3,8 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useQuery } from "@tanstack/react-query";
-import type React from "react";
-import { useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
@@ -13,7 +12,7 @@ import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
 
-const BlogDetail: React.FC = () => {
+const BlogDetail: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
@@ -27,7 +26,7 @@ const BlogDetail: React.FC = () => {
 
   const blogPost = useQuery({
     queryKey: [`blog-post_${slug}`],
-    queryFn: () =>
+    queryFn: async () =>
       createClient(environmentId, apiKey, isPreview)
         .items<BlogPost>()
         .type("blog_post")

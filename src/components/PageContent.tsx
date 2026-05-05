@@ -42,7 +42,7 @@ const createPortableTextComponents = (
         (item) => item.system.codename === value.componentOrItem._ref,
       );
       if (!item) {
-        return <div>Did not find any item with codename {value.component._ref}</div>;
+        return <div>Did not find any item with codename {value.componentOrItem._ref}</div>;
       }
 
       if (isVideo(item)) {

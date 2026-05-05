@@ -3,8 +3,7 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useQuery } from "@tanstack/react-query";
-import type React from "react";
-import { useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import ArticleList from "../components/articles/ArticleList.tsx";
@@ -19,7 +18,7 @@ import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
 
-const HeroImageAuthorCard: React.FC<{
+const HeroImageAuthorCard: FC<{
   prefix?: string;
   firstName: string;
   lastName: string;
@@ -51,22 +50,22 @@ const HeroImageAuthorCard: React.FC<{
             to={createPreviewLink(`/our-team/${codename}`, isPreview)}
             className="text-white text-body-md font-bold hover:text-burgundy underline"
           >
-            {prefix && <span>{prefix}</span>}
+            {prefix ? <span>{prefix}</span> : null}
             {firstName} {lastName}
-            {suffix && <span>, {suffix}</span>}
+            {suffix ? <span>, {suffix}</span> : null}
           </NavLink>
         </div>
-        {publishDate && (
+        {publishDate ? (
           <p className="text-body-md text-white">
             {language === "es-ES" ? "Publicado en" : "Published on"} {publishDate}
           </p>
-        )}
+        ) : null}
       </div>
     </div>
   );
 };
 
-const ArticleDetailPage: React.FC = () => {
+const ArticleDetailPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
   const { slug } = useParams();
 
@@ -77,7 +76,7 @@ const ArticleDetailPage: React.FC = () => {
 
   const articleSystem = useQuery({
     queryKey: [`article-detail_${slug}-system`],
-    queryFn: () =>
+    queryFn: async () =>
       createClient(environmentId, apiKey, isPreview)
         .items<Article>()
         .type("article")
@@ -96,7 +95,7 @@ const ArticleDetailPage: React.FC = () => {
 
   const articleData = useQuery({
     queryKey: ["article-detail", slug, lang],
-    queryFn: () =>
+    queryFn: async () =>
       createClient(environmentId, apiKey, isPreview)
         .items<Article>()
         .type("article")
@@ -161,7 +160,7 @@ const ArticleDetailPage: React.FC = () => {
             >
               {article.elements.title.value}
             </h1>
-            {article.elements.author?.linkedItems[0] && (
+            {article.elements.author?.linkedItems[0] ? (
               <HeroImageAuthorCard
                 prefix={article.elements.author.linkedItems[0].elements.prefix?.value}
                 firstName={article.elements.author.linkedItems[0].elements.first_name?.value || ""}
@@ -169,9 +168,9 @@ const ArticleDetailPage: React.FC = () => {
                 suffix={article.elements.author.linkedItems[0].elements.suffixes?.value}
                 publishDate={formattedDate}
                 image={{
-                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url || "",
+                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url ?? "",
                   alt:
-                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ||
+                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ??
                     `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
                       article.elements.author.linkedItems[0].elements.last_name?.value
                     }`,
@@ -179,8 +178,8 @@ const ArticleDetailPage: React.FC = () => {
                 codename={article.elements.author.linkedItems[0].system.codename}
                 language={article.system.language}
               />
-            )}
-            {article.elements.topics.value.length > 0 && article.system.language === "default" && (
+            ) : null}
+            {article.elements.topics.value.length > 0 && article.system.language === "default" ? (
               <Tags
                 tags={article.elements.topics.value.map((topic) => topic.name)}
                 orientation="horizontal"
@@ -188,7 +187,7 @@ const ArticleDetailPage: React.FC = () => {
                 itemId={article.system.id}
                 elementCodename="topics"
               />
-            )}
+            ) : null}
           </div>
           <div className="flex-1">
             <img
@@ -224,7 +223,7 @@ const ArticleDetailPage: React.FC = () => {
         </div>
       </PageSection>
 
-      {article.elements.author?.linkedItems[0] && (
+      {article.elements.author?.linkedItems[0] ? (
         <PageSection color="bg-creme">
           <div className="creme-theme flex gap-24 max-w-[728px] mx-auto py-[104px] items-center ">
             <h2 className="text-heading-2 text-heading-2-color">Author</h2>
@@ -236,9 +235,9 @@ const ArticleDetailPage: React.FC = () => {
                 suffix={article.elements.author.linkedItems[0].elements.suffixes?.value}
                 jobTitle={article.elements.author.linkedItems[0].elements.job_title?.value || ""}
                 image={{
-                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url || "",
+                  url: article.elements.author.linkedItems[0].elements.image?.value[0]?.url ?? "",
                   alt:
-                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ||
+                    article.elements.author.linkedItems[0].elements.image?.value[0]?.description ??
                     `Photo of ${article.elements.author.linkedItems[0].elements.first_name?.value} ${
                       article.elements.author.linkedItems[0].elements.last_name?.value
                     }`,
@@ -247,9 +246,9 @@ const ArticleDetailPage: React.FC = () => {
             </div>
           </div>
         </PageSection>
-      )}
+      ) : null}
 
-      {article.elements.related_articles.linkedItems.length > 0 && (
+      {article.elements.related_articles.linkedItems.length > 0 ? (
         <PageSection color="bg-white">
           <div className="flex flex-col max-w-6xl mx-auto py-[104px]">
             <h2 className="text-heading-2 text-heading-2-color">Related articles</h2>
@@ -268,7 +267,7 @@ const ArticleDetailPage: React.FC = () => {
             />
           </div>
         </PageSection>
-      )}
+      ) : null}
     </div>
   );
 };

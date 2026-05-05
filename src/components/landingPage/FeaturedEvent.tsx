@@ -26,44 +26,40 @@ const FeaturedEvent: FC<FeaturedEventProps> = ({ event }) => {
       type="event"
       displayFeatured={true}
     >
-      <>
-        <div {...createItemSmartLink(event.system.id)}>
-          <h2 className="text-center lg:text-left text-5xl font-semibold text-burgundy">
-            {event.elements.name?.value}
-          </h2>
-          <p className="text-center lg:text-left text-gray-light mt-6 text-lg">
-            {`${
-              event.elements.start_date?.value?.length
-                ? formatDate(event.elements.start_date?.value as string)
-                : ""
-            }${
-              event.elements.end_date?.value?.length
-                ? ` - ${formatDate(event.elements.end_date?.value as string)}`
-                : ""
-            }`}
-          </p>
-          <Tags
-            tags={[
-              ...(event.elements.event_type?.value ?? []),
-              ...(event.elements.event_topic?.value ?? []),
-            ].map((t) => t.name)}
-            className="mt-4"
+      <div {...createItemSmartLink(event.system.id)}>
+        <h2 className="text-center lg:text-left text-5xl font-semibold text-burgundy">
+          {event.elements.name?.value}
+        </h2>
+        <p className="text-center lg:text-left text-gray-light mt-6 text-lg">
+          {`${
+            event.elements.start_date?.value?.length
+              ? formatDate(event.elements.start_date?.value)
+              : ""
+          }${
+            event.elements.end_date?.value?.length
+              ? ` - ${formatDate(event.elements.end_date?.value)}`
+              : ""
+          }`}
+        </p>
+        <Tags
+          tags={[
+            ...(event.elements.event_type?.value ?? []),
+            ...(event.elements.event_topic?.value ?? []),
+          ].map((t) => t.name)}
+          className="mt-4"
+        />
+        <div className="mt-4">
+          <PortableText
+            value={transformToPortableText(event.elements.description?.value ?? "")}
+            components={defaultPortableRichTextResolvers}
           />
-          <div className="mt-4">
-            <PortableText
-              value={transformToPortableText(event.elements.description?.value ?? "")}
-              components={defaultPortableRichTextResolvers}
-            />
-          </div>
         </div>
-        {event.elements.description?.value !== "<p><br></p>" && (
-          <Link href={"#"} text="Read more" className="mt-6" />
-        )}
-      </>
+      </div>
+      {event.elements.description?.value !== "<p><br></p>" && (
+        <Link href="#" text="Read more" className="mt-6" />
+      )}
     </FeaturedComponentBase>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
 
 export default FeaturedEvent;

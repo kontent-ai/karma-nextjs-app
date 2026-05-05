@@ -14,7 +14,7 @@ type CallToActionProps = Readonly<{
   imageSrc?: string;
   imageAlt: string;
   imagePosition?: "left" | "right" | "center";
-  style?: "burgundy" | "default";
+  variant?: "burgundy" | "default";
   parentId: string;
   componentId: string | null;
 }>;
@@ -27,7 +27,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
   imageSrc,
   imageAlt,
   imagePosition = "left",
-  style = "default",
+  variant = "default",
   parentId,
   componentId,
 }) => {
@@ -42,7 +42,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
 
   return (
     <div
-      className={`${style === "burgundy" ? "burgundy-theme" : ""} flex flex-col ${calculateLayout(
+      className={`${variant === "burgundy" ? "burgundy-theme" : ""} flex flex-col ${calculateLayout(
         imagePosition,
       )} items-center gap-16`}
     >

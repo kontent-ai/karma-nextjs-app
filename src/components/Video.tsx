@@ -33,15 +33,13 @@ const Video: FC<VideoProps> = ({ video, parentId, componentId }) => {
               video.elements.autoplay?.value[0]?.codename === "true" ? "&autoplay=1&mute=1" : ""
             }`}
             referrerPolicy="strict-origin-when-cross-origin"
-            allow={"autoplay"}
+            allow="autoplay"
           />
           <figcaption className="text-gray-light block m-auto w-fit text-xl pt-6">
             {video.elements.caption?.value}
           </figcaption>
         </figure>
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 };

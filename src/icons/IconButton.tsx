@@ -7,6 +7,7 @@ type IconButtonProps = {
 
 export const IconButton: React.FC<IconButtonProps> = ({ onClick, icon, className, isSelected }) => (
   <button
+    type="button"
     onClick={onClick}
     className={`w-fit h-fit text-[0px] ${className} ${isSelected ? "border-[3px] border-azure rounded-full" : ""}  `}
   >

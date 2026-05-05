@@ -1,10 +1,11 @@
 import type { PortableTextObject } from "@kontent-ai/rich-text-resolver";
-import type React from "react";
+import { type FC, Fragment } from "react";
 import Divider from "../Divider.tsx";
 import PageSection from "../PageSection.tsx";
 import BlogListItem from "./BlogListItem.tsx";
 
 type Blog = Readonly<{
+  id: string;
   imageSrc?: string;
   title: string;
   description: PortableTextObject[];
@@ -15,13 +16,12 @@ type BlogListProps = Readonly<{
   blogs: Blog[];
 }>;
 
-const BlogList: React.FC<BlogListProps> = ({ blogs }) => {
-  const blogItems = blogs.map((blog, index) => (
-    <div key={index}>
-      <PageSection key={index} color="bg-white">
+const BlogList: FC<BlogListProps> = ({ blogs }) => {
+  const blogItems = blogs.map((blog) => (
+    <Fragment key={blog.id}>
+      <PageSection color="bg-white">
         <div className="max-w-6xl mx-auto">
           <BlogListItem
-            key={index}
             imageSrc={blog.imageSrc}
             title={blog.title}
             description={blog.description}
@@ -30,8 +30,8 @@ const BlogList: React.FC<BlogListProps> = ({ blogs }) => {
           />
         </div>
       </PageSection>
-      <Divider key={`divider-${index}`} />
-    </div>
+      <Divider />
+    </Fragment>
   ));
 
   return <div className="flex flex-col">{blogItems}</div>;
