@@ -3,13 +3,11 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import type { FC } from "react";
-import { useSearchParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
 import TeamMemberList from "../components/team/TeamMemberList.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import type { Page, Person } from "../model/content-types/index.ts";
-import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const selectTeamMembers = (data: ReadonlyArray<Person>) =>
   data.map((member) => ({
@@ -28,16 +26,14 @@ const selectTeamMembers = (data: ReadonlyArray<Person>) =>
   }));
 
 const OurTeamPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [teamPage, teamMembers] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["team_page", environmentId, isPreview],
+        queryKey: ["team_page", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .item<Page>("our_team")
             .toPromise()
             .then((res) => res.data)
@@ -49,9 +45,9 @@ const OurTeamPage: FC = () => {
             }),
       },
       {
-        queryKey: ["team_members", environmentId, isPreview],
+        queryKey: ["team_members", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .items<Person>()
             .type("person")
             .toPromise()

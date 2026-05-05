@@ -9,14 +9,13 @@ import ArticleList from "../components/articles/ArticleList.tsx";
 import PageSection from "../components/PageSection.tsx";
 import PersonCard from "../components/PersonCard.tsx";
 import Tags from "../components/Tags.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { Article, LanguageCodenames } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const HeroImageAuthorCard: FC<{
   prefix?: string;
@@ -66,18 +65,15 @@ const HeroImageAuthorCard: FC<{
 };
 
 const ArticleDetailPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
 
   const [searchParams] = useSearchParams();
-
   const lang = searchParams.get("lang");
-  const isPreview = searchParams.get("preview") === "true";
 
   const articleData = useSuspenseQuery({
-    queryKey: ["article-detail", slug, lang, environmentId, isPreview],
+    queryKey: ["article-detail", slug, lang, environmentId, isPreviewEnabled],
     queryFn: async () => {
-      const client = createClient(environmentId, apiKey, isPreview);
       const systemRes = await client
         .items<Article>()
         .type("article")

@@ -3,20 +3,17 @@ import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useCallback } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { useAppContext } from "../context/AppContext.tsx";
+import { useParams } from "react-router-dom";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { BlogPost } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const BlogDetail: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
 
   const createTag = (tag: string) => (
     <div className="w-fit text-small border tracking-wider font-[700] text-grey border-azure px-4 py-2 rounded-lg uppercase">
@@ -25,9 +22,9 @@ const BlogDetail: FC = () => {
   );
 
   const blogPost = useSuspenseQuery({
-    queryKey: ["blog-post", slug, environmentId, isPreview],
+    queryKey: ["blog-post", slug, environmentId, isPreviewEnabled],
     queryFn: async () => {
-      const res = await createClient(environmentId, apiKey, isPreview)
+      const res = await client
         .items<BlogPost>()
         .type("blog_post")
         .equalsFilter("elements.url_slug", slug ?? "")

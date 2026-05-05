@@ -3,13 +3,11 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import type React from "react";
-import { useSearchParams } from "react-router-dom";
 import BlogList from "../components/blog/BlogList.tsx";
 import PageSection from "../components/PageSection.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import type { BlogPost, Page } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const selectBlogList = (data: ReadonlyArray<BlogPost>) =>
   data.map((b) => ({
@@ -21,16 +19,14 @@ const selectBlogList = (data: ReadonlyArray<BlogPost>) =>
   }));
 
 const BlogPage: React.FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [blogPage, blogs] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["blog_page", environmentId, isPreview],
+        queryKey: ["blog_page", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .item<Page>("blog")
             .toPromise()
             .then((res) => res.data)
@@ -42,9 +38,9 @@ const BlogPage: React.FC = () => {
             }),
       },
       {
-        queryKey: ["blog_posts", environmentId, isPreview],
+        queryKey: ["blog_posts", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .items<BlogPost>()
             .type("blog_post")
             .toPromise()

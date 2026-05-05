@@ -7,13 +7,12 @@ import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
 import Tags from "../components/Tags.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { Person, Service } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const TeamMemberCard: FC<{
   prefix?: string;
@@ -53,15 +52,13 @@ const TeamMemberCard: FC<{
 };
 
 const ServiceDetail: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
 
   const serviceData = useSuspenseQuery({
-    queryKey: ["service-detail", slug, environmentId, isPreview],
+    queryKey: ["service-detail", slug, environmentId, isPreviewEnabled],
     queryFn: async () => {
-      const res = await createClient(environmentId, apiKey, isPreview)
+      const res = await client
         .items<Service>()
         .type("service")
         .equalsFilter("elements.url_slug", slug ?? "")

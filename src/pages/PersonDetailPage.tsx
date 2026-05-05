@@ -3,27 +3,22 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type React from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import type { Person } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const PersonDetailPage: React.FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
 
   const personData = useSuspenseQuery({
-    queryKey: ["person-detail", slug, environmentId, isPreview],
+    queryKey: ["person-detail", slug, environmentId, isPreviewEnabled],
     queryFn: async () => {
       try {
-        const res = await createClient(environmentId, apiKey, isPreview)
-          .item<Person>(slug ?? "")
-          .toPromise();
+        const res = await client.item<Person>(slug ?? "").toPromise();
         return res.data.item;
       } catch (err) {
         if (err instanceof DeliveryError) {

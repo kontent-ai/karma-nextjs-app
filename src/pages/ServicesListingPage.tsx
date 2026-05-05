@@ -3,13 +3,11 @@ import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import type { FC } from "react";
-import { useSearchParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
 import ServiceList from "../components/services/ServiceList.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import type { Page, Service } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const selectServiceList = (data: ReadonlyArray<Service>) =>
   data.map((service) => ({
@@ -24,16 +22,14 @@ const selectServiceList = (data: ReadonlyArray<Service>) =>
   }));
 
 const ServicesListingPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [servicesPage, services] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["services_page", environmentId, isPreview],
+        queryKey: ["services_page", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .item<Page>("services")
             .toPromise()
             .then((res) => res.data)
@@ -45,9 +41,9 @@ const ServicesListingPage: FC = () => {
             }),
       },
       {
-        queryKey: ["services_listing", environmentId, isPreview],
+        queryKey: ["services_listing", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .items<Service>()
             .type("service")
             .toPromise()

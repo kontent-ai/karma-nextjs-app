@@ -7,25 +7,21 @@ import "../index.css";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { type FC, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
 import FeaturedContent from "../components/landingPage/FeaturedContent.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { LandingPage as LandingPageType } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import type { Replace } from "../utils/types.ts";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 const LandingPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
-  const [searchParams] = useSearchParams();
-  const isPreview = searchParams.get("preview") === "true";
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
 
   const [landingPage] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["landing_page", environmentId, isPreview],
+        queryKey: ["landing_page", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          createClient(environmentId, apiKey, isPreview)
+          client
             .items()
             .type("landing_page")
             .limitParameter(1)

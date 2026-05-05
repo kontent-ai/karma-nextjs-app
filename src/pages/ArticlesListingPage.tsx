@@ -10,15 +10,14 @@ import ImageWithTag from "../components/ImageWithTag.tsx";
 import PageSection from "../components/PageSection.tsx";
 import Selector, { type SelectorOption } from "../components/Selector.tsx";
 import Tags from "../components/Tags.tsx";
-import { useAppContext } from "../context/AppContext.tsx";
 import {
   type Article,
   isArticleType,
   isGeneralHealthcareTopics,
   type Page,
 } from "../model/index.ts";
-import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
+import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
 type FeaturedArticleProps = Readonly<{
   image: {
@@ -68,21 +67,20 @@ const FeaturedArticle: FC<FeaturedArticleProps> = ({
 };
 
 const ArticlesListingPage: FC = () => {
-  const { environmentId, apiKey } = useAppContext();
+  const { client, environmentId, isPreviewEnabled } = useDeliveryClient();
   const [articleType, setArticleType] = useState<string>("All");
   const [articleTopic, setArticleTopic] = useState<string>("All");
   const [searchParams, setSearchParams] = useSearchParams();
 
   const articleTypeCodename = searchParams.get("type");
   const articleTopicCodename = searchParams.get("topic");
-  const isPreview = searchParams.get("preview") === "true";
 
   const [articlesPage, articlesTypes, articlesTopics, articles] = useSuspenseQueries({
     queries: [
       {
-        queryKey: ["articles_page", environmentId, isPreview],
+        queryKey: ["articles_page", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          await createClient(environmentId, apiKey, isPreview)
+          await client
             .item<Page>("research")
             .toPromise()
             .then((res) => res.data)
@@ -94,23 +92,23 @@ const ArticlesListingPage: FC = () => {
             }),
       },
       {
-        queryKey: ["articles_types", environmentId, isPreview],
+        queryKey: ["articles_types", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          await createClient(environmentId, apiKey, isPreview)
+          await client
             .taxonomy("article_type")
             .toPromise()
             .then((res) => res.data.taxonomy),
       },
       {
-        queryKey: ["articles_topics", environmentId, isPreview],
+        queryKey: ["articles_topics", environmentId, isPreviewEnabled],
         queryFn: async () =>
-          await createClient(environmentId, apiKey, isPreview)
+          await client
             .taxonomy("general_healthcare_topics")
             .toPromise()
             .then((res) => res.data.taxonomy),
       },
       {
-        queryKey: ["articles_listing", environmentId, isPreview],
+        queryKey: ["articles_listing", environmentId, isPreviewEnabled],
         // Disabled because articles can contain cyclic references through linked items
         // (e.g. article A references article B which references A). React Query's default
         // structural sharing walks the result to preserve referential equality with the
@@ -118,7 +116,7 @@ const ArticlesListingPage: FC = () => {
         // navigation, causing items to stack/duplicate across page transitions.
         structuralSharing: false,
         queryFn: async () =>
-          await createClient(environmentId, apiKey, isPreview)
+          await client
             .items<Article>()
             .type("article")
             .orderByDescending("elements.publish_date")
