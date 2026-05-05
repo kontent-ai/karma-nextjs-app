@@ -1,11 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StrictMode, Suspense } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ErrorBoundary } from "react-error-boundary";
+import { HelmetProvider } from "react-helmet-async";
 import { createBrowserRouter, type RouteObject, RouterProvider } from "react-router-dom";
 import Auth0ProviderWithRedirect from "./components/auth/AuthProviderWithRedirect.tsx";
 import Layout from "./components/Layout.tsx";
-import Loader from "./components/Loader.tsx";
 import NotFound from "./components/NotFound.tsx";
 import ArticleDetailPage from "./pages/ArticleDetailPage.tsx";
 import ArticlesListingPage from "./pages/ArticlesListingPage.tsx";
@@ -93,24 +92,7 @@ const router = createBrowserRouter([
               clientId={VITE_AUTH_CLIENT_ID}
               redirectUri={VITE_AUTH_REDIRECT_URL}
             >
-              <ErrorBoundary
-                fallbackRender={({ error }) => (
-                  <div>
-                    There was an error!{" "}
-                    <pre>{error instanceof Error ? error.message : String(error)}</pre>
-                  </div>
-                )}
-              >
-                <Suspense
-                  fallback={
-                    <div className="flex w-screen h-screen justify-center">
-                      <Loader />
-                    </div>
-                  }
-                >
-                  <Layout />
-                </Suspense>
-              </ErrorBoundary>
+              <Layout />
             </Auth0ProviderWithRedirect>
           ),
           children: BaseRouting.map((p) => ({
@@ -129,8 +111,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </HelmetProvider>
   </StrictMode>,
 );
