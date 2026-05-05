@@ -19,6 +19,13 @@ import {
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
 
+const selectTaxonomyOptions = (taxonomy: {
+  terms: ReadonlyArray<{ name: string; codename: string }>;
+}): ReadonlyArray<SelectorOption> => [
+  { label: "All", codename: "all" },
+  ...taxonomy.terms.map((t) => ({ label: t.name, codename: t.codename })),
+];
+
 type FeaturedArticleProps = Readonly<{
   image: {
     url: string;
@@ -98,6 +105,7 @@ const ArticlesListingPage: FC = () => {
             .taxonomy("article_type")
             .toPromise()
             .then((res) => res.data.taxonomy),
+        select: selectTaxonomyOptions,
       },
       {
         queryKey: ["articles_topics", environmentId, isPreviewEnabled],
@@ -106,6 +114,7 @@ const ArticlesListingPage: FC = () => {
             .taxonomy("general_healthcare_topics")
             .toPromise()
             .then((res) => res.data.taxonomy),
+        select: selectTaxonomyOptions,
       },
       {
         queryKey: ["articles_listing", environmentId, isPreviewEnabled],
@@ -154,22 +163,6 @@ const ArticlesListingPage: FC = () => {
       });
     }
   };
-
-  const articleTypeOptions = useMemo<ReadonlyArray<SelectorOption>>(
-    () => [
-      { label: "All", codename: "all" },
-      ...articlesTypes.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
-    ],
-    [articlesTypes.data.terms],
-  );
-
-  const articleTopicOptions = useMemo<ReadonlyArray<SelectorOption>>(
-    () => [
-      { label: "All", codename: "all" },
-      ...articlesTopics.data.terms.map((t) => ({ label: t.name, codename: t.codename })),
-    ],
-    [articlesTopics.data.terms],
-  );
 
   const featuredArticle = useMemo(() => {
     const featured = articles.data[0];
@@ -278,13 +271,13 @@ const ArticlesListingPage: FC = () => {
         <div className="flex flex-row gap-6 pt-16">
           <Selector
             label="Article Type"
-            options={articleTypeOptions}
+            options={articlesTypes.data}
             selectedOption={articleType}
             onChange={handleArticleTypeChange}
           />
           <Selector
             label="Article Topic"
-            options={articleTopicOptions}
+            options={articlesTopics.data}
             selectedOption={articleTopic}
             onChange={handleArticleTopicChange}
           />
