@@ -123,13 +123,7 @@ const ArticlesListingPage: FC = () => {
             .type("article")
             .orderByDescending("elements.publish_date")
             .toPromise()
-            .then((res) => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return null;
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
       },
     ],
   });
@@ -180,7 +174,7 @@ const ArticlesListingPage: FC = () => {
   );
 
   const featuredArticle = useMemo(() => {
-    const featured = articles.data?.[0];
+    const featured = articles.data[0];
     if (!featured) {
       return null;
     }
@@ -208,7 +202,7 @@ const ArticlesListingPage: FC = () => {
   const articleListItems = useMemo(
     () =>
       articles.data
-        ?.filter((a) =>
+        .filter((a) =>
           isArticleType(articleTypeCodename)
             ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
             : true,
@@ -234,11 +228,11 @@ const ArticlesListingPage: FC = () => {
             : "No date",
           topics: article.elements.topics.value.map((topic) => topic.name),
           urlSlug: article.elements.url_slug.value,
-        })) ?? [],
+        })),
     [articles.data, articleTypeCodename, articleTopicCodename],
   );
 
-  if (!articlesPage.data || !articles.data) {
+  if (!articlesPage.data) {
     return <div className="flex-grow" />;
   }
 

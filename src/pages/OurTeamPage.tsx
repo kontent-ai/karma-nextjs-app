@@ -11,8 +11,8 @@ import type { Page, Person } from "../model/content-types/index.ts";
 import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
-const selectTeamMembers = (data: ReadonlyArray<Person> | null) =>
-  data?.map((member) => ({
+const selectTeamMembers = (data: ReadonlyArray<Person>) =>
+  data.map((member) => ({
     image: {
       url: member.elements.image.value[0]?.url ?? "",
       alt:
@@ -25,7 +25,7 @@ const selectTeamMembers = (data: ReadonlyArray<Person> | null) =>
     lastName: member.elements.last_name.value,
     position: member.elements.job_title.value,
     link: member.system.codename,
-  })) ?? null;
+  }));
 
 const OurTeamPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
@@ -55,19 +55,13 @@ const OurTeamPage: FC = () => {
             .items<Person>()
             .type("person")
             .toPromise()
-            .then((res) => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return null;
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
         select: selectTeamMembers,
       },
     ],
   });
 
-  if (!teamPage.data || !teamMembers.data) {
+  if (!teamPage.data) {
     return <div className="flex-grow" />;
   }
 

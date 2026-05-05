@@ -11,8 +11,8 @@ import type { Page, Service } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "../utils/richtext.tsx";
 
-const selectServiceList = (data: ReadonlyArray<Service> | null) =>
-  data?.map((service) => ({
+const selectServiceList = (data: ReadonlyArray<Service>) =>
+  data.map((service) => ({
     image: {
       url: service.elements.image.value[0]?.url ?? "",
       alt: service.elements.image.value[0]?.description ?? "",
@@ -21,7 +21,7 @@ const selectServiceList = (data: ReadonlyArray<Service> | null) =>
     summary: service.elements.summary.value,
     tags: service.elements.medical_specialties.value.map((specialty) => specialty.name),
     urlSlug: service.elements.url_slug.value,
-  })) ?? null;
+  }));
 
 const ServicesListingPage: FC = () => {
   const { environmentId, apiKey } = useAppContext();
@@ -51,19 +51,13 @@ const ServicesListingPage: FC = () => {
             .items<Service>()
             .type("service")
             .toPromise()
-            .then((res) => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return null;
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
         select: selectServiceList,
       },
     ],
   });
 
-  if (!servicesPage.data || !services.data) {
+  if (!servicesPage.data) {
     return <div className="flex-grow" />;
   }
 

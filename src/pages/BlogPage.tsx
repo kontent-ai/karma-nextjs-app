@@ -48,19 +48,13 @@ const BlogPage: React.FC = () => {
             .items<BlogPost>()
             .type("blog_post")
             .toPromise()
-            .then((res) => res.data.items)
-            .catch((err) => {
-              if (err instanceof DeliveryError) {
-                return [];
-              }
-              throw err;
-            }),
+            .then((res) => res.data.items),
         select: selectBlogList,
       },
     ],
   });
 
-  if (!blogPage.data || !blogs.data) {
+  if (!blogPage.data) {
     return <div className="flex-grow" />;
   }
 
