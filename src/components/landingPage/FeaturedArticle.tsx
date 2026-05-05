@@ -16,13 +16,13 @@ type FeaturedArticleProps = Readonly<{
     topics: ReadonlyArray<string>;
     itemId?: string;
   }>;
-  displayFeatured?: boolean;
+  isFeatured?: boolean;
   urlSlug: string;
 }>;
 
 const FeaturedArticle: React.FC<FeaturedArticleProps> = ({
   article,
-  displayFeatured = false,
+  isFeatured = false,
   urlSlug,
 }) => {
   return (
@@ -32,7 +32,7 @@ const FeaturedArticle: React.FC<FeaturedArticleProps> = ({
         url: article.image.url,
         alt: article.image.alt,
       }}
-      displayFeatured={displayFeatured}
+      isFeatured={isFeatured}
     >
       <div {...createItemSmartLink(article.itemId)}>
         <h2 className="text-center lg:text-left text-heading-2 font-semibold text-burgundy">

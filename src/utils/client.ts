@@ -6,13 +6,13 @@ const url = !import.meta.env.VITE_KONTENT_URL ? "kontent.ai" : import.meta.env.V
 export const createClient = (
   environmentId: string,
   previewApiKey: string,
-  usePreviewMode: boolean,
+  isPreviewEnabled: boolean,
 ) =>
   createDeliveryClient<CoreClientTypes>({
     environmentId,
-    previewApiKey: previewApiKey,
+    previewApiKey,
     defaultQueryConfig: {
-      usePreviewMode,
+      usePreviewMode: isPreviewEnabled,
       waitForLoadingNewContent: true,
     },
     proxy: {

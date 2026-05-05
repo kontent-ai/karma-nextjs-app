@@ -1,16 +1,16 @@
 export const createItemSmartLink = (
   itemId: string | undefined,
-  disableHighlight: boolean = false,
+  shouldDisableHighlight: boolean = false,
 ) =>
-  withDisable(disableHighlight, {
+  withDisable(shouldDisableHighlight, {
     "data-kontent-item-id": itemId,
   });
 
 export const createElementSmartLink = (
   elementCodename: string,
-  disableHighlight: boolean = false,
+  shouldDisableHighlight: boolean = false,
 ) =>
-  withDisable(disableHighlight, {
+  withDisable(shouldDisableHighlight, {
     "data-kontent-element-codename": elementCodename,
   });
 
@@ -46,8 +46,10 @@ type RenderPosition =
   | "right"
   | "right-end";
 
-const withDisable = (disable: boolean, attrs: Readonly<Record<string, string | undefined>>) =>
-  disable ? { ...attrs, ...disableAttribute } : attrs;
+const withDisable = (
+  shouldDisable: boolean,
+  attrs: Readonly<Record<string, string | undefined>>,
+) => (shouldDisable ? { ...attrs, ...disableAttribute } : attrs);
 
 const disableAttribute = {
   "data-kontent-disable-features": "highlight",
@@ -55,8 +57,8 @@ const disableAttribute = {
 
 export const createComponentSmartLink = (
   itemId: string | undefined,
-  disableHighlight: boolean = false,
+  shouldDisableHighlight: boolean = false,
 ) =>
-  withDisable(disableHighlight, {
+  withDisable(shouldDisableHighlight, {
     "data-kontent-component-id": itemId,
   });

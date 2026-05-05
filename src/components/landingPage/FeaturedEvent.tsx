@@ -23,7 +23,7 @@ const FeaturedEvent: FC<FeaturedEventProps> = ({ event }) => {
         alt: event.elements.image?.value[0]?.description ?? "",
       }}
       type="event"
-      displayFeatured={true}
+      isFeatured={true}
     >
       <div {...createItemSmartLink(event.system.id)}>
         <h2 className="text-center lg:text-left text-5xl font-semibold text-burgundy">

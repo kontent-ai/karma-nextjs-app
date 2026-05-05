@@ -36,7 +36,7 @@ const FeaturedContent: FC<FeaturedContentProps> = ({ featuredContent, parentId }
                     topics: item.elements.topics.value.map((t) => t.name),
                     itemId: item.system.id,
                   }}
-                  displayFeatured={true}
+                  isFeatured={true}
                   urlSlug={`/research/${item.elements.url_slug.value}`}
                 />
               </PageSection>
