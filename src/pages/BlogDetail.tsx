@@ -1,10 +1,9 @@
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { type FC, useCallback } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router-dom";
-import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { BlogPost } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
@@ -37,18 +36,7 @@ const BlogDetail: FC = () => {
     },
   });
 
-  const onRefresh = useCallback(
-    (_: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => {
-      if (metadata.manualRefresh) {
-        originalRefresh();
-      } else {
-        blogPost.refetch();
-      }
-    },
-    [blogPost],
-  );
-
-  useCustomRefresh(onRefresh);
+  useSmartLinkRefetch(blogPost.refetch);
 
   return (
     <div className="container flex flex-col gap-12">

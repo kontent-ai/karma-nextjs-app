@@ -8,6 +8,7 @@ import {
   createContext,
   type FC,
   type PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -82,6 +83,25 @@ export const useCustomRefresh = (
 
     return;
   }, [smartLink, callback]);
+};
+
+export const useSmartLinkRefetch = (refetch: () => unknown): void => {
+  const callback = useCallback(
+    (
+      _data: IRefreshMessageData,
+      metadata: IRefreshMessageMetadata,
+      originalRefresh: () => void,
+    ) => {
+      if (metadata.manualRefresh) {
+        originalRefresh();
+      } else {
+        void refetch();
+      }
+    },
+    [refetch],
+  );
+
+  useCustomRefresh(callback);
 };
 
 export const useLivePreview = (callback: (data: IUpdateMessageData) => void): void => {

@@ -4,11 +4,10 @@ import HeroImage from "../components/HeroImage.tsx";
 import PageContent from "../components/PageContent.tsx";
 import PageSection from "../components/PageSection.tsx";
 import "../index.css";
-import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQueries } from "@tanstack/react-query";
-import { type FC, useCallback } from "react";
+import type { FC } from "react";
 import FeaturedContent from "../components/landingPage/FeaturedContent.tsx";
-import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { LandingPage as LandingPageType } from "../model/index.ts";
 import type { Replace } from "../utils/types.ts";
 import { useDeliveryClient } from "../utils/useDeliveryClient.ts";
@@ -43,18 +42,7 @@ const LandingPage: FC = () => {
     ],
   });
 
-  const onRefresh = useCallback(
-    (_: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => {
-      if (metadata.manualRefresh) {
-        originalRefresh();
-      } else {
-        landingPage.refetch();
-      }
-    },
-    [landingPage],
-  );
-
-  useCustomRefresh(onRefresh);
+  useSmartLinkRefetch(landingPage.refetch);
 
   if (!landingPage.data || !Object.entries(landingPage.data.elements).length) {
     return <div className="flex-grow" />;

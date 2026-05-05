@@ -1,13 +1,12 @@
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { type FC, useCallback, useMemo } from "react";
+import { type FC, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
 import Tags from "../components/Tags.tsx";
-import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { Person, Service } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
@@ -71,18 +70,7 @@ const ServiceDetail: FC = () => {
     },
   });
 
-  const onRefresh = useCallback(
-    (_: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => {
-      if (metadata.manualRefresh) {
-        originalRefresh();
-      } else {
-        serviceData.refetch();
-      }
-    },
-    [serviceData],
-  );
-
-  useCustomRefresh(onRefresh);
+  useSmartLinkRefetch(serviceData.refetch);
 
   const service = serviceData.data;
 

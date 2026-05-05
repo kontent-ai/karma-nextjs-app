@@ -1,15 +1,14 @@
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { type FC, useCallback, useMemo } from "react";
+import { type FC, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
 import ArticleList from "../components/articles/ArticleList.tsx";
 import PageSection from "../components/PageSection.tsx";
 import PersonCard from "../components/PersonCard.tsx";
 import Tags from "../components/Tags.tsx";
-import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
+import { useSmartLinkRefetch } from "../context/SmartLinkContext.tsx";
 import type { Article, LanguageCodenames } from "../model/index.ts";
 import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
@@ -98,18 +97,7 @@ const ArticleDetailPage: FC = () => {
     },
   });
 
-  const onRefresh = useCallback(
-    (_: IRefreshMessageData, metadata: IRefreshMessageMetadata, originalRefresh: () => void) => {
-      if (metadata.manualRefresh) {
-        originalRefresh();
-      } else {
-        articleData.refetch();
-      }
-    },
-    [articleData],
-  );
-
-  useCustomRefresh(onRefresh);
+  useSmartLinkRefetch(articleData.refetch);
 
   const article = articleData.data;
 
