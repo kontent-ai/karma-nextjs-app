@@ -31,20 +31,17 @@ export const SmartLinkContextComponent: FC<PropsWithChildren> = ({ children }) =
   const [smartLink, setSmartLink] = useState<KontentSmartLink | null>(null);
 
   useEffect(() => {
-    const instance = KontentSmartLink.initialize({
+    setSmartLink(KontentSmartLink.initialize());
+  }, []);
+
+  useEffect(() => {
+    smartLink?.setConfiguration({
       defaultDataAttributes: {
-        environmentId: environmentId,
+        environmentId,
         languageCodename: "default",
       },
     });
-
-    setSmartLink(instance);
-
-    return () => {
-      // instance?.destroy();
-      setSmartLink(null);
-    };
-  }, [environmentId]);
+  }, [smartLink, environmentId]);
 
   const value = useMemo(() => ({ smartLink }), [smartLink]);
 
