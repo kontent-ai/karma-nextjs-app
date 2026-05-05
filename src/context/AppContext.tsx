@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createContext, type FC, type PropsWithChildren, useContext, useMemo } from "react";
+import { createContext, type FC, type PropsWithChildren, useContext } from "react";
 import { useParams } from "react-router";
 import { loadPreviewApiKey } from "../utils/api.ts";
 
@@ -78,13 +78,5 @@ export const AppContextComponent: FC<PropsWithChildren> = ({ children }) => {
     },
   });
 
-  const value = useMemo(
-    () => ({
-      environmentId: contextData.data.environmentId,
-      apiKey: contextData.data.apiKey,
-    }),
-    [contextData.data.environmentId, contextData.data.apiKey],
-  );
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={contextData.data}>{children}</AppContext.Provider>;
 };
