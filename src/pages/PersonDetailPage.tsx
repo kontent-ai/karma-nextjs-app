@@ -1,13 +1,14 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type React from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import PageSection from "../components/PageSection.tsx";
 import { useAppContext } from "../context/AppContext.tsx";
 import type { Person } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
+import { NotFoundError } from "../utils/errors.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 
 const PersonDetailPage: React.FC = () => {
@@ -16,24 +17,22 @@ const PersonDetailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 
-  const personData = useQuery({
+  const personData = useSuspenseQuery({
     queryKey: [`person-detail_${slug}`],
-    queryFn: async () =>
-      createClient(environmentId, apiKey, isPreview)
-        .item<Person>(slug ?? "")
-        .toPromise()
-        .then((res) => res.data.item)
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
+    queryFn: async () => {
+      try {
+        const res = await createClient(environmentId, apiKey, isPreview)
+          .item<Person>(slug ?? "")
+          .toPromise();
+        return res.data.item;
+      } catch (err) {
+        if (err instanceof DeliveryError) {
+          throw new NotFoundError(`Person '${slug}' not found`);
+        }
+        throw err;
+      }
+    },
   });
-
-  if (!personData.data) {
-    return <div className="flex-grow" />;
-  }
 
   const person = personData.data;
 

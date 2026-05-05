@@ -1,8 +1,7 @@
-import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useCallback, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
@@ -14,6 +13,7 @@ import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { Article, LanguageCodenames } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
+import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
@@ -74,45 +74,32 @@ const ArticleDetailPage: FC = () => {
   const lang = searchParams.get("lang");
   const isPreview = searchParams.get("preview") === "true";
 
-  const articleSystem = useQuery({
-    queryKey: [`article-detail_${slug}-system`],
-    queryFn: async () =>
-      createClient(environmentId, apiKey, isPreview)
+  const articleData = useSuspenseQuery({
+    queryKey: ["article-detail", slug, lang],
+    queryFn: async () => {
+      const client = createClient(environmentId, apiKey, isPreview);
+      const systemRes = await client
         .items<Article>()
         .type("article")
         .equalsFilter("elements.url_slug", slug ?? "")
-        .toPromise()
-        .then((res) => res.data.items[0])
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
-  });
-
-  const articleCodename = articleSystem.data?.system.codename;
-
-  const articleData = useQuery({
-    queryKey: ["article-detail", slug, lang],
-    queryFn: async () =>
-      createClient(environmentId, apiKey, isPreview)
+        .toPromise();
+      const codename = systemRes.data.items[0]?.system.codename;
+      if (!codename) {
+        throw new NotFoundError(`Article '${slug}' not found`);
+      }
+      const articleRes = await client
         .items<Article>()
         .type("article")
-        .equalsFilter("system.codename", articleCodename ?? "")
+        .equalsFilter("system.codename", codename)
         .languageParameter((lang ?? "default") as LanguageCodenames)
         .depthParameter(1)
-        .toPromise()
-        .then((res) => {
-          return res.data.items[0];
-        })
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
-    enabled: !!articleCodename,
+        .toPromise();
+      const article = articleRes.data.items[0];
+      if (!article) {
+        throw new NotFoundError(`Article '${slug}' not available in ${lang ?? "default"}`);
+      }
+      return article;
+    },
   });
 
   const onRefresh = useCallback(
@@ -131,7 +118,7 @@ const ArticleDetailPage: FC = () => {
   const article = articleData.data;
 
   const formattedDate = useMemo(() => {
-    if (!article?.elements.publish_date.value) {
+    if (!article.elements.publish_date.value) {
       return "";
     }
     return new Date(article.elements.publish_date.value).toLocaleDateString(
@@ -142,9 +129,9 @@ const ArticleDetailPage: FC = () => {
         day: "numeric",
       },
     );
-  }, [article?.elements.publish_date.value, article?.system.language]);
+  }, [article.elements.publish_date.value, article.system.language]);
 
-  const author = article?.elements.author?.linkedItems[0];
+  const author = article.elements.author?.linkedItems[0];
 
   const authorImage = useMemo(
     () =>
@@ -160,13 +147,13 @@ const ArticleDetailPage: FC = () => {
   );
 
   const topicNames = useMemo(
-    () => article?.elements.topics.value.map((topic) => topic.name) ?? [],
-    [article?.elements.topics.value],
+    () => article.elements.topics.value.map((topic) => topic.name),
+    [article.elements.topics.value],
   );
 
   const relatedArticleItems = useMemo(
     () =>
-      article?.elements.related_articles.linkedItems.map((relatedArticle) => ({
+      article.elements.related_articles.linkedItems.map((relatedArticle) => ({
         title: relatedArticle.elements.title.value,
         image: {
           url: relatedArticle.elements.image.value[0]?.url ?? "",
@@ -176,13 +163,9 @@ const ArticleDetailPage: FC = () => {
         introduction: relatedArticle.elements.introduction.value,
         publishDate: relatedArticle.elements.publish_date.value ?? "",
         topics: relatedArticle.elements.topics.value.map((topic) => topic.name),
-      })) ?? [],
-    [article?.elements.related_articles.linkedItems],
+      })),
+    [article.elements.related_articles.linkedItems],
   );
-
-  if (!article) {
-    return <div className="flex-grow" />;
-  }
 
   return (
     <div className="flex flex-col gap-12">

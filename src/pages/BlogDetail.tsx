@@ -1,14 +1,14 @@
-import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useCallback } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { BlogPost } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
+import { NotFoundError } from "../utils/errors.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "../utils/smartlink.ts";
 
@@ -24,21 +24,20 @@ const BlogDetail: FC = () => {
     </div>
   );
 
-  const blogPost = useQuery({
+  const blogPost = useSuspenseQuery({
     queryKey: [`blog-post_${slug}`],
-    queryFn: async () =>
-      createClient(environmentId, apiKey, isPreview)
+    queryFn: async () => {
+      const res = await createClient(environmentId, apiKey, isPreview)
         .items<BlogPost>()
         .type("blog_post")
         .equalsFilter("elements.url_slug", slug ?? "")
-        .toPromise()
-        .then((res) => res.data.items[0])
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
+        .toPromise();
+      const post = res.data.items[0];
+      if (!post) {
+        throw new NotFoundError(`Blog post '${slug}' not found`);
+      }
+      return post;
+    },
   });
 
   const onRefresh = useCallback(
@@ -53,10 +52,6 @@ const BlogDetail: FC = () => {
   );
 
   useCustomRefresh(onRefresh);
-
-  if (!blogPost.data) {
-    return <div className="flex-grow" />;
-  }
 
   return (
     <div className="container flex flex-col gap-12">

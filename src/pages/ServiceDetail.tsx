@@ -1,8 +1,7 @@
-import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import type { IRefreshMessageData, IRefreshMessageMetadata } from "@kontent-ai/smart-link";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { type FC, useCallback, useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router";
 import { useParams } from "react-router-dom";
@@ -12,6 +11,7 @@ import { useAppContext } from "../context/AppContext.tsx";
 import { useCustomRefresh } from "../context/SmartLinkContext.tsx";
 import type { Person, Service } from "../model/index.ts";
 import { createClient } from "../utils/client.ts";
+import { NotFoundError } from "../utils/errors.ts";
 import { createPreviewLink } from "../utils/link.ts";
 import { defaultPortableRichTextResolvers } from "../utils/richtext.tsx";
 
@@ -58,21 +58,20 @@ const ServiceDetail: FC = () => {
   const [searchParams] = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 
-  const serviceData = useQuery({
+  const serviceData = useSuspenseQuery({
     queryKey: [`service-detail_${slug}`],
-    queryFn: async () =>
-      createClient(environmentId, apiKey, isPreview)
+    queryFn: async () => {
+      const res = await createClient(environmentId, apiKey, isPreview)
         .items<Service>()
         .type("service")
         .equalsFilter("elements.url_slug", slug ?? "")
-        .toPromise()
-        .then((res) => res.data.items[0])
-        .catch((err) => {
-          if (err instanceof DeliveryError) {
-            return null;
-          }
-          throw err;
-        }),
+        .toPromise();
+      const service = res.data.items[0];
+      if (!service) {
+        throw new NotFoundError(`Service '${slug}' not found`);
+      }
+      return service;
+    },
   });
 
   const onRefresh = useCallback(
@@ -88,17 +87,12 @@ const ServiceDetail: FC = () => {
 
   useCustomRefresh(onRefresh);
 
-  const medicalSpecialtyNames = useMemo(
-    () =>
-      serviceData.data?.elements.medical_specialties.value.map((specialty) => specialty.name) ?? [],
-    [serviceData.data?.elements.medical_specialties.value],
-  );
-
-  if (!serviceData.data) {
-    return <div className="flex-grow" />;
-  }
-
   const service = serviceData.data;
+
+  const medicalSpecialtyNames = useMemo(
+    () => service.elements.medical_specialties.value.map((specialty) => specialty.name),
+    [service.elements.medical_specialties.value],
+  );
 
   return (
     <div className="flex flex-col gap-12">
