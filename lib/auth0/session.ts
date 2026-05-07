@@ -1,7 +1,10 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
-import { getAuth0Config, SESSION_COOKIE_NAME, TEMP_COOKIE_NAME } from "./config.ts";
+import { getAuth0Config } from "./config.ts";
+
+const SESSION_COOKIE_NAME = "kdd_session";
+const LOGIN_FLOW_COOKIE_NAME = "kdd_login_flow";
 
 export type CachedKey = Readonly<{
   envId: string;
@@ -35,16 +38,18 @@ export const getSession = async () =>
 export const getSessionFromRequest = (req: NextRequest, res: NextResponse) =>
   getIronSession<SessionData>(req, res, buildSessionOptions());
 
-export type TempData = {
+// In-flight OAuth login state — set on /auth/login, consumed once on /callback.
+// Auto-expires after 10 minutes if the user abandons the flow.
+export type LoginFlowState = {
   codeVerifier: string;
   state: string;
   nonce: string;
   returnTo: string;
 };
 
-const buildTempOptions = (): SessionOptions => ({
+const buildLoginFlowOptions = (): SessionOptions => ({
   password: getAuth0Config().sessionPassword,
-  cookieName: TEMP_COOKIE_NAME,
+  cookieName: LOGIN_FLOW_COOKIE_NAME,
   cookieOptions: {
     httpOnly: true,
     secure: true,
@@ -54,5 +59,5 @@ const buildTempOptions = (): SessionOptions => ({
   },
 });
 
-export const getTempSession = async () =>
-  getIronSession<TempData>(await cookies(), buildTempOptions());
+export const getLoginFlowSession = async () =>
+  getIronSession<LoginFlowState>(await cookies(), buildLoginFlowOptions());

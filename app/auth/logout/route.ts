@@ -7,5 +7,5 @@ export async function GET() {
   const session = await getSession();
   session.destroy();
   await session.save();
-  return NextResponse.redirect(buildLogoutUrl(getAuth0Config().appBaseUrl));
+  return NextResponse.redirect(await buildLogoutUrl(getAuth0Config().appBaseUrl));
 }
