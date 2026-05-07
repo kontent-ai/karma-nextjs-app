@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/lib/auth0/config.ts";
+import { getSessionFromRequest } from "@/lib/auth0/session.ts";
 
 const ENVID_RE = /^\/envid\/([^/]+)(\/.*)?$/;
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const match = req.nextUrl.pathname.match(ENVID_RE);
   if (!match) {
     return NextResponse.next();
@@ -14,7 +14,14 @@ export function proxy(req: NextRequest) {
   if (!envId) {
     return NextResponse.next();
   }
-  if (!req.cookies.has(SESSION_COOKIE_NAME)) {
+
+  const probe = NextResponse.next();
+  const session = await getSessionFromRequest(req, probe);
+  const cached = session.currentKey;
+  const isValid =
+    session.authed === true && cached?.envId === envId && cached.expiresAt > Date.now();
+
+  if (!isValid) {
     const login = new URL("/auth/login", req.url);
     login.searchParams.set("returnTo", req.nextUrl.pathname + req.nextUrl.search);
     return NextResponse.redirect(login);

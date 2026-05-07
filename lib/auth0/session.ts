@@ -1,23 +1,17 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
+import type { NextRequest, NextResponse } from "next/server";
 import { getAuth0Config, SESSION_COOKIE_NAME, TEMP_COOKIE_NAME } from "./config.ts";
 
-export type TokenSet = Readonly<{
-  accessToken: string;
+export type CachedKey = Readonly<{
+  envId: string;
+  apiKey: string;
   expiresAt: number;
-  refreshToken?: string;
-  audience: string;
-  scope: string;
 }>;
 
 export type SessionData = {
-  user?: {
-    sub: string;
-    name?: string;
-    email?: string;
-    [key: string]: unknown;
-  };
-  tokens?: Record<string, TokenSet>;
+  authed?: boolean;
+  currentKey?: CachedKey;
 };
 
 // SameSite=None + Secure so the cookie is sent when the app runs inside
@@ -37,6 +31,9 @@ const buildSessionOptions = (): SessionOptions => ({
 
 export const getSession = async () =>
   getIronSession<SessionData>(await cookies(), buildSessionOptions());
+
+export const getSessionFromRequest = (req: NextRequest, res: NextResponse) =>
+  getIronSession<SessionData>(req, res, buildSessionOptions());
 
 export type TempData = {
   codeVerifier: string;
