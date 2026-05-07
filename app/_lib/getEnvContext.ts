@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth0/session.ts";
 
 const getEnvIdFromRequest = cache(async () => (await headers()).get("x-kontent-env-id"));
 
-export type EnvContextBase = Readonly<{
+type EnvContextBase = Readonly<{
   environmentId: string;
   urlPrefix: string;
 }>;
