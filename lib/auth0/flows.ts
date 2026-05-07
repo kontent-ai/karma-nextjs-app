@@ -1,3 +1,4 @@
+import { loadPreviewApiKey } from "@/utils/api.ts";
 import { defaultScope, getAuth0Config, getIssuer, getRedirectUri } from "./config.ts";
 import {
   generateCodeChallenge,
@@ -5,9 +6,11 @@ import {
   generateNonce,
   generateState,
 } from "./pkce.ts";
-import { getSession, getTempSession, type TokenSet } from "./session.ts";
+import { getSession, getTempSession } from "./session.ts";
 
 const KONTENT_AUDIENCE = "https://app.kenticocloud.com/";
+const ENVID_RE = /^\/envid\/([^/]+)/;
+const KEY_TTL_MS = 8 * 60 * 60 * 1000;
 
 type StartLoginArgs = Readonly<{
   returnTo: string;
@@ -74,19 +77,6 @@ const exchangeCodeForTokens = async (
   return res.json();
 };
 
-const decodeIdToken = (idToken: string): { sub: string; name?: string; email?: string } | null => {
-  const [, payload] = idToken.split(".");
-  if (!payload) {
-    return null;
-  }
-  const json = Buffer.from(payload, "base64").toString("utf8");
-  const parsed = JSON.parse(json) as { sub?: string; name?: string; email?: string };
-  if (!parsed.sub) {
-    return null;
-  }
-  return { sub: parsed.sub, name: parsed.name, email: parsed.email };
-};
-
 export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: string }> => {
   const tempSession = await getTempSession();
   const { codeVerifier, state, returnTo } = tempSession;
@@ -108,55 +98,27 @@ export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: stri
   const tokens = await exchangeCodeForTokens(code, codeVerifier);
 
   const session = await getSession();
-  if (tokens.id_token) {
-    const user = decodeIdToken(tokens.id_token);
-    if (user) {
-      session.user = user;
+  session.authed = true;
+
+  const envIdMatch = (returnTo ?? "").match(ENVID_RE);
+  const envId = envIdMatch?.[1];
+  if (envId) {
+    const apiKey = await loadPreviewApiKey({
+      accessToken: tokens.access_token,
+      environmentId: envId,
+    });
+    if (!apiKey) {
+      throw new Error(`Could not obtain preview API key for environment ${envId}.`);
     }
+    session.currentKey = { envId, apiKey, expiresAt: Date.now() + KEY_TTL_MS };
   }
 
-  const tokenSet: TokenSet = {
-    accessToken: tokens.access_token,
-    expiresAt: Date.now() + tokens.expires_in * 1000,
-    refreshToken: tokens.refresh_token,
-    audience: KONTENT_AUDIENCE,
-    scope: tokens.scope ?? defaultScope,
-  };
-  session.tokens = { ...(session.tokens ?? {}), [KONTENT_AUDIENCE]: tokenSet };
   await session.save();
 
   tempSession.destroy();
   await tempSession.save();
 
   return { returnTo: returnTo || "/" };
-};
-
-export const refreshTokens = async (refreshToken: string, audience: string): Promise<TokenSet> => {
-  const config = getAuth0Config();
-  const body = new URLSearchParams({
-    grant_type: "refresh_token",
-    client_id: config.clientId,
-    refresh_token: refreshToken,
-    audience,
-  });
-
-  const res = await fetch(`${getIssuer()}/oauth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body,
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Auth0 token refresh failed: ${res.status} ${err}`);
-  }
-  const tokens: TokenResponse = await res.json();
-  return {
-    accessToken: tokens.access_token,
-    expiresAt: Date.now() + tokens.expires_in * 1000,
-    refreshToken: tokens.refresh_token ?? refreshToken,
-    audience,
-    scope: tokens.scope ?? defaultScope,
-  };
 };
 
 export const buildLogoutUrl = (returnTo: string): string => {

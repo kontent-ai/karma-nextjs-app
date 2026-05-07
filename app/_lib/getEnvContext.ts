@@ -1,9 +1,6 @@
 import { headers } from "next/headers";
 import { cache } from "react";
-import { getAccessToken } from "@/lib/auth0/tokens.ts";
-import { loadPreviewApiKey } from "@/utils/api.ts";
-
-const KONTENT_AUDIENCE = "https://app.kenticocloud.com/";
+import { getSession } from "@/lib/auth0/session.ts";
 
 const getEnvIdFromRequest = cache(async () => (await headers()).get("x-kontent-env-id"));
 
@@ -34,12 +31,14 @@ export const getEnvContextBase = cache(async (): Promise<EnvContextBase> => {
 export const getApiKey = cache(async (): Promise<string> => {
   const envId = await getEnvIdFromRequest();
   if (envId) {
-    const accessToken = await getAccessToken({ audience: KONTENT_AUDIENCE });
-    const key = await loadPreviewApiKey({ accessToken, environmentId: envId });
-    if (!key) {
-      throw new Error(`Could not obtain preview API key for environment ${envId}.`);
+    const session = await getSession();
+    const cached = session.currentKey;
+    if (cached?.envId === envId && cached.expiresAt > Date.now()) {
+      return cached.apiKey;
     }
-    return key;
+    throw new Error(
+      `No valid cached delivery key for environment ${envId} — proxy should have redirected to /auth/login.`,
+    );
   }
 
   const apiKey = process.env.KONTENT_DELIVERY_API_KEY;
