@@ -26,13 +26,20 @@ const defaultContextValue: SmartLinkContextValue = {
 
 const SmartLinkContext = createContext<SmartLinkContextValue>(defaultContextValue);
 
+const baseUrl = import.meta.env.VITE_KONTENT_URL ?? "kontent.ai";
+
 export const SmartLinkContextComponent: FC<PropsWithChildren> = ({ children }) => {
   const { environmentId } = useAppContext();
   const [smartLink, setSmartLink] = useState<KontentSmartLink | null>(null);
 
   useEffect(() => {
     setSmartLink(KontentSmartLink.initialize());
-  }, []);
+
+    return () => {
+      smartLink?.destroy();
+      setSmartLink(null);
+    }
+  }, [smartLink]);
 
   useEffect(() => {
     smartLink?.setConfiguration({
@@ -40,6 +47,7 @@ export const SmartLinkContextComponent: FC<PropsWithChildren> = ({ children }) =
         environmentId,
         languageCodename: "default",
       },
+      baseUrl,
     });
   }, [smartLink, environmentId]);
 
