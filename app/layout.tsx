@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/Footer.tsx";
 import { Header } from "@/components/Header.tsx";
 import { SmartLinkProvider } from "@/components/SmartLinkProvider.tsx";
-import { AppContextProvider } from "@/context/AppContext.tsx";
 import { getEnvContextBase } from "./_lib/getEnvContext.ts";
 import "./globals.css";
 
@@ -30,20 +29,18 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const envContext = await getEnvContextBase();
+  const { environmentId } = await getEnvContextBase();
 
   return (
     <html lang="en" className={`${sourceSans.variable} ${abhayaLibre.variable}`}>
       <body>
-        <AppContextProvider value={envContext}>
-          <SmartLinkProvider environmentId={envContext.environmentId}>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <div className="flex flex-col flex-1">{children}</div>
-              <Footer />
-            </div>
-          </SmartLinkProvider>
-        </AppContextProvider>
+        <SmartLinkProvider environmentId={environmentId}>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <div className="flex flex-col flex-1">{children}</div>
+            <Footer />
+          </div>
+        </SmartLinkProvider>
       </body>
     </html>
   );

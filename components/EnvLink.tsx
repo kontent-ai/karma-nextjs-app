@@ -1,9 +1,8 @@
 "use client";
 
 import NextLink from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ComponentProps, FC } from "react";
-import { useAppContext } from "@/context/AppContext.tsx";
 
 type Props = Omit<ComponentProps<typeof NextLink>, "href"> &
   Readonly<{
@@ -11,9 +10,12 @@ type Props = Omit<ComponentProps<typeof NextLink>, "href"> &
   }>;
 
 const isInternalAbsolute = (href: string) => href.startsWith("/");
+const ENV_PREFIX_PATTERN = /^\/envid\/[^/]+/;
 
 export const EnvLink: FC<Props> = ({ href, ...rest }) => {
-  const { urlPrefix } = useAppContext();
+  const pathname = usePathname();
+  const envMatch = pathname.match(ENV_PREFIX_PATTERN);
+  const urlPrefix = envMatch?.[0] ?? "";
   const searchParams = useSearchParams();
   const isPreview = searchParams.get("preview") === "true";
 

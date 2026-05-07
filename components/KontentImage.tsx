@@ -5,7 +5,7 @@ const KONTENT_ASSET_HOST_PATTERN =
 
 const isKontentAsset = (url: string): boolean => KONTENT_ASSET_HOST_PATTERN.test(url);
 
-export const buildKontentImageUrl = (
+const buildKontentImageUrl = (
   src: string,
   width: number,
   dpr: 1 | 2,
