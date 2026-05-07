@@ -1,24 +1,21 @@
 import { generateDeliveryModelsAsync, resolveCase } from "@kontent-ai/model-generator";
-import dotenv from "dotenv";
 
-dotenv.config();
+const { KONTENT_ENVIRONMENT_ID, KONTENT_MANAGEMENT_API_KEY } = process.env;
 
-const { VITE_ENVIRONMENT_ID, VITE_MANAGEMENT_API_KEY } = process.env;
-
-if (!VITE_ENVIRONMENT_ID) {
-  throw new Error("VITE_ENVIRONMENT_ID cannot be empty!");
+if (!KONTENT_ENVIRONMENT_ID) {
+  throw new Error("KONTENT_ENVIRONMENT_ID cannot be empty!");
 }
 
-if (!VITE_MANAGEMENT_API_KEY) {
-  throw new Error("VITE_MAPI_API_KEY cannot be empty!");
+if (!KONTENT_MANAGEMENT_API_KEY) {
+  throw new Error("KONTENT_MANAGEMENT_API_KEY cannot be empty!");
 }
 
 await generateDeliveryModelsAsync({
-  environmentId: VITE_ENVIRONMENT_ID,
-  managementApiKey: VITE_MANAGEMENT_API_KEY,
+  environmentId: KONTENT_ENVIRONMENT_ID,
+  managementApiKey: KONTENT_MANAGEMENT_API_KEY,
   addTimestamp: false,
   createFiles: true,
-  outputDir: "./src/model",
+  outputDir: "./model",
   moduleFileExtension: "ts",
   fileResolvers: {
     taxonomy: (taxonomy) => resolveCase(taxonomy.codename, "camelCase"),

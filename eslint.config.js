@@ -4,11 +4,19 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    files: ["src/**/*.{ts,tsx}"],
+    files: [
+      "app/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "context/**/*.{ts,tsx}",
+      "icons/**/*.{ts,tsx}",
+      "lib/**/*.{ts,tsx}",
+      "utils/**/*.{ts,tsx}",
+      "middleware.ts",
+    ],
     extends: [kontentAiConfig, kontentAiReactConfig],
     languageOptions: {
       parserOptions: {
-        project: "./tsconfig.app.json",
+        project: "./tsconfig.json",
       },
     },
     rules: {
