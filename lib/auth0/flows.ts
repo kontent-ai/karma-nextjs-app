@@ -1,5 +1,5 @@
 import * as client from "openid-client";
-import { loadPreviewApiKey } from "@/utils/api.ts";
+import { loadPreviewApiKey } from "@/lib/iapi/loadPreviewApiKey.ts";
 import { getAuth0Config } from "./config.ts";
 import { getLoginFlowSession, getSession } from "./session.ts";
 

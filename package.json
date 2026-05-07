@@ -15,6 +15,7 @@
     "model:generate": "npx tsx ./scripts/generateModel.ts"
   },
   "dependencies": {
+    "@kontent-ai/core-sdk": "^12.0.0-preview.29",
     "@kontent-ai/delivery-sdk": "^16.4.2",
     "@kontent-ai/rich-text-resolver": "^3.0.2",
     "@kontent-ai/rich-text-resolver-react": "^3.0.2",
@@ -24,7 +25,9 @@
     "oauth4webapi": "^3.5.0",
     "openid-client": "^6.8.4",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "ts-pattern": "^5.9.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",
