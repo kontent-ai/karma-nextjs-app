@@ -48,6 +48,16 @@ npm run model:generate
 > [!NOTE]
 > Ensure `.env.local` contains `VITE_ENVIRONMENT_ID` and `VITE_MANAGEMENT_API_KEY`.
 
+## HTTPS dev server
+
+Some flows require HTTPS in development. Run:
+
+```sh
+npm run dev:https
+```
+
+This starts Vite with `--mode=https`, so any variables in `.env.https.local` override `.env.local` for that session. Use it to set HTTPS-specific values such as `VITE_AUTH_REDIRECT_URL=https://localhost:3000/callback`.
+
 ## Contributing
 
 For Contributing please see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for more information.

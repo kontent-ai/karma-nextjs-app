@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:https": "vite --config vite-ssl-config.ts",
+    "dev:https": "vite --mode=https --config vite-ssl-config.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint ./src",
     "biome:fix": "biome check --fix .",
