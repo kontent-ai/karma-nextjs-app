@@ -1,101 +1,74 @@
+import * as client from "openid-client";
 import { loadPreviewApiKey } from "@/utils/api.ts";
-import { defaultScope, getAuth0Config, getIssuer, getRedirectUri } from "./config.ts";
-import {
-  generateCodeChallenge,
-  generateCodeVerifier,
-  generateNonce,
-  generateState,
-} from "./pkce.ts";
-import { getSession, getTempSession } from "./session.ts";
+import { getAuth0Config } from "./config.ts";
+import { getLoginFlowSession, getSession } from "./session.ts";
 
 const KONTENT_AUDIENCE = "https://app.kenticocloud.com/";
+const DEFAULT_SCOPE = "openid profile email";
 const ENVID_RE = /^\/envid\/([^/]+)/;
 const KEY_TTL_MS = 8 * 60 * 60 * 1000;
+
+const configCache = new Map<string, Promise<client.Configuration>>();
+
+const getConfig = (): Promise<client.Configuration> => {
+  const { domain, clientId } = getAuth0Config();
+  const key = `${domain}:${clientId}`;
+  const existing = configCache.get(key);
+  if (existing) {
+    return existing;
+  }
+  // No client secret = public client; openid-client handles this transparently.
+  const created = client.discovery(new URL(`https://${domain}`), clientId);
+  configCache.set(key, created);
+  return created;
+};
+
+const getRedirectUri = () => `${getAuth0Config().appBaseUrl}/callback`;
 
 type StartLoginArgs = Readonly<{
   returnTo: string;
 }>;
 
 export const buildAuthorizationUrl = async ({ returnTo }: StartLoginArgs): Promise<string> => {
-  const codeVerifier = generateCodeVerifier();
-  const codeChallenge = generateCodeChallenge(codeVerifier);
-  const state = generateState();
-  const nonce = generateNonce();
+  const config = await getConfig();
+  const codeVerifier = client.randomPKCECodeVerifier();
+  const codeChallenge = await client.calculatePKCECodeChallenge(codeVerifier);
+  const state = client.randomState();
+  const nonce = client.randomNonce();
 
-  const tempSession = await getTempSession();
-  tempSession.codeVerifier = codeVerifier;
-  tempSession.state = state;
-  tempSession.nonce = nonce;
-  tempSession.returnTo = returnTo;
-  await tempSession.save();
+  const loginFlow = await getLoginFlowSession();
+  loginFlow.codeVerifier = codeVerifier;
+  loginFlow.state = state;
+  loginFlow.nonce = nonce;
+  loginFlow.returnTo = returnTo;
+  await loginFlow.save();
 
-  const config = getAuth0Config();
-  const url = new URL(`${getIssuer()}/authorize`);
-  url.searchParams.set("client_id", config.clientId);
-  url.searchParams.set("redirect_uri", getRedirectUri());
-  url.searchParams.set("response_type", "code");
-  url.searchParams.set("scope", defaultScope);
-  url.searchParams.set("audience", KONTENT_AUDIENCE);
-  url.searchParams.set("code_challenge", codeChallenge);
-  url.searchParams.set("code_challenge_method", "S256");
-  url.searchParams.set("state", state);
-  url.searchParams.set("nonce", nonce);
-  return url.toString();
-};
-
-type TokenResponse = {
-  access_token: string;
-  expires_in: number;
-  refresh_token?: string;
-  id_token?: string;
-  scope?: string;
-  token_type: string;
-};
-
-const exchangeCodeForTokens = async (
-  code: string,
-  codeVerifier: string,
-): Promise<TokenResponse> => {
-  const config = getAuth0Config();
-  const body = new URLSearchParams({
-    grant_type: "authorization_code",
-    client_id: config.clientId,
-    code,
+  const url = client.buildAuthorizationUrl(config, {
     redirect_uri: getRedirectUri(),
-    code_verifier: codeVerifier,
+    scope: DEFAULT_SCOPE,
+    audience: KONTENT_AUDIENCE,
+    code_challenge: codeChallenge,
+    code_challenge_method: "S256",
+    state,
+    nonce,
   });
-
-  const res = await fetch(`${getIssuer()}/oauth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body,
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Auth0 token exchange failed: ${res.status} ${err}`);
-  }
-  return res.json();
+  return url.href;
 };
 
 export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: string }> => {
-  const tempSession = await getTempSession();
-  const { codeVerifier, state, returnTo } = tempSession;
-  if (!codeVerifier || !state) {
-    throw new Error("Missing PKCE verifier or state — login flow not initiated.");
+  const config = await getConfig();
+  const loginFlow = await getLoginFlowSession();
+  const { codeVerifier, state, nonce, returnTo } = loginFlow;
+  if (!codeVerifier || !state || !nonce) {
+    throw new Error("Missing PKCE verifier, state, or nonce — login flow not initiated.");
   }
 
-  const callbackState = callbackUrl.searchParams.get("state");
-  if (callbackState !== state) {
-    throw new Error("OAuth state mismatch.");
-  }
-
-  const code = callbackUrl.searchParams.get("code");
-  if (!code) {
-    const error = callbackUrl.searchParams.get("error_description") ?? "missing code";
-    throw new Error(`OAuth callback error: ${error}`);
-  }
-
-  const tokens = await exchangeCodeForTokens(code, codeVerifier);
+  // Verifies state, nonce, ID-token signature (JWKS), iss/aud/exp claims; exchanges code.
+  const tokens = await client.authorizationCodeGrant(config, callbackUrl, {
+    pkceCodeVerifier: codeVerifier,
+    expectedState: state,
+    expectedNonce: nonce,
+  });
 
   const session = await getSession();
   session.authed = true;
@@ -115,16 +88,16 @@ export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: stri
 
   await session.save();
 
-  tempSession.destroy();
-  await tempSession.save();
+  loginFlow.destroy();
+  await loginFlow.save();
 
   return { returnTo: returnTo || "/" };
 };
 
-export const buildLogoutUrl = (returnTo: string): string => {
-  const config = getAuth0Config();
-  const url = new URL(`${getIssuer()}/v2/logout`);
-  url.searchParams.set("client_id", config.clientId);
-  url.searchParams.set("returnTo", returnTo);
-  return url.toString();
+export const buildLogoutUrl = async (returnTo: string): Promise<string> => {
+  const config = await getConfig();
+  const url = client.buildEndSessionUrl(config, {
+    post_logout_redirect_uri: returnTo,
+  });
+  return url.href;
 };

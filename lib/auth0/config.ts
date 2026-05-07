@@ -12,10 +12,3 @@ export const getAuth0Config = () => ({
   appBaseUrl: requireEnv("APP_BASE_URL"),
   sessionPassword: requireEnv("SESSION_PASSWORD"),
 });
-
-export const getIssuer = () => `https://${getAuth0Config().domain}`;
-export const getRedirectUri = () => `${getAuth0Config().appBaseUrl}/callback`;
-export const defaultScope = "openid profile email offline_access";
-
-export const SESSION_COOKIE_NAME = "kdd_session";
-export const TEMP_COOKIE_NAME = "kdd_auth_tmp";
