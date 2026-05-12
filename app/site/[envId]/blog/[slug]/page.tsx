@@ -9,6 +9,20 @@ import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export const generateStaticParams = async () => {
+  const envId = process.env.KONTENT_ENVIRONMENT_ID;
+  const apiKey = process.env.KONTENT_DELIVERY_API_KEY;
+  if (!envId || !apiKey) {
+    return [];
+  }
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled: false });
+  const res = await client.items<BlogPost>().type("blog_post").toPromise();
+  return res.data.items.map((item) => ({ envId, slug: item.elements.url_slug.value }));
+};
+
 type Props = Readonly<{
   params: Promise<{ envId: string; slug: string }>;
 }>;

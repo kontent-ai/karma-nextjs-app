@@ -2,30 +2,26 @@ import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { draftMode } from "next/headers";
-import { ArticleList } from "@/components/articles/ArticleList.tsx";
+import { Suspense } from "react";
 import { ButtonLink } from "@/components/ButtonLink.tsx";
-import { FiltersClient } from "@/components/filters/FiltersClient.tsx";
 import { ImageWithTag } from "@/components/ImageWithTag.tsx";
 import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
+import { ArticleListWithFilters } from "@/components/research/ArticleListWithFilters.tsx";
 import type { SelectorOption } from "@/components/Selector.tsx";
 import { Tags } from "@/components/Tags.tsx";
 import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
-import {
-  type Article,
-  isArticleType,
-  isGeneralHealthcareTopics,
-  type Page,
-} from "@/model/index.ts";
+import type { Article, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export const generateStaticParams = async () => [{ envId: process.env.KONTENT_ENVIRONMENT_ID! }];
+
 type Props = Readonly<{
   params: Promise<{ envId: string }>;
-  searchParams: Promise<{
-    type?: string;
-    topic?: string;
-  }>;
 }>;
 
 const selectTaxonomyOptions = (taxonomy: {
@@ -70,12 +66,8 @@ const FeaturedArticleView = ({
   </div>
 );
 
-export default async function ResearchPage({ params, searchParams }: Props) {
+export default async function ResearchPage({ params }: Props) {
   const { envId } = await params;
-  const sp = await searchParams;
-  const articleTypeCodename = sp.type ?? null;
-  const articleTopicCodename = sp.topic ?? null;
-
   const apiKey = await resolveApiKey(envId);
   const { isEnabled: isPreviewEnabled } = await draftMode();
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
@@ -134,34 +126,25 @@ export default async function ResearchPage({ params, searchParams }: Props) {
       }
     : null;
 
-  const articleListItems = articles
-    .filter((a) =>
-      isArticleType(articleTypeCodename)
-        ? a.elements.article_type.value.find((t) => t.codename === articleTypeCodename)
-        : true,
-    )
-    .filter((a) =>
-      isGeneralHealthcareTopics(articleTopicCodename)
-        ? a.elements.topics.value.find((t) => t.codename === articleTopicCodename)
-        : true,
-    )
-    .map((article) => ({
-      image: {
-        url: article.elements.image.value[0]?.url ?? "",
-        alt: article.elements.image.value[0]?.description ?? "",
-      },
-      title: article.elements.title.value,
-      introduction: article.elements.introduction.value,
-      publishDate: article.elements.publish_date.value
-        ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })
-        : "No date",
-      topics: article.elements.topics.value.map((t) => t.name),
-      urlSlug: article.elements.url_slug.value,
-    }));
+  const articleListItems = articles.map((article) => ({
+    image: {
+      url: article.elements.image.value[0]?.url ?? "",
+      alt: article.elements.image.value[0]?.description ?? "",
+    },
+    title: article.elements.title.value,
+    introduction: article.elements.introduction.value,
+    publishDate: article.elements.publish_date.value
+      ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "No date",
+    topics: article.elements.topics.value.map((t) => t.name),
+    urlSlug: article.elements.url_slug.value,
+    articleTypeCodenames: article.elements.article_type.value.map((t) => t.codename),
+    topicCodenames: article.elements.topics.value.map((t) => t.codename),
+  }));
 
   return (
     <div className="flex flex-col">
@@ -204,10 +187,13 @@ export default async function ResearchPage({ params, searchParams }: Props) {
           </div>
         </PageSection>
       )}
-      <PageSection color="bg-white">
-        <FiltersClient articleTypes={articlesTypes} articleTopics={articlesTopics} />
-      </PageSection>
-      <ArticleList articles={articleListItems} />
+      <Suspense>
+        <ArticleListWithFilters
+          articleTypes={articlesTypes}
+          articleTopics={articlesTopics}
+          articles={articleListItems}
+        />
+      </Suspense>
     </div>
   );
 }
