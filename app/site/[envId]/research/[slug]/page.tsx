@@ -1,5 +1,6 @@
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { ArticleList } from "@/components/articles/ArticleList.tsx";
 import { EnvLink } from "@/components/EnvLink.tsx";
@@ -7,15 +8,15 @@ import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
 import { PersonCard } from "@/components/PersonCard.tsx";
 import { Tags } from "@/components/Tags.tsx";
+import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 import type { Article, LanguageCodenames } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
-import { getApiKey, getEnvContextBase } from "../../_lib/getEnvContext.ts";
 
 type Props = Readonly<{
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ preview?: string; lang?: string }>;
+  params: Promise<{ envId: string; slug: string }>;
+  searchParams: Promise<{ lang?: string }>;
 }>;
 
 type AuthorCardProps = Readonly<{
@@ -69,13 +70,12 @@ const HeroImageAuthorCard = ({
 );
 
 export default async function ArticleDetailPage({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const { preview, lang } = await searchParams;
-  const isPreviewEnabled = preview === "true";
+  const { envId, slug } = await params;
+  const { lang } = await searchParams;
 
-  const { environmentId } = await getEnvContextBase();
-  const apiKey = await getApiKey();
-  const client = getDeliveryClient({ environmentId, apiKey, isPreviewEnabled });
+  const apiKey = await resolveApiKey(envId);
+  const { isEnabled: isPreviewEnabled } = await draftMode();
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const systemRes = await client
     .items<Article>()

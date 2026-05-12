@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Abhaya_Libre, Source_Sans_3 } from "next/font/google";
-import type { ReactNode } from "react";
+import { type ReactNode, Suspense } from "react";
 import { Footer } from "@/components/Footer.tsx";
 import { Header } from "@/components/Header.tsx";
-import { SmartLinkProvider } from "@/components/SmartLinkProvider.tsx";
-import { getEnvContextBase } from "./_lib/getEnvContext.ts";
 import "./globals.css";
 
 const sourceSans = Source_Sans_3({
@@ -28,19 +26,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const { environmentId } = await getEnvContextBase();
-
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={`${sourceSans.variable} ${abhayaLibre.variable}`}>
       <body>
-        <SmartLinkProvider environmentId={environmentId}>
-          <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen">
+          <Suspense>
             <Header />
-            <div className="flex flex-col flex-1">{children}</div>
-            <Footer />
-          </div>
-        </SmartLinkProvider>
+          </Suspense>
+          <div className="flex flex-col flex-1">{children}</div>
+          <Footer />
+        </div>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { draftMode } from "next/headers";
 import { ArticleList } from "@/components/articles/ArticleList.tsx";
 import { ButtonLink } from "@/components/ButtonLink.tsx";
 import { FiltersClient } from "@/components/filters/FiltersClient.tsx";
@@ -9,6 +10,7 @@ import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
 import type { SelectorOption } from "@/components/Selector.tsx";
 import { Tags } from "@/components/Tags.tsx";
+import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 import {
   type Article,
   isArticleType,
@@ -17,11 +19,10 @@ import {
 } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
-import { getApiKey, getEnvContextBase } from "../_lib/getEnvContext.ts";
 
 type Props = Readonly<{
+  params: Promise<{ envId: string }>;
   searchParams: Promise<{
-    preview?: string;
     type?: string;
     topic?: string;
   }>;
@@ -69,15 +70,15 @@ const FeaturedArticleView = ({
   </div>
 );
 
-export default async function ResearchPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const isPreviewEnabled = params.preview === "true";
-  const articleTypeCodename = params.type ?? null;
-  const articleTopicCodename = params.topic ?? null;
+export default async function ResearchPage({ params, searchParams }: Props) {
+  const { envId } = await params;
+  const sp = await searchParams;
+  const articleTypeCodename = sp.type ?? null;
+  const articleTopicCodename = sp.topic ?? null;
 
-  const { environmentId } = await getEnvContextBase();
-  const apiKey = await getApiKey();
-  const client = getDeliveryClient({ environmentId, apiKey, isPreviewEnabled });
+  const apiKey = await resolveApiKey(envId);
+  const { isEnabled: isPreviewEnabled } = await draftMode();
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const [articlesPage, articlesTypes, articlesTopics, articles] = await Promise.all([
     client

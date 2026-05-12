@@ -1,25 +1,24 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
+import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 import type { Person } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
-import { getApiKey, getEnvContextBase } from "../../_lib/getEnvContext.ts";
 
 type Props = Readonly<{
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ preview?: string }>;
+  params: Promise<{ envId: string; slug: string }>;
 }>;
 
-export default async function PersonDetailPage({ params, searchParams }: Props) {
-  const { slug } = await params;
-  const isPreviewEnabled = (await searchParams).preview === "true";
-  const { environmentId } = await getEnvContextBase();
-  const apiKey = await getApiKey();
-  const client = getDeliveryClient({ environmentId, apiKey, isPreviewEnabled });
+export default async function PersonDetailPage({ params }: Props) {
+  const { envId, slug } = await params;
+  const apiKey = await resolveApiKey(envId);
+  const { isEnabled: isPreviewEnabled } = await draftMode();
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const person = await client
     .item<Person>(slug)

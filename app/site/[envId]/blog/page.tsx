@@ -1,22 +1,23 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { draftMode } from "next/headers";
 import { BlogList } from "@/components/blog/BlogList.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
+import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 import type { BlogPost, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
-import { getApiKey, getEnvContextBase } from "../_lib/getEnvContext.ts";
 
 type Props = Readonly<{
-  searchParams: Promise<{ preview?: string }>;
+  params: Promise<{ envId: string }>;
 }>;
 
-export default async function BlogPage({ searchParams }: Props) {
-  const isPreviewEnabled = (await searchParams).preview === "true";
-  const { environmentId } = await getEnvContextBase();
-  const apiKey = await getApiKey();
-  const client = getDeliveryClient({ environmentId, apiKey, isPreviewEnabled });
+export default async function BlogPage({ params }: Props) {
+  const { envId } = await params;
+  const apiKey = await resolveApiKey(envId);
+  const { isEnabled: isPreviewEnabled } = await draftMode();
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const [blogPage, blogs] = await Promise.all([
     client
