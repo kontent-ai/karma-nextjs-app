@@ -9,6 +9,11 @@ import type { LandingPage as LandingPageType } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import type { Replace } from "@/utils/types.ts";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export const generateStaticParams = async () => [{ envId: process.env.KONTENT_ENVIRONMENT_ID! }];
+
 type Props = Readonly<{
   params: Promise<{ envId: string }>;
 }>;

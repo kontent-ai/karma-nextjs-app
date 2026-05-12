@@ -10,6 +10,11 @@ import type { Page, Person } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
+export const generateStaticParams = async () => [{ envId: process.env.KONTENT_ENVIRONMENT_ID! }];
+
 type Props = Readonly<{
   params: Promise<{ envId: string }>;
 }>;
