@@ -1,22 +1,23 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
+import { draftMode } from "next/headers";
 import { HeroImage } from "@/components/HeroImage.tsx";
 import { FeaturedContent } from "@/components/landingPage/FeaturedContent.tsx";
 import { PageContent } from "@/components/PageContent.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
+import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 import type { LandingPage as LandingPageType } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import type { Replace } from "@/utils/types.ts";
-import { getApiKey, getEnvContextBase } from "./_lib/getEnvContext.ts";
 
 type Props = Readonly<{
-  searchParams: Promise<{ preview?: string }>;
+  params: Promise<{ envId: string }>;
 }>;
 
-export default async function Page({ searchParams }: Props) {
-  const isPreviewEnabled = (await searchParams).preview === "true";
-  const { environmentId } = await getEnvContextBase();
-  const apiKey = await getApiKey();
-  const client = getDeliveryClient({ environmentId, apiKey, isPreviewEnabled });
+export default async function Page({ params }: Props) {
+  const { envId } = await params;
+  const apiKey = await resolveApiKey(envId);
+  const { isEnabled: isPreviewEnabled } = await draftMode();
+  const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const landingPage = await client
     .items()
