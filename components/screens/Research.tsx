@@ -12,6 +12,7 @@ import { Tags } from "@/components/Tags.tsx";
 import type { Article, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
+import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
 
 type Props = Readonly<{
   envId: string;
@@ -143,14 +144,26 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
       <PageSection color="bg-creme">
         <div className="flex flex-col-reverse gap-16 lg:gap-0 lg:flex-row items-center py-16 lg:py-0 lg:pt-[104px] lg:pb-[160px]">
           <div className="flex flex-col flex-1 gap-6 ">
-            <h1 className="text-heading-1 text-heading-1-color">
+            <h1
+              className="text-heading-1 text-heading-1-color"
+              {...createItemSmartLink(articlesPage.item.system.id)}
+              {...createElementSmartLink("headline")}
+            >
               {articlesPage.item.elements.headline.value}
             </h1>
-            <p className="text-body-lg text-body-color">
+            <p
+              className="text-body-lg text-body-color"
+              {...createItemSmartLink(articlesPage.item.system.id)}
+              {...createElementSmartLink("subheadline")}
+            >
               {articlesPage.item.elements.subheadline.value}
             </p>
           </div>
-          <div className="flex flex-col flex-1">
+          <div
+            className="flex flex-col flex-1"
+            {...createItemSmartLink(articlesPage.item.system.id)}
+            {...createElementSmartLink("hero_image")}
+          >
             <KontentImage
               src={articlesPage.item.elements.hero_image?.value[0]?.url}
               alt={articlesPage.item.elements.hero_image?.value[0]?.description ?? ""}
@@ -171,7 +184,11 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
       </PageSection>
       {!isEmptyRichText(articlesPage.item.elements.body.value) && (
         <PageSection color="bg-white">
-          <div className="flex flex-col pt-10 mx-auto gap-6">
+          <div
+            className="flex flex-col pt-10 mx-auto gap-6"
+            {...createItemSmartLink(articlesPage.item.system.id)}
+            {...createElementSmartLink("body")}
+          >
             <PortableText
               value={transformToPortableText(articlesPage.item.elements.body.value)}
               components={defaultPortableRichTextResolvers}

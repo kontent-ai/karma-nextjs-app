@@ -7,6 +7,7 @@ import { PageSection } from "@/components/PageSection.tsx";
 import type { Person } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
+import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
 
 type Props = Readonly<{
   envId: string;
@@ -46,7 +47,10 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
             <div className="w-fit text-body-xs text-white border border-white px-4 py-2 rounded-lg uppercase tracking-wider font-bold">
               Person
             </div>
-            <h1 className="text-heading-1 text-heading-1-color">
+            <h1
+              className="text-heading-1 text-heading-1-color"
+              {...createItemSmartLink(person.system.id)}
+            >
               {person.elements.prefix?.value ? <span>{person.elements.prefix.value}</span> : null}
               &nbsp;
               {person.elements.first_name?.value} {person.elements.last_name?.value}
@@ -54,12 +58,20 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
                 <span>, {person.elements.suffixes.value}</span>
               ) : null}
             </h1>
-            <p className="text-[32px] leading-[130%] text-body-color">
+            <p
+              className="text-[32px] leading-[130%] text-body-color"
+              {...createItemSmartLink(person.system.id)}
+              {...createElementSmartLink("job_title")}
+            >
               {person.elements.job_title?.value}
             </p>
           </div>
 
-          <div className="flex-1 flex justify-end">
+          <div
+            className="flex-1 flex justify-end"
+            {...createItemSmartLink(person.system.id)}
+            {...createElementSmartLink("image")}
+          >
             <KontentImage
               src={person.elements.image?.value[0]?.url}
               alt={
@@ -77,7 +89,11 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
 
       <PageSection color="bg-white">
         <div className="flex flex-col lg:flex-row gap-16 py-16 max-w-6xl mx-auto justify-center">
-          <div className="prose prose-lg">
+          <div
+            className="prose prose-lg"
+            {...createItemSmartLink(person.system.id)}
+            {...createElementSmartLink("biography")}
+          >
             <PortableText
               value={transformToPortableText(person.elements.biography?.value)}
               components={defaultPortableRichTextResolvers}
@@ -90,7 +106,10 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
 
               <div className="flex flex-col gap">
                 {person.elements.phone?.value ? (
-                  <div>
+                  <div
+                    {...createItemSmartLink(person.system.id)}
+                    {...createElementSmartLink("phone")}
+                  >
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Phone:</span> {person.elements.phone.value}
                     </p>
@@ -98,7 +117,10 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
                 ) : null}
 
                 {person.elements.email?.value ? (
-                  <div>
+                  <div
+                    {...createItemSmartLink(person.system.id)}
+                    {...createElementSmartLink("email")}
+                  >
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-bold">Email:</span>&nbsp;
                       <a
@@ -112,7 +134,10 @@ export const TeamMember = async ({ envId, apiKey, isPreviewEnabled, slug }: Prop
                 ) : null}
 
                 {person.elements.website?.value ? (
-                  <div>
+                  <div
+                    {...createItemSmartLink(person.system.id)}
+                    {...createElementSmartLink("website")}
+                  >
                     <p className="text-body-lg text-grey-600 mb-1">
                       <span className="font-[700]">Website:</span>&nbsp;
                       <a
