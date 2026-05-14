@@ -27,3 +27,6 @@ out
 
 tsconfig*.tsbuildinfo
 certificates
+
+# Claude Code in-repo worktrees
+.claude/worktrees/
