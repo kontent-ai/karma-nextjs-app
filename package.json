@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@kontent-ai/core-sdk": "^12.0.0-preview.29",
-    "@kontent-ai/delivery-sdk": "^16.4.2",
+    "@kontent-ai/delivery-sdk": "^16.4.3",
     "@kontent-ai/rich-text-resolver": "^3.0.2",
     "@kontent-ai/rich-text-resolver-react": "^3.0.2",
     "@kontent-ai/smart-link": "^5.0.6",
@@ -42,5 +42,12 @@
     "local-ssl-proxy": "^2.0.5",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "@kontent-ai/management-sdk": "^8.5.1",
+    "@kontent-ai/migration-toolkit": "^3.1.5",
+    "@kontent-ai-consulting/tools-analytics": "^0.0.12",
+    "@kontent-ai/delivery-sdk": "^16.4.3",
+    "coreSdkLegacy": "npm:@kontent-ai/core-sdk@^10.12.5"
   }
 }
