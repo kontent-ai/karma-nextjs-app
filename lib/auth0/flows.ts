@@ -11,7 +11,7 @@ const KEY_TTL_MS = 8 * 60 * 60 * 1000;
 
 const configCache = new Map<string, Promise<client.Configuration>>();
 
-const getConfig = async (): Promise<client.Configuration> => {
+const getConfig = (): Promise<client.Configuration> => {
   const { domain, clientId } = getAuth0Config();
   const key = `${domain}:${clientId}`;
   const existing = configCache.get(key);
