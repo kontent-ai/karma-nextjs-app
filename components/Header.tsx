@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { FC } from "react";
 import { IconButton } from "@/icons/IconButton.tsx";
 import IconSpain from "@/icons/IconSpain.tsx";
@@ -9,23 +9,21 @@ import { Container } from "./Container.tsx";
 import { Logo } from "./Logo.tsx";
 import { Navigation } from "./Navigation.tsx";
 
+const RESEARCH_PATH_RE = /^(\/envid\/[^/]+)?\/research\/([\w-]+)(?:\/([\w-]+))?$/;
+
 export const Header: FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const isResearchPage = pathname.match(/^(\/envid\/[^/]+)?\/research\/[\w-]+$/);
-  const lang = searchParams.get("lang");
+  const match = pathname.match(RESEARCH_PATH_RE);
+  const isResearchPage = match !== null;
+  const envPrefix = match?.[1] ?? "";
+  const slug = match?.[2] ?? "";
+  const currentLang = match?.[3] ?? "default";
 
-  const buildHref = (nextLang: string | null) => {
-    const params = new URLSearchParams(searchParams);
-    if (nextLang === null) {
-      params.delete("lang");
-    } else {
-      params.set("lang", nextLang);
-    }
-    const qs = params.toString();
-    return qs ? `${pathname}?${qs}` : pathname;
-  };
+  const buildHref = (nextLang: "default" | "es-ES") =>
+    nextLang === "default"
+      ? `${envPrefix}/research/${slug}`
+      : `${envPrefix}/research/${slug}/${nextLang}`;
 
   return (
     <Container>
@@ -37,13 +35,13 @@ export const Header: FC = () => {
         {isResearchPage && (
           <div className="flex gap-2 xl:pr-16 justify-self-end items-center">
             <IconButton
-              icon={<IconUnitedStates className={`hover:cursor-pointer hover:scale-110`} />}
-              isSelected={lang === "en-US" || lang === null}
-              onClick={() => router.replace(buildHref(null))}
+              icon={<IconUnitedStates className="hover:cursor-pointer hover:scale-110" />}
+              isSelected={currentLang === "default"}
+              onClick={() => router.replace(buildHref("default"))}
             />
             <IconButton
-              icon={<IconSpain className={`hover:cursor-pointer hover:scale-110`} />}
-              isSelected={lang === "es-ES"}
+              icon={<IconSpain className="hover:cursor-pointer hover:scale-110" />}
+              isSelected={currentLang === "es-ES"}
               onClick={() => router.replace(buildHref("es-ES"))}
             />
           </div>

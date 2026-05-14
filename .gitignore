@@ -25,5 +25,5 @@ out
 
 .env
 
-tsconfig.*.tsbuildinfo
+tsconfig*.tsbuildinfo
 certificates

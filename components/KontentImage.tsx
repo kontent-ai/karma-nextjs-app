@@ -5,12 +5,7 @@ const KONTENT_ASSET_HOST_PATTERN =
 
 const isKontentAsset = (url: string): boolean => KONTENT_ASSET_HOST_PATTERN.test(url);
 
-const buildKontentImageUrl = (
-  src: string,
-  width: number,
-  dpr: 1 | 2,
-  quality?: number,
-): string => {
+const buildKontentImageUrl = (src: string, width: number, dpr: 1 | 2, quality?: number): string => {
   if (!isKontentAsset(src)) {
     return src;
   }
