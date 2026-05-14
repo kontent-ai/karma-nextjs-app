@@ -3,16 +3,17 @@
 
 ## About The Project
 
-A React sample project built on top of Kontent.ai. It mirrors the Karma healthcare site and serves as a reference for integrating Kontent.ai into a React application.
+A Next.js sample project built on top of Kontent.ai. It mirrors the Karma healthcare site and serves as a reference for integrating Kontent.ai into a Next.js application.
 
 ## Demonstrated Kontent.ai Features
 
-- **Delivery SDK** with strongly-typed content via generated models (`src/utils/client.ts`)
-- **Preview mode** toggle for previewing unpublished content
-- **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`src/utils/richtext.tsx`)
-- **Smart Link** integration for in-context editing, live preview, and custom refresh hooks (`src/context/SmartLinkContext.tsx`)
-- **Taxonomy-based filtering** on the articles listing page (`src/pages/ArticlesListingPage.tsx`)
-- **Language switching** on article detail pages (`src/pages/ArticleDetailPage.tsx`)
+- **Delivery SDK** with strongly-typed content via generated models (`utils/client.server.ts`, `model/`)
+- **Draft Mode preview** — uses Next.js Draft Mode to preview unpublished content. Toggle it through the `/api/preview/enable` and `/api/preview/disable` routes; while enabled, pages render preview data instead of published content.
+- **Multi-environment preview** — sign in with Auth0 to preview any Kontent.ai environment you have access to under the `/envid/[envId]` route tree (see [Multi-environment preview](#multi-environment-preview) below)
+- **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`utils/richtext.tsx`)
+- **Smart Link** integration for in-context editing and live preview, mounted only while Draft Mode is enabled (`components/SmartLinkProvider.tsx`)
+- **Taxonomy-based filtering** on the research listing page (`components/research/ArticleListWithFilters.tsx`)
+- **Language switching** on research detail pages (`app/research/[slug]/[lang]/page.tsx`)
 - **Type generation** from the Kontent.ai content model (`scripts/generateModel.ts`)
 
 ## Getting Started
@@ -31,11 +32,25 @@ A React sample project built on top of Kontent.ai. It mirrors the Karma healthca
    ```sh
    npm ci
    ```
-3. Create a `.env.local` file from `.env.template` and fill in `VITE_ENVIRONMENT_ID` and `VITE_DELIVERY_API_KEY`.
+3. Create a `.env.local` file from `.env.template` and fill in the Kontent.ai and Auth0 values. At minimum you need `KONTENT_ENVIRONMENT_ID`, `KONTENT_DELIVERY_API_KEY`, `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `APP_BASE_URL`, and `SESSION_PASSWORD`.
 4. Run the app
    ```sh
    npm run dev
    ```
+
+## Multi-environment preview
+
+The default content tree (`/`, `/blog`, `/research`, …) reads its delivery key from `KONTENT_DELIVERY_API_KEY` and is statically generated with ISR.
+
+On top of that, the app can preview **any other Kontent.ai environment** the signed-in user has access to. Authentication goes through Auth0 as a public client using PKCE (no Auth0 client secret). After login, the Auth0 access token is exchanged via the Kontent.ai API for that environment's Delivery preview key, which is cached in an encrypted `iron-session` cookie. These per-environment pages live under the `/envid/[envId]` route tree and are gated by `proxy.ts`, which redirects unauthenticated visitors to the login flow.
+
+### Removing it
+
+If you only need the single default environment, you can strip the Auth0 layer out:
+
+- Delete the `app/envid/` route tree, `app/auth/`, `app/callback/`, `lib/auth0/`, `lib/iapi/`, `lib/env/resolveApiKey.ts`, `lib/sanitizeReturnTo.ts`, and `proxy.ts`.
+- Replace `components/EnvLink.tsx` with a plain `next/link`, and remove the `/envid/` prefix handling from `components/Header.tsx` and `components/Navigation.tsx`.
+- Drop the Auth0 variables from `.env.template` and uninstall the now-unused `iron-session` and `openid-client` dependencies.
 
 ## Regenerating the Model
 
@@ -46,17 +61,17 @@ npm run model:generate
 ```
 
 > [!NOTE]
-> Ensure `.env.local` contains `VITE_ENVIRONMENT_ID` and `VITE_MANAGEMENT_API_KEY`.
+> Ensure `.env.local` contains `KONTENT_ENVIRONMENT_ID` and `KONTENT_MANAGEMENT_API_KEY`.
 
 ## HTTPS dev server
 
-Some flows require HTTPS in development. Run:
+Some flows require HTTPS in development — most notably the session cookie, which uses `SameSite=None; Secure` so it works inside the Kontent.ai preview iframe. Run:
 
 ```sh
 npm run dev:https
 ```
 
-This starts Vite with `--mode=https`, so any variables in `.env.https.local` override `.env.local` for that session. Use it to set HTTPS-specific values such as `VITE_AUTH_REDIRECT_URL=https://localhost:3000/callback`.
+This starts Next.js with `--experimental-https`, generating a local certificate so the dev server is served over HTTPS.
 
 ## Contributing
 
