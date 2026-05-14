@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { ResearchDetail } from "@/components/screens/ResearchDetail.tsx";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
-import { isNonDefaultLanguage, NON_DEFAULT_LANGUAGES } from "@/lib/i18n.ts";
+import { NON_DEFAULT_LANGUAGES, parseLangSegment } from "@/lib/i18n.ts";
 import type { Article } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 
@@ -16,24 +16,32 @@ export const generateStaticParams = async () => {
   }
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled: false });
 
-  const results = await Promise.all(
+  const defaultRes = await client.items<Article>().type("article").toPromise();
+  const defaultParams = defaultRes.data.items.map((item) => ({
+    slug: item.elements.url_slug.value,
+    lang: [] as string[],
+  }));
+
+  const nonDefaultParams = await Promise.all(
     NON_DEFAULT_LANGUAGES.map(async (lang) => {
       const res = await client.items<Article>().type("article").languageParameter(lang).toPromise();
       return res.data.items
         .filter((item) => item.system.language === lang)
-        .map((item) => ({ slug: item.elements.url_slug.value, lang }));
+        .map((item) => ({ slug: item.elements.url_slug.value, lang: [lang] }));
     }),
   );
-  return results.flat();
+
+  return [...defaultParams, ...nonDefaultParams.flat()];
 };
 
 type Props = Readonly<{
-  params: Promise<{ slug: string; lang: string }>;
+  params: Promise<{ slug: string; lang?: string[] }>;
 }>;
 
 export default async function Page({ params }: Props) {
   const { slug, lang } = await params;
-  if (!isNonDefaultLanguage(lang)) {
+  const parsedLang = parseLangSegment(lang);
+  if (parsedLang === null) {
     notFound();
   }
   const { envId, apiKey } = getDefaultEnv();
@@ -43,7 +51,7 @@ export default async function Page({ params }: Props) {
       apiKey={apiKey}
       isPreviewEnabled={false}
       slug={slug}
-      lang={lang}
+      lang={parsedLang}
     />
   );
 }

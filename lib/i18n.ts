@@ -23,3 +23,19 @@ export const isNonDefaultLanguage = (
 
 export const buildArticleHref = (slug: string, lang: SupportedLanguage) =>
   lang === DEFAULT_LANGUAGE ? `/research/${slug}` : `/research/${slug}/${lang}`;
+
+// Parses the optional [[...lang]] catch-all segment of a research detail route.
+// Returns the validated non-default language, `undefined` for the default
+// language (no segment), or `null` when the segment is malformed (route 404s).
+export const parseLangSegment = (
+  segments: string[] | undefined,
+): Exclude<SupportedLanguage, "default"> | undefined | null => {
+  const [first, ...rest] = segments ?? [];
+  if (first === undefined) {
+    return undefined;
+  }
+  if (rest.length === 0 && isNonDefaultLanguage(first)) {
+    return first;
+  }
+  return null;
+};
