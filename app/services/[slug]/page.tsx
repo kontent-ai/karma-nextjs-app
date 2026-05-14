@@ -3,7 +3,8 @@ import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import type { Service } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 300;
 
 export const generateStaticParams = async () => {
   const envId = process.env.KONTENT_ENVIRONMENT_ID;
