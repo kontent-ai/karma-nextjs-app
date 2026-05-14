@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import type { FC } from "react";
-import { IconButton } from "@/icons/IconButton.tsx";
+import { IconLink } from "@/icons/IconLink.tsx";
 import IconSpain from "@/icons/IconSpain.tsx";
 import IconUnitedStates from "@/icons/IconUnitedStates.tsx";
 import { Container } from "./Container.tsx";
@@ -13,7 +13,6 @@ const RESEARCH_PATH_RE = /^(\/envid\/[^/]+)?\/research\/([\w-]+)(?:\/([\w-]+))?$
 
 export const Header: FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const match = pathname.match(RESEARCH_PATH_RE);
   const isResearchPage = match !== null;
   const envPrefix = match?.[1] ?? "";
@@ -34,15 +33,15 @@ export const Header: FC = () => {
         </div>
         {isResearchPage && (
           <div className="flex gap-2 xl:pr-16 justify-self-end items-center">
-            <IconButton
+            <IconLink
               icon={<IconUnitedStates className="hover:cursor-pointer hover:scale-110" />}
               isSelected={currentLang === "default"}
-              onClick={() => router.replace(buildHref("default"))}
+              href={buildHref("default")}
             />
-            <IconButton
+            <IconLink
               icon={<IconSpain className="hover:cursor-pointer hover:scale-110" />}
               isSelected={currentLang === "es-ES"}
-              onClick={() => router.replace(buildHref("es-ES"))}
+              href={buildHref("es-ES")}
             />
           </div>
         )}
