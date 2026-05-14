@@ -8,6 +8,7 @@ import { TeamMemberCard } from "@/components/team/TeamMemberCard.tsx";
 import type { Person, Service } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
+import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
 
 type Props = Readonly<{
   envId: string;
@@ -39,14 +40,26 @@ export const ServiceDetail = async ({ envId, apiKey, isPreviewEnabled, slug }: P
             <div className="w-fit text-small text-body-color border tracking-wider font-[700] border-white px-4 py-2 rounded-lg uppercase">
               Service
             </div>
-            <h1 className="text-heading-1 text-heading-1-color max-w-[12ch]">
+            <h1
+              className="text-heading-1 text-heading-1-color max-w-[12ch]"
+              {...createItemSmartLink(service.system.id)}
+              {...createElementSmartLink("name")}
+            >
               {service.elements.name.value}
             </h1>
-            <p className="text-body-lg text-body-color text-[32px] leading-[130%]">
+            <p
+              className="text-body-lg text-body-color text-[32px] leading-[130%]"
+              {...createItemSmartLink(service.system.id)}
+              {...createElementSmartLink("summary")}
+            >
               {service.elements.summary.value}
             </p>
           </div>
-          <div className="flex flex-col flex-1">
+          <div
+            className="flex flex-col flex-1"
+            {...createItemSmartLink(service.system.id)}
+            {...createElementSmartLink("image")}
+          >
             <KontentImage
               src={service.elements.image.value[0]?.url}
               alt={service.elements.image.value[0]?.description ?? ""}
@@ -61,7 +74,11 @@ export const ServiceDetail = async ({ envId, apiKey, isPreviewEnabled, slug }: P
 
       <PageSection color="bg-white">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 max-w-6xl mx-auto">
-          <div className="rich-text-body lg:basis-2/3 flex-mx-auto flex flex-col gap-5">
+          <div
+            className="rich-text-body lg:basis-2/3 flex-mx-auto flex flex-col gap-5"
+            {...createItemSmartLink(service.system.id)}
+            {...createElementSmartLink("description")}
+          >
             <PortableText
               value={transformToPortableText(service.elements.description?.value)}
               components={defaultPortableRichTextResolvers}
@@ -71,13 +88,22 @@ export const ServiceDetail = async ({ envId, apiKey, isPreviewEnabled, slug }: P
           <div className="flex flex-col gap-20">
             <div className="flex flex-col gap-10">
               <h2 className="text-heading-2 text-burgundy">Medical Specialties</h2>
-              <Tags tags={medicalSpecialtyNames} orientation="vertical" />
+              <Tags
+                tags={medicalSpecialtyNames}
+                orientation="vertical"
+                itemId={service.system.id}
+                elementCodename="medical_specialties"
+              />
             </div>
 
             {service.elements.team?.value.length > 0 && (
               <div className="max-w-3xl">
                 <h2 className="text-heading-2 text-burgundy mb-10">Team</h2>
-                <div className="flex flex-col gap-6">
+                <div
+                  className="flex flex-col gap-6"
+                  {...createItemSmartLink(service.system.id)}
+                  {...createElementSmartLink("team")}
+                >
                   {service.elements.team.linkedItems.map((person: Person) => (
                     <TeamMemberCard
                       key={person.system.id}
