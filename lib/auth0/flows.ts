@@ -1,4 +1,5 @@
 import * as client from "openid-client";
+import { isDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import { loadPreviewApiKey } from "@/lib/iapi/loadPreviewApiKey.ts";
 import { getAuth0Config } from "./config.ts";
 import { getLoginFlowSession, getSession } from "./session.ts";
@@ -73,9 +74,11 @@ export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: stri
   const session = await getSession();
   session.authed = true;
 
+  // The default env serves its key from env vars; only non-default tenants need
+  // a delivery key resolved via the IAPI and cached on the session.
   const envIdMatch = (returnTo ?? "").match(ENVID_RE);
   const envId = envIdMatch?.[1];
-  if (envId) {
+  if (envId && !isDefaultEnv(envId)) {
     const apiKey = await loadPreviewApiKey({
       accessToken: tokens.access_token,
       environmentId: envId,
