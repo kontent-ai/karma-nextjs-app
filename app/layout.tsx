@@ -19,8 +19,9 @@ const abhayaLibre = Abhaya_Libre({
 });
 
 export const metadata: Metadata = {
-  title: "Kontent.ai Kickstart",
-  description: "Get started quickly with Kontent.ai using our Kickstart application template.",
+  title: "Kontent.ai Karma Health Sample",
+  description:
+    "Next.js sample app for the Karma Health site, showcasing the Kontent.ai Delivery SDK, Draft Mode preview, and Smart Link in-context editing.",
   icons: {
     icon: "/kaipurple.png",
   },
