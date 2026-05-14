@@ -8,7 +8,7 @@ import {
 const KONTENT_HOST = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
 
 const sdkInfo: SdkInfo = {
-  name: "karma-devrel-demo",
+  name: "karma-nextjs-app",
   version: "0.0.0",
   host: "npmjs.com",
 };
