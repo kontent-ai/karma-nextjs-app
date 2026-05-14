@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "typecheck": "tsc",
     "biome:fix": "biome check --fix .",
     "biome:check": "biome check .",
     "biome:ci": "biome ci .",
