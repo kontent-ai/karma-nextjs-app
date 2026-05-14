@@ -35,7 +35,7 @@ const buildSessionOptions = (): SessionOptions => ({
 export const getSession = async () =>
   getIronSession<SessionData>(await cookies(), buildSessionOptions());
 
-export const getSessionFromRequest = (req: NextRequest, res: NextResponse) =>
+export const getSessionFromRequest = async (req: NextRequest, res: NextResponse) =>
   getIronSession<SessionData>(req, res, buildSessionOptions());
 
 // In-flight OAuth login state — set on /auth/login, consumed once on /callback.

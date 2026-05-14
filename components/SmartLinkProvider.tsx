@@ -4,7 +4,7 @@ import KontentSmartLink, { KontentSmartLinkEvent } from "@kontent-ai/smart-link"
 import { useRouter } from "next/navigation";
 import { type FC, type PropsWithChildren, useEffect, useState } from "react";
 
-const baseUrl = process.env.NEXT_PUBLIC_KONTENT_URL || "kontent.ai";
+const baseUrl = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
 
 type Props = PropsWithChildren<
   Readonly<{
