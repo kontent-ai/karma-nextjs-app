@@ -1,7 +1,7 @@
 import { createDeliveryClient } from "@kontent-ai/delivery-sdk";
 import type { CoreClientTypes } from "@/model/index.ts";
 
-const url = process.env.NEXT_PUBLIC_KONTENT_URL || "kontent.ai";
+const url = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
 
 type Args = Readonly<{
   environmentId: string;
