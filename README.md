@@ -9,7 +9,6 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
 
 - **Delivery SDK** with strongly-typed content via generated models (`utils/client.server.ts`, `model/`)
 - **Draft Mode preview** — uses Next.js Draft Mode to preview unpublished content. Toggle it through the `/api/preview/enable` and `/api/preview/disable` routes; while enabled, pages render preview data instead of published content.
-- **Multi-environment preview** — sign in with Auth0 to preview any Kontent.ai environment you have access to under the `/envid/[envId]` route tree (see [Multi-environment preview](#multi-environment-preview) below)
 - **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`utils/richtext.tsx`)
 - **Smart Link** integration for in-context editing and live preview, mounted only while Draft Mode is enabled (`components/SmartLinkProvider.tsx`)
 - **Taxonomy-based filtering** on the research listing page (`components/research/ArticleListWithFilters.tsx`)

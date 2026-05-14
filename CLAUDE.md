@@ -1,5 +1,3 @@
-Guidance for AI agents working in this repository. This file is self-contained — do not assume any external configuration.
-
 ## What this project is
 
 A Next.js sample app on top of Kontent.ai. It mirrors the Karma healthcare site and exists as an integration reference: Delivery SDK usage, Draft Mode preview, Smart Link in-context editing, and multi-environment preview via Auth0.
