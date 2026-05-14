@@ -31,9 +31,7 @@ export const ArticleListWithFilters: FC<Props> = ({ articleTypes, articleTopics,
   const topicFilter = searchParams.get("topic");
 
   const filtered = articles
-    .filter((a) =>
-      isArticleType(typeFilter) ? a.articleTypeCodenames.includes(typeFilter) : true,
-    )
+    .filter((a) => (isArticleType(typeFilter) ? a.articleTypeCodenames.includes(typeFilter) : true))
     .filter((a) =>
       isGeneralHealthcareTopics(topicFilter) ? a.topicCodenames.includes(topicFilter) : true,
     );
