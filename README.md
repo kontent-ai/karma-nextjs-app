@@ -7,12 +7,12 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
 
 ## Demonstrated Kontent.ai Features
 
-- **Delivery SDK** with strongly-typed content via generated models (`utils/client.server.ts`, `model/`)
+- **Delivery SDK** with strongly-typed content via generated models (`src/utils/client.server.ts`, `src/model/`)
 - **Draft Mode preview** — uses Next.js Draft Mode to preview unpublished content. Toggle it through the `/api/preview/enable` and `/api/preview/disable` routes; while enabled, pages render preview data instead of published content.
-- **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`utils/richtext.tsx`)
-- **Smart Link** integration for in-context editing and live preview, mounted only while Draft Mode is enabled (`components/SmartLinkProvider.tsx`)
-- **Taxonomy-based filtering** on the research listing page (`components/research/ArticleListWithFilters.tsx`)
-- **Language switching** on research detail pages (`app/research/[slug]/[lang]/page.tsx`)
+- **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`src/utils/richtext.tsx`)
+- **Smart Link** integration for in-context editing and live preview, mounted only while Draft Mode is enabled (`src/components/SmartLinkProvider.tsx`)
+- **Taxonomy-based filtering** on the research listing page (`src/components/research/ArticleListWithFilters.tsx`)
+- **Language switching** on research detail pages (`src/app/research/[slug]/[lang]/page.tsx`)
 - **Type generation** from the Kontent.ai content model (`scripts/generateModel.ts`)
 
 ## Getting Started
@@ -41,14 +41,14 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
 
 The default content tree (`/`, `/blog`, `/research`, …) reads its delivery key from `KONTENT_DELIVERY_API_KEY` and is statically generated with ISR.
 
-On top of that, the app can preview **any other Kontent.ai environment** the signed-in user has access to. Authentication goes through Auth0 as a public client using PKCE (no Auth0 client secret). After login, the Auth0 access token is exchanged via the Kontent.ai API for that environment's Delivery preview key, which is cached in an encrypted `iron-session` cookie. These per-environment pages live under the `/envid/[envId]` route tree and are gated by `proxy.ts`, which redirects unauthenticated visitors to the login flow.
+On top of that, the app can preview **any other Kontent.ai environment** the signed-in user has access to. Authentication goes through Auth0 as a public client using PKCE (no Auth0 client secret). After login, the Auth0 access token is exchanged via the Kontent.ai API for that environment's Delivery preview key, which is cached in an encrypted `iron-session` cookie. These per-environment pages live under the `/envid/[envId]` route tree and are gated by `src/proxy.ts`, which redirects unauthenticated visitors to the login flow.
 
 ### Removing it
 
 If you only need the single default environment, you can strip the Auth0 layer out:
 
-- Delete the `app/envid/` route tree, `app/auth/`, `app/callback/`, `lib/auth0/`, `lib/iapi/`, `lib/env/resolveApiKey.ts`, `lib/sanitizeReturnTo.ts`, and `proxy.ts`.
-- Replace `components/EnvLink.tsx` with a plain `next/link`, and remove the `/envid/` prefix handling from `components/Header.tsx` and `components/Navigation.tsx`.
+- Delete the `src/app/envid/` route tree, `src/app/auth/`, `src/app/callback/`, `src/lib/auth0/`, `src/lib/iapi/`, `src/lib/env/resolveApiKey.ts`, `src/lib/sanitizeReturnTo.ts`, and `src/proxy.ts`.
+- Replace `src/components/EnvLink.tsx` with a plain `next/link`, and remove the `/envid/` prefix handling from `src/components/Header.tsx` and `src/components/Navigation.tsx`.
 - Drop the Auth0 variables from `.env.template` and uninstall the now-unused `iron-session` and `openid-client` dependencies.
 
 ## Regenerating the Model

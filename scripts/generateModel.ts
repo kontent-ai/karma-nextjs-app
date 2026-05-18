@@ -15,7 +15,7 @@ await generateDeliveryModelsAsync({
   managementApiKey: KONTENT_MANAGEMENT_API_KEY,
   addTimestamp: false,
   createFiles: true,
-  outputDir: "./model",
+  outputDir: "./src/model",
   moduleFileExtension: "ts",
   fileResolvers: {
     taxonomy: (taxonomy) => resolveCase(taxonomy.codename, "camelCase"),
