@@ -8,13 +8,13 @@ export default defineConfig([
   },
   {
     files: [
-      "app/**/*.{ts,tsx}",
-      "components/**/*.{ts,tsx}",
-      "context/**/*.{ts,tsx}",
-      "icons/**/*.{ts,tsx}",
-      "lib/**/*.{ts,tsx}",
-      "utils/**/*.{ts,tsx}",
-      "middleware.ts",
+      "src/app/**/*.{ts,tsx}",
+      "src/components/**/*.{ts,tsx}",
+      "src/hooks/**/*.{ts,tsx}",
+      "src/icons/**/*.{ts,tsx}",
+      "src/lib/**/*.{ts,tsx}",
+      "src/utils/**/*.{ts,tsx}",
+      "src/proxy.ts",
     ],
     extends: [kontentAiConfig, kontentAiReactConfig],
     languageOptions: {
