@@ -1,4 +1,6 @@
+import { draftMode } from "next/headers";
 import { TeamMember } from "@/components/screens/TeamMember.tsx";
+import { TeamMemberPreview } from "@/components/screens/TeamMemberPreview.tsx";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import type { Person } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
@@ -24,5 +26,10 @@ type Props = Readonly<{
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const { envId, apiKey } = getDefaultEnv();
-  return <TeamMember envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />;
+  const { isEnabled } = await draftMode();
+  return isEnabled ? (
+    <TeamMemberPreview envId={envId} slug={slug} />
+  ) : (
+    <TeamMember envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />
+  );
 }

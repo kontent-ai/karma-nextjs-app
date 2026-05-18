@@ -1,4 +1,6 @@
+import { draftMode } from "next/headers";
 import { BlogDetail } from "@/components/screens/BlogDetail.tsx";
+import { BlogDetailPreview } from "@/components/screens/BlogDetailPreview.tsx";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import type { BlogPost } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
@@ -24,5 +26,10 @@ type Props = Readonly<{
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const { envId, apiKey } = getDefaultEnv();
-  return <BlogDetail envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />;
+  const { isEnabled } = await draftMode();
+  return isEnabled ? (
+    <BlogDetailPreview envId={envId} slug={slug} />
+  ) : (
+    <BlogDetail envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />
+  );
 }

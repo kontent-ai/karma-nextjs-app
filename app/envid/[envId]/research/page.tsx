@@ -1,4 +1,5 @@
 import { draftMode } from "next/headers";
+import { SmartLinkEnvironment } from "@/components/SmartLinkProvider.tsx";
 import { Research } from "@/components/screens/Research.tsx";
 import { resolveApiKey } from "@/lib/env/resolveApiKey.ts";
 
@@ -12,5 +13,10 @@ export default async function Page({ params }: Props) {
   const { envId } = await params;
   const apiKey = await resolveApiKey(envId);
   const { isEnabled } = await draftMode();
-  return <Research envId={envId} apiKey={apiKey} isPreviewEnabled={isEnabled} />;
+  return (
+    <>
+      {isEnabled ? <SmartLinkEnvironment environmentId={envId} /> : null}
+      <Research envId={envId} apiKey={apiKey} isPreviewEnabled={isEnabled} />
+    </>
+  );
 }
