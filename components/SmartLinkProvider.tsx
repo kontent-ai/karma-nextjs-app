@@ -1,60 +1,69 @@
 "use client";
 
 import KontentSmartLink, { KontentSmartLinkEvent } from "@kontent-ai/smart-link";
-import { useRouter } from "next/navigation";
-import { type FC, type PropsWithChildren, useEffect, useState } from "react";
+import {
+  createContext,
+  type FC,
+  type PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const baseUrl = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
 
-type Props = PropsWithChildren<
-  Readonly<{
-    environmentId: string;
-  }>
->;
+type SmartLinkContextValue = Readonly<{
+  instance: KontentSmartLink | null;
+}>;
 
-export const SmartLinkProvider: FC<Props> = ({ environmentId, children }) => {
-  const router = useRouter();
-  const [smartLink, setSmartLink] = useState<KontentSmartLink | null>(null);
+const SmartLinkContext = createContext<SmartLinkContextValue>({ instance: null });
+
+export const useSmartLink = (): SmartLinkContextValue => useContext(SmartLinkContext);
+
+export const SmartLinkProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [instance, setInstance] = useState<KontentSmartLink | null>(null);
 
   useEffect(() => {
-    const instance = KontentSmartLink.initialize();
-    setSmartLink(instance);
+    const created = KontentSmartLink.initialize({ baseUrl });
+    setInstance(created);
     return () => {
-      instance.destroy();
-      setSmartLink(null);
+      created.destroy();
+      setInstance(null);
     };
   }, []);
 
+  // Register a noop Refresh handler. Not calling `original()` cancels the
+  // SDK's default Refresh behavior (full reload). Live update via the Update
+  // event is the sole rendering path.
   useEffect(() => {
-    smartLink?.setConfiguration({
+    if (!instance) {
+      return;
+    }
+    const onRefresh = () => {};
+    instance.on(KontentSmartLinkEvent.Refresh, onRefresh);
+    return () => {
+      instance.off(KontentSmartLinkEvent.Refresh, onRefresh);
+    };
+  }, [instance]);
+
+  const value = useMemo<SmartLinkContextValue>(() => ({ instance }), [instance]);
+  return <SmartLinkContext.Provider value={value}>{children}</SmartLinkContext.Provider>;
+};
+
+type EnvironmentProps = Readonly<{
+  environmentId: string;
+}>;
+
+export const SmartLinkEnvironment: FC<EnvironmentProps> = ({ environmentId }) => {
+  const { instance } = useSmartLink();
+  useEffect(() => {
+    instance?.setConfiguration({
       defaultDataAttributes: {
         environmentId,
         languageCodename: "default",
       },
-      baseUrl,
     });
-  }, [smartLink, environmentId]);
-
-  useEffect(() => {
-    if (!smartLink) {
-      return;
-    }
-    const onRefresh = (
-      _data: unknown,
-      metadata: { manualRefresh?: boolean },
-      original: () => void,
-    ) => {
-      if (metadata.manualRefresh) {
-        original();
-      } else {
-        router.refresh();
-      }
-    };
-    smartLink.on(KontentSmartLinkEvent.Refresh, onRefresh);
-    return () => {
-      smartLink.off(KontentSmartLinkEvent.Refresh, onRefresh);
-    };
-  }, [smartLink, router]);
-
-  return <>{children}</>;
+  }, [instance, environmentId]);
+  return null;
 };

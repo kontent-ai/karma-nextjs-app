@@ -1,4 +1,6 @@
+import { draftMode } from "next/headers";
 import { ServiceDetail } from "@/components/screens/ServiceDetail.tsx";
+import { ServiceDetailPreview } from "@/components/screens/ServiceDetailPreview.tsx";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import type { Service } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
@@ -24,5 +26,10 @@ type Props = Readonly<{
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const { envId, apiKey } = getDefaultEnv();
-  return <ServiceDetail envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />;
+  const { isEnabled } = await draftMode();
+  return isEnabled ? (
+    <ServiceDetailPreview envId={envId} slug={slug} />
+  ) : (
+    <ServiceDetail envId={envId} apiKey={apiKey} isPreviewEnabled={false} slug={slug} />
+  );
 }

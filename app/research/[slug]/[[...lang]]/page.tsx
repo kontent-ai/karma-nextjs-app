@@ -1,5 +1,7 @@
+import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { ResearchDetail } from "@/components/screens/ResearchDetail.tsx";
+import { ResearchDetailPreview } from "@/components/screens/ResearchDetailPreview.tsx";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import { NON_DEFAULT_LANGUAGES, parseLangSegment } from "@/lib/i18n.ts";
 import type { Article } from "@/model/index.ts";
@@ -45,7 +47,10 @@ export default async function Page({ params }: Props) {
     notFound();
   }
   const { envId, apiKey } = getDefaultEnv();
-  return (
+  const { isEnabled } = await draftMode();
+  return isEnabled ? (
+    <ResearchDetailPreview envId={envId} slug={slug} lang={parsedLang} />
+  ) : (
     <ResearchDetail
       envId={envId}
       apiKey={apiKey}
