@@ -1,22 +1,22 @@
 "use client";
 
-import NextLink from "next/link";
-import { usePathname } from "next/navigation";
 import type { ComponentProps, FC } from "react";
+import { Link, usePathname } from "@/i18n/routing.ts";
 
-type Props = Omit<ComponentProps<typeof NextLink>, "href"> &
+type Props = Omit<ComponentProps<typeof Link>, "href"> &
   Readonly<{
     href: string;
   }>;
 
-const isInternalAbsolute = (href: string) => href.startsWith("/");
 const ENV_PREFIX_PATTERN = /^\/envid\/[^/]+/;
+
+const isInternalAbsolute = (href: string) => href.startsWith("/");
 
 export const EnvLink: FC<Props> = ({ href, ...rest }) => {
   const pathname = usePathname();
   const envMatch = pathname.match(ENV_PREFIX_PATTERN);
-  const urlPrefix = envMatch?.[0] ?? "";
+  const envPrefix = envMatch?.[0] ?? "";
 
-  const finalHref = isInternalAbsolute(href) ? `${urlPrefix}${href}` : href;
-  return <NextLink href={finalHref} {...rest} />;
+  const finalHref = isInternalAbsolute(href) ? `${envPrefix}${href}` : href;
+  return <Link href={finalHref} {...rest} />;
 };

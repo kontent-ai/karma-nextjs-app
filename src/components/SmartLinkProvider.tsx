@@ -53,17 +53,18 @@ export const SmartLinkProvider: FC<PropsWithChildren> = ({ children }) => {
 
 type EnvironmentProps = Readonly<{
   environmentId: string;
+  languageCodename: string;
 }>;
 
-export const SmartLinkEnvironment: FC<EnvironmentProps> = ({ environmentId }) => {
+export const SmartLinkEnvironment: FC<EnvironmentProps> = ({ environmentId, languageCodename }) => {
   const { instance } = useSmartLink();
   useEffect(() => {
     instance?.setConfiguration({
       defaultDataAttributes: {
         environmentId,
-        languageCodename: "default",
+        languageCodename,
       },
     });
-  }, [instance, environmentId]);
+  }, [instance, environmentId, languageCodename]);
   return null;
 };

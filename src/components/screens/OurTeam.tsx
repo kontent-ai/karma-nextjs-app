@@ -4,6 +4,7 @@ import { PortableText } from "@kontent-ai/rich-text-resolver-react";
 import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
 import { TeamMemberList } from "@/components/team/TeamMemberList.tsx";
+import type { SupportedLanguage } from "@/i18n/routing.ts";
 import type { Page, Person } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
@@ -13,14 +14,16 @@ type Props = Readonly<{
   envId: string;
   apiKey: string;
   isPreviewEnabled: boolean;
+  locale: SupportedLanguage;
 }>;
 
-export const OurTeam = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
+export const OurTeam = async ({ envId, apiKey, isPreviewEnabled, locale }: Props) => {
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
 
   const [teamPage, teamMembers] = await Promise.all([
     client
       .item<Page>("our_team")
+      .languageParameter(locale)
       .toPromise()
       .then((res) => res.data)
       .catch((err) => {
@@ -32,6 +35,8 @@ export const OurTeam = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
     client
       .items<Person>()
       .type("person")
+      .languageParameter(locale)
+      .equalsFilter("system.language", locale)
       .toPromise()
       .then((res) => res.data.items),
   ]);

@@ -1,6 +1,7 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { ButtonLink } from "@/components/ButtonLink.tsx";
 import { ImageWithTag } from "@/components/ImageWithTag.tsx";
@@ -9,6 +10,8 @@ import { PageSection } from "@/components/PageSection.tsx";
 import { ArticleListWithFilters } from "@/components/research/ArticleListWithFilters.tsx";
 import type { SelectorOption } from "@/components/Selector.tsx";
 import { Tags } from "@/components/Tags.tsx";
+import type { SupportedLanguage } from "@/i18n/routing.ts";
+import { translateTaxonomyTerm } from "@/lib/taxonomies.ts";
 import type { Article, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
@@ -18,14 +21,13 @@ type Props = Readonly<{
   envId: string;
   apiKey: string;
   isPreviewEnabled: boolean;
+  locale: SupportedLanguage;
 }>;
 
-const selectTaxonomyOptions = (taxonomy: {
-  terms: ReadonlyArray<{ name: string; codename: string }>;
-}): ReadonlyArray<SelectorOption> => [
-  { label: "All", codename: "all" },
-  ...taxonomy.terms.map((t) => ({ label: t.name, codename: t.codename })),
-];
+const LOCALE_TO_BCP47: Record<SupportedLanguage, string> = {
+  default: "en-US",
+  "es-ES": "es-ES",
+};
 
 type FeaturedArticleViewProps = Readonly<{
   image: { url: string; alt: string; width: number; height: number };
@@ -34,6 +36,8 @@ type FeaturedArticleViewProps = Readonly<{
   tags: ReadonlyArray<string>;
   description: string;
   urlSlug: string;
+  readMoreLabel: string;
+  featuredLabel: string;
 }>;
 
 const FeaturedArticleView = ({
@@ -43,11 +47,13 @@ const FeaturedArticleView = ({
   tags,
   description,
   urlSlug,
+  readMoreLabel,
+  featuredLabel,
 }: FeaturedArticleViewProps) => (
   <div className="flex flex-col lg:flex-row items-center pt-[104px] pb-[120px] gap-12">
     <ImageWithTag
       image={{ url: image.url, alt: image.alt, width: image.width, height: image.height }}
-      tagText="Featured Article"
+      tagText={featuredLabel}
       className="lg:basis-1/2 xl:basis-2/5"
     />
     <div className="lg:basis-1/2 xl:basis-3/5">
@@ -56,18 +62,23 @@ const FeaturedArticleView = ({
       <Tags tags={tags} className="mt-4" />
       <p className="text-body-lg text-body-color pt-3">{description}</p>
       <ButtonLink href={`/research/${urlSlug}`} className="mt-6">
-        Read More
+        {readMoreLabel}
       </ButtonLink>
     </div>
   </div>
 );
 
-export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
+export const Research = async ({ envId, apiKey, isPreviewEnabled, locale }: Props) => {
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
+  const t = await getTranslations({ locale });
+  const tArticleType = await getTranslations({ locale, namespace: "articleType" });
+  const tTopics = await getTranslations({ locale, namespace: "generalHealthcareTopics" });
+  const bcp47 = LOCALE_TO_BCP47[locale];
 
-  const [articlesPage, articlesTypes, articlesTopics, articles] = await Promise.all([
+  const [articlesPage, articleTypeTerms, topicTerms, articles] = await Promise.all([
     client
       .item<Page>("research")
+      .languageParameter(locale)
       .toPromise()
       .then((res) => res.data)
       .catch((err) => {
@@ -79,14 +90,16 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
     client
       .taxonomy("article_type")
       .toPromise()
-      .then((res) => selectTaxonomyOptions(res.data.taxonomy)),
+      .then((res) => res.data.taxonomy.terms),
     client
       .taxonomy("general_healthcare_topics")
       .toPromise()
-      .then((res) => selectTaxonomyOptions(res.data.taxonomy)),
+      .then((res) => res.data.taxonomy.terms),
     client
       .items<Article>()
       .type("article")
+      .languageParameter(locale)
+      .equalsFilter("system.language", locale)
       .orderByDescending("elements.publish_date")
       .toPromise()
       .then((res) => res.data.items),
@@ -95,6 +108,36 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
   if (!articlesPage) {
     return <div className="flex-grow" />;
   }
+
+  const allLabel = t("filters.all");
+  const articlesTypes: ReadonlyArray<SelectorOption> = [
+    { label: allLabel, codename: "all" },
+    ...articleTypeTerms.map((term) => ({
+      label: translateTaxonomyTerm(tArticleType, term.codename, term.name),
+      codename: term.codename,
+    })),
+  ];
+  const articlesTopics: ReadonlyArray<SelectorOption> = [
+    { label: allLabel, codename: "all" },
+    ...topicTerms.map((term) => ({
+      label: translateTaxonomyTerm(tTopics, term.codename, term.name),
+      codename: term.codename,
+    })),
+  ];
+
+  const formatLongDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(bcp47, {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  const formatShortDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(bcp47, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
 
   const featured = articles[0];
   const featuredArticle = featured
@@ -106,14 +149,12 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
           height: 440,
         },
         title: featured.elements.title.value,
-        published: `Published on ${new Date(
+        published: `${t("article.publishedOn")} ${formatShortDate(
           featured.elements.publish_date.value ?? "",
-        ).toLocaleDateString("en-US", {
-          month: "short",
-          year: "numeric",
-          day: "numeric",
-        })}`,
-        tags: featured.elements.topics.value.map((t) => t.name),
+        )}`,
+        tags: featured.elements.topics.value.map((tag) =>
+          translateTaxonomyTerm(tTopics, tag.codename, tag.name),
+        ),
         description: featured.elements.introduction.value,
         urlSlug: featured.elements.url_slug.value,
       }
@@ -127,16 +168,14 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
     title: article.elements.title.value,
     introduction: article.elements.introduction.value,
     publishDate: article.elements.publish_date.value
-      ? new Date(article.elements.publish_date.value).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        })
-      : "No date",
-    topics: article.elements.topics.value.map((t) => t.name),
+      ? formatLongDate(article.elements.publish_date.value)
+      : t("article.noDate"),
+    topics: article.elements.topics.value.map((tag) =>
+      translateTaxonomyTerm(tTopics, tag.codename, tag.name),
+    ),
     urlSlug: article.elements.url_slug.value,
-    articleTypeCodenames: article.elements.article_type.value.map((t) => t.codename),
-    topicCodenames: article.elements.topics.value.map((t) => t.codename),
+    articleTypeCodenames: article.elements.article_type.value.map((tag) => tag.codename),
+    topicCodenames: article.elements.topics.value.map((tag) => tag.codename),
   }));
 
   return (
@@ -178,7 +217,11 @@ export const Research = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
       <PageSection color="bg-burgundy">
         {featuredArticle ? (
           <div className="burgundy-theme">
-            <FeaturedArticleView {...featuredArticle} />
+            <FeaturedArticleView
+              {...featuredArticle}
+              readMoreLabel={t("cta.readMore")}
+              featuredLabel={t("featured.article")}
+            />
           </div>
         ) : null}
       </PageSection>

@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "ourTeam": "Nuestro Equipo",
+    "research": "Investigación",
+    "blog": "Blog",
+    "logoAriaLabel": "Inicio de Karma Health"
+  },
+  "footer": {
+    "copyright": "©{year} Karma Health, LLC. Todos los derechos reservados."
+  },
+  "errors": {
+    "pageNotFound": "Página no encontrada",
+    "pageNotFoundDescription": "La página que buscas puede haber sido eliminada, haber cambiado de nombre o no estar disponible temporalmente.",
+    "returnHome": "Volver al inicio",
+    "oops": "Vaya",
+    "somethingWentWrong": "Algo salió mal",
+    "errorDescription": "Hemos encontrado un error inesperado al cargar esta página. Inténtalo de nuevo o vuelve a la página de inicio.",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "filters": {
+    "all": "Todos",
+    "articleType": "Tipo de artículo",
+    "articleTopic": "Tema del artículo"
+  },
+  "cta": {
+    "readMore": "Leer más",
+    "learnMore": "Saber más"
+  },
+  "article": {
+    "by": "Por",
+    "publishedOn": "Publicado el",
+    "typeLabel": "Artículo",
+    "authorHeading": "Autor",
+    "relatedArticles": "Artículos relacionados",
+    "noDate": "Sin fecha"
+  },
+  "articles": {
+    "noArticles": "No hay artículos disponibles"
+  },
+  "services": {
+    "noServices": "No hay servicios disponibles"
+  },
+  "featured": {
+    "article": "Artículo destacado",
+    "event": "Evento destacado"
+  },
+  "notTranslated": {
+    "title": "Aún no traducido",
+    "description": "Lo sentimos, esta página aún no se ha traducido a {language}.",
+    "backHome": "Volver al inicio"
+  },
+  "blogIndex": {
+    "title": "Blog",
+    "intro": "Bienvenido a la sección del blog de Karma Health, donde compartimos liderazgo de pensamiento y artículos atractivos escritos por expertos de nuestra institución. Estate atento a las últimas tendencias, investigaciones y debates en el sector sanitario."
+  },
+  "blogPost": {
+    "typeLabel": "Entrada del blog"
+  },
+  "serviceDetail": {
+    "typeLabel": "Servicio",
+    "medicalSpecialties": "Especialidades médicas",
+    "team": "Equipo"
+  },
+  "personDetail": {
+    "typeLabel": "Persona",
+    "contact": "Contacto",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "website": "Sitio web"
+  },
+  "articleType": {
+    "clinical_guidelines": "Directrices clínicas",
+    "case_study": "Caso de estudio",
+    "research": "Investigación",
+    "healthcare_policy_update": "Actualización de política sanitaria",
+    "institutional_announcement": "Anuncio institucional",
+    "industry_updates": "Actualizaciones del sector",
+    "patient_education": "Educación al paciente",
+    "professional_training": "Formación profesional",
+    "educational": "Educativo"
+  },
+  "medicalSpecialties": {
+    "clinical_research": "Investigación clínica",
+    "cardiology": "Cardiología",
+    "dermatology": "Dermatología",
+    "endocrinology": "Endocrinología",
+    "experimental_medicine": "Medicina experimental",
+    "immunology": "Inmunología",
+    "infectious_diseases": "Enfermedades infecciosas",
+    "neurodegenerative_disorders": "Trastornos neurodegenerativos",
+    "neurology": "Neurología",
+    "oncology": "Oncología",
+    "orthopedics": "Ortopedia",
+    "pediatrics": "Pediatría"
+  },
+  "generalHealthcareTopics": {
+    "healthcare_policy___regulations": "Política y regulaciones sanitarias",
+    "medical_research___innovations": "Investigación e innovaciones médicas",
+    "health___wellness": "Salud y bienestar",
+    "preventative_care": "Atención preventiva",
+    "public_health": "Salud pública"
+  },
+  "eventType": {
+    "seminar": "Seminario",
+    "webinar": "Webinario",
+    "workshop": "Taller"
+  },
+  "eventTopic": {
+    "nutrition": "Nutrición",
+    "physical_fitness": "Actividad física",
+    "preventative_care": "Atención preventiva"
+  }
+}
