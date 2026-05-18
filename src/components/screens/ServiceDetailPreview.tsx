@@ -6,46 +6,54 @@ import {
 } from "@kontent-ai/smart-link";
 import { useCallback } from "react";
 import { SmartLinkEnvironment } from "@/components/SmartLinkProvider.tsx";
+import { NotTranslated } from "@/components/screens/NotTranslated.tsx";
 import { ServiceDetailView } from "@/components/screens/ServiceDetailView.tsx";
 import { useSmartLinkPreview } from "@/hooks/useSmartLinkPreview.ts";
+import type { SupportedLanguage } from "@/i18n/routing.ts";
 import { fetchLinkedItems, fetchScreen } from "@/lib/preview/client.ts";
+import type { LoadResult } from "@/lib/screens/types.ts";
 import type { Service } from "@/model/index.ts";
 
 type Props = Readonly<{
   envId: string;
   slug: string;
+  locale: SupportedLanguage;
 }>;
 
-export const ServiceDetailPreview = ({ envId, slug }: Props) => {
+export const ServiceDetailPreview = ({ envId, slug, locale }: Props) => {
   const initialFetch = useCallback(
-    async () => fetchScreen<Service | null>("service-detail", { envId, slug }),
-    [envId, slug],
+    async () => fetchScreen<LoadResult<Service>>("service-detail", { envId, slug, locale }),
+    [envId, slug, locale],
   );
 
   const applyUpdate = useCallback(
-    async (current: Service | null, update: IUpdateMessageData) => {
-      if (!current) {
+    async (current: LoadResult<Service>, update: IUpdateMessageData) => {
+      if (current.kind !== "found") {
         return current;
       }
-      const next = await applyUpdateOnItemAndLoadLinkedItems(current, update, async (codenames) => [
-        ...(await fetchLinkedItems(envId, codenames)),
-      ]);
-      return next as Service;
+      const next = await applyUpdateOnItemAndLoadLinkedItems(
+        current.item,
+        update,
+        async (codenames) => [...(await fetchLinkedItems(envId, codenames))],
+      );
+      return { kind: "found" as const, item: next as Service };
     },
     [envId],
   );
 
-  const { data, isLoading } = useSmartLinkPreview<Service | null>({
+  const { data, isLoading } = useSmartLinkPreview<LoadResult<Service>>({
     initialFetch,
     applyUpdate,
-    deps: [envId, slug],
+    deps: [envId, slug, locale],
   });
 
   return (
     <>
-      <SmartLinkEnvironment environmentId={envId} />
-      {data ? (
-        <ServiceDetailView service={data} />
+      <SmartLinkEnvironment environmentId={envId} languageCodename={locale} />
+      {data?.kind === "found" ? (
+        <ServiceDetailView service={data.item} />
+      ) : data?.kind === "notTranslated" ? (
+        <NotTranslated locale={locale} />
       ) : isLoading ? null : (
         <div className="flex-grow" />
       )}

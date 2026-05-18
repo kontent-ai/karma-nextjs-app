@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Abhaya_Libre, Source_Sans_3 } from "next/font/google";
 import { draftMode } from "next/headers";
-import { type ReactNode, Suspense } from "react";
-import { Footer } from "@/components/Footer.tsx";
-import { Header } from "@/components/Header.tsx";
+import type { ReactNode } from "react";
 import { SmartLinkProvider } from "@/components/SmartLinkProvider.tsx";
 import "./globals.css";
 
@@ -29,29 +27,11 @@ export const metadata: Metadata = {
   },
 };
 
-const Shell = ({ children }: Readonly<{ children: ReactNode }>) => (
-  <div className="flex flex-col min-h-screen">
-    <Suspense>
-      <Header />
-    </Suspense>
-    <div className="flex flex-col flex-1">{children}</div>
-    <Footer />
-  </div>
-);
-
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { isEnabled } = await draftMode();
   return (
     <html lang="en" className={`${sourceSans.variable} ${abhayaLibre.variable}`}>
-      <body>
-        {isEnabled ? (
-          <SmartLinkProvider>
-            <Shell>{children}</Shell>
-          </SmartLinkProvider>
-        ) : (
-          <Shell>{children}</Shell>
-        )}
-      </body>
+      <body>{isEnabled ? <SmartLinkProvider>{children}</SmartLinkProvider> : <>{children}</>}</body>
     </html>
   );
 }

@@ -1,0 +1,115 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "ourTeam": "Our Team",
+    "research": "Research",
+    "blog": "Blog",
+    "logoAriaLabel": "Karma Health home"
+  },
+  "footer": {
+    "copyright": "©{year} Karma Health, LLC. All Rights Reserved."
+  },
+  "errors": {
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+    "returnHome": "Return to Home",
+    "oops": "Oops",
+    "somethingWentWrong": "Something went wrong",
+    "errorDescription": "We hit an unexpected error while loading this page. Please try again, or head back to the homepage.",
+    "tryAgain": "Try again"
+  },
+  "filters": {
+    "all": "All",
+    "articleType": "Article Type",
+    "articleTopic": "Article Topic"
+  },
+  "cta": {
+    "readMore": "Read more",
+    "learnMore": "Learn more"
+  },
+  "article": {
+    "by": "By",
+    "publishedOn": "Published on",
+    "typeLabel": "Article",
+    "authorHeading": "Author",
+    "relatedArticles": "Related articles",
+    "noDate": "No date"
+  },
+  "articles": {
+    "noArticles": "No articles available"
+  },
+  "services": {
+    "noServices": "No services available"
+  },
+  "featured": {
+    "article": "Featured Article",
+    "event": "Featured Event"
+  },
+  "notTranslated": {
+    "title": "Not translated yet",
+    "description": "Sorry, this page hasn't been translated to {language} yet.",
+    "backHome": "Back to home"
+  },
+  "blogIndex": {
+    "title": "Blog",
+    "intro": "Welcome to the Karma Health blog section, where we share insightful thought leadership and engaging blog posts from experts within our institution. Stay tuned for the latest trends, research, and discussions in the healthcare industry."
+  },
+  "blogPost": {
+    "typeLabel": "Blog Post"
+  },
+  "serviceDetail": {
+    "typeLabel": "Service",
+    "medicalSpecialties": "Medical Specialties",
+    "team": "Team"
+  },
+  "personDetail": {
+    "typeLabel": "Person",
+    "contact": "Contact",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website"
+  },
+  "articleType": {
+    "clinical_guidelines": "Clinical Guidelines",
+    "case_study": "Case Study",
+    "research": "Research",
+    "healthcare_policy_update": "Healthcare Policy Update",
+    "institutional_announcement": "Institutional Announcement",
+    "industry_updates": "Industry Updates",
+    "patient_education": "Patient Education",
+    "professional_training": "Professional Training",
+    "educational": "Educational"
+  },
+  "medicalSpecialties": {
+    "clinical_research": "Clinical Research",
+    "cardiology": "Cardiology",
+    "dermatology": "Dermatology",
+    "endocrinology": "Endocrinology",
+    "experimental_medicine": "Experimental Medicine",
+    "immunology": "Immunology",
+    "infectious_diseases": "Infectious Diseases",
+    "neurodegenerative_disorders": "Neurodegenerative Disorders",
+    "neurology": "Neurology",
+    "oncology": "Oncology",
+    "orthopedics": "Orthopedics",
+    "pediatrics": "Pediatrics"
+  },
+  "generalHealthcareTopics": {
+    "healthcare_policy___regulations": "Healthcare Policy & Regulations",
+    "medical_research___innovations": "Medical Research & Innovations",
+    "health___wellness": "Health & Wellness",
+    "preventative_care": "Preventative Care",
+    "public_health": "Public Health"
+  },
+  "eventType": {
+    "seminar": "Seminar",
+    "webinar": "Webinar",
+    "workshop": "Workshop"
+  },
+  "eventTopic": {
+    "nutrition": "Nutrition",
+    "physical_fitness": "Physical Fitness",
+    "preventative_care": "Preventative Care"
+  }
+}

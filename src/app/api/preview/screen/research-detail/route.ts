@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { DEFAULT_LANGUAGE, type SupportedLanguage } from "@/lib/i18n.ts";
+import { hasLocale } from "next-intl";
+import { routing } from "@/i18n/routing.ts";
 import { withPreviewClient } from "@/lib/preview/previewClient.ts";
 import { loadResearchDetail } from "@/lib/screens/researchDetail.ts";
 
@@ -8,9 +9,12 @@ export const GET = async (req: NextRequest) => {
   if (!slug) {
     return new NextResponse("slug required", { status: 400 });
   }
-  const lang = (req.nextUrl.searchParams.get("lang") ?? DEFAULT_LANGUAGE) as SupportedLanguage;
+  const raw = req.nextUrl.searchParams.get("locale") ?? routing.defaultLocale;
+  if (!hasLocale(routing.locales, raw)) {
+    return new NextResponse("invalid locale", { status: 400 });
+  }
   return await withPreviewClient(
     req,
-    async ({ client }) => await loadResearchDetail(client, slug, lang),
+    async ({ client }) => await loadResearchDetail(client, slug, raw),
   );
 };

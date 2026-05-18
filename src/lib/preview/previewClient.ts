@@ -1,4 +1,5 @@
 import type { IDeliveryClient } from "@kontent-ai/delivery-sdk";
+import { stringify } from "flatted";
 import { draftMode } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 import { getDefaultEnv, isDefaultEnv } from "@/lib/env/defaultEnv.ts";
@@ -35,5 +36,11 @@ export const withPreviewClient = async <T>(
 
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled: true });
   const data = await handler({ client, envId, searchParams });
-  return NextResponse.json(data);
+  // Kontent's Delivery SDK resolves linkedItems by reference, producing cycles
+  // in the in-memory graph that break JSON.stringify. `flatted` serializes
+  // cycles into a flat reference array; the client decodes it with the same
+  // library to reconstruct the original tree.
+  return new NextResponse(stringify(data), {
+    headers: { "content-type": "application/json" },
+  });
 };

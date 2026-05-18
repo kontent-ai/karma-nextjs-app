@@ -1,5 +1,6 @@
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { useTranslations } from "next-intl";
 import type { FC } from "react";
 import { ArticleList } from "@/components/articles/ArticleList.tsx";
 import { EnvLink } from "@/components/EnvLink.tsx";
@@ -7,9 +8,16 @@ import { KontentImage } from "@/components/KontentImage.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
 import { PersonCard } from "@/components/PersonCard.tsx";
 import { Tags } from "@/components/Tags.tsx";
-import type { Article, LanguageCodenames } from "@/model/index.ts";
+import type { SupportedLanguage } from "@/i18n/routing.ts";
+import { translateTaxonomyTerm } from "@/lib/taxonomies.ts";
+import type { Article } from "@/model/index.ts";
 import { defaultPortableRichTextResolvers } from "@/utils/richtext.tsx";
 import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
+
+const LOCALE_TO_BCP47: Record<SupportedLanguage, string> = {
+  default: "en-US",
+  "es-ES": "es-ES",
+};
 
 type AuthorCardProps = Readonly<{
   prefix?: string;
@@ -19,7 +27,8 @@ type AuthorCardProps = Readonly<{
   publishDate?: string;
   image: { url: string; alt: string };
   codename: string;
-  language: LanguageCodenames;
+  byLabel: string;
+  publishedOnLabel: string;
 }>;
 
 const HeroImageAuthorCard = ({
@@ -30,7 +39,8 @@ const HeroImageAuthorCard = ({
   publishDate,
   image,
   codename,
-  language,
+  byLabel,
+  publishedOnLabel,
 }: AuthorCardProps) => (
   <div className="flex items-center gap-4">
     <KontentImage
@@ -42,7 +52,7 @@ const HeroImageAuthorCard = ({
     />
     <div className="flex flex-col">
       <div className="flex items-center">
-        <span className="text-white text-body-md">{language === "es-ES" ? "Por" : "By"}&nbsp;</span>
+        <span className="text-white text-body-md">{byLabel}&nbsp;</span>
         <EnvLink
           href={`/our-team/${codename}`}
           className="text-white text-body-md font-bold hover:text-burgundy underline"
@@ -54,7 +64,7 @@ const HeroImageAuthorCard = ({
       </div>
       {publishDate ? (
         <p className="text-body-md text-white">
-          {language === "es-ES" ? "Publicado en" : "Published on"} {publishDate}
+          {publishedOnLabel} {publishDate}
         </p>
       ) : null}
     </div>
@@ -63,14 +73,20 @@ const HeroImageAuthorCard = ({
 
 type Props = Readonly<{
   article: Article;
+  locale: SupportedLanguage;
 }>;
 
-export const ResearchDetailView: FC<Props> = ({ article }) => {
+export const ResearchDetailView: FC<Props> = ({ article, locale }) => {
+  const t = useTranslations();
+  const tTopics = useTranslations("generalHealthcareTopics");
+  const bcp47 = LOCALE_TO_BCP47[locale];
+
   const formattedDate = article.elements.publish_date.value
-    ? new Date(article.elements.publish_date.value).toLocaleDateString(
-        article.system.language === "es-ES" ? "es-ES" : "en-US",
-        { year: "numeric", month: "long", day: "numeric" },
-      )
+    ? new Date(article.elements.publish_date.value).toLocaleDateString(bcp47, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
     : "";
 
   const author = article.elements.author?.linkedItems[0];
@@ -83,7 +99,9 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
       }
     : null;
 
-  const topicNames = article.elements.topics.value.map((t) => t.name);
+  const topicNames = article.elements.topics.value.map((term) =>
+    translateTaxonomyTerm(tTopics, term.codename, term.name),
+  );
 
   const relatedArticleItems = article.elements.related_articles.linkedItems.map((rel) => ({
     title: rel.elements.title.value,
@@ -94,7 +112,9 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
     urlSlug: rel.elements.url_slug.value,
     introduction: rel.elements.introduction.value,
     publishDate: rel.elements.publish_date.value ?? "",
-    topics: rel.elements.topics.value.map((t) => t.name),
+    topics: rel.elements.topics.value.map((term) =>
+      translateTaxonomyTerm(tTopics, term.codename, term.name),
+    ),
   }));
 
   return (
@@ -103,7 +123,7 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
         <div className="azure-theme flex flex-col-reverse gap-16 lg:flex-row items-center pt-[104px] pb-[160px]">
           <div className="flex flex-col flex-1 gap-6">
             <div className="w-fit text-xs text-body-color border tracking-wider font-[700] border-tag-border-color px-4 py-2 rounded-lg uppercase">
-              {article.system.language === "es-ES" ? "Artículo" : "Article"}
+              {t("article.typeLabel")}
             </div>
             <h1
               className="text-heading-1 leading-[84%] text-heading-1-color"
@@ -121,10 +141,11 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
                 publishDate={formattedDate}
                 image={authorImage}
                 codename={author.system.codename}
-                language={article.system.language}
+                byLabel={t("article.by")}
+                publishedOnLabel={t("article.publishedOn")}
               />
             ) : null}
-            {topicNames.length > 0 && article.system.language === "default" ? (
+            {topicNames.length > 0 ? (
               <Tags
                 tags={topicNames}
                 orientation="horizontal"
@@ -172,7 +193,7 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
       {author && authorImage ? (
         <PageSection color="bg-creme">
           <div className="creme-theme flex gap-24 max-w-[728px] mx-auto py-[104px] items-center ">
-            <h2 className="text-heading-2 text-heading-2-color">Author</h2>
+            <h2 className="text-heading-2 text-heading-2-color">{t("article.authorHeading")}</h2>
             <div className="text-body-lg text-body-color">
               <PersonCard
                 prefix={author.elements.prefix?.value}
@@ -191,7 +212,7 @@ export const ResearchDetailView: FC<Props> = ({ article }) => {
       {relatedArticleItems.length > 0 ? (
         <PageSection color="bg-white">
           <div className="flex flex-col max-w-6xl mx-auto py-[104px]">
-            <h2 className="text-heading-2 text-heading-2-color">Related articles</h2>
+            <h2 className="text-heading-2 text-heading-2-color">{t("article.relatedArticles")}</h2>
             <ArticleList articles={relatedArticleItems} />
           </div>
         </PageSection>

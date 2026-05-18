@@ -1,4 +1,5 @@
 import type { IContentItem } from "@kontent-ai/delivery-sdk";
+import { parse } from "flatted";
 
 export const fetchScreen = async <T>(
   name: string,
@@ -9,7 +10,7 @@ export const fetchScreen = async <T>(
   if (!res.ok) {
     throw new Error(`Preview screen fetch failed: ${res.status}`);
   }
-  return (await res.json()) as T;
+  return parse(await res.text()) as T;
 };
 
 export const fetchLinkedItems = async (
@@ -24,5 +25,5 @@ export const fetchLinkedItems = async (
   if (!res.ok) {
     throw new Error(`Preview linked-items fetch failed: ${res.status}`);
   }
-  return (await res.json()) as ReadonlyArray<IContentItem>;
+  return parse(await res.text()) as ReadonlyArray<IContentItem>;
 };

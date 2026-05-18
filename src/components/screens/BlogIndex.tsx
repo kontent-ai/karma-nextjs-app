@@ -1,8 +1,10 @@
 import { DeliveryError } from "@kontent-ai/delivery-sdk";
 import { transformToPortableText } from "@kontent-ai/rich-text-resolver";
 import { PortableText } from "@kontent-ai/rich-text-resolver-react";
+import { getTranslations } from "next-intl/server";
 import { BlogList } from "@/components/blog/BlogList.tsx";
 import { PageSection } from "@/components/PageSection.tsx";
+import type { SupportedLanguage } from "@/i18n/routing.ts";
 import type { BlogPost, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
@@ -12,14 +14,17 @@ type Props = Readonly<{
   envId: string;
   apiKey: string;
   isPreviewEnabled: boolean;
+  locale: SupportedLanguage;
 }>;
 
-export const BlogIndex = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
+export const BlogIndex = async ({ envId, apiKey, isPreviewEnabled, locale }: Props) => {
   const client = getDeliveryClient({ environmentId: envId, apiKey, isPreviewEnabled });
+  const t = await getTranslations({ locale, namespace: "blogIndex" });
 
   const [blogPage, blogs] = await Promise.all([
     client
       .item<Page>("blog")
+      .languageParameter(locale)
       .toPromise()
       .then((res) => res.data)
       .catch((err) => {
@@ -31,6 +36,8 @@ export const BlogIndex = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
     client
       .items<BlogPost>()
       .type("blog_post")
+      .languageParameter(locale)
+      .equalsFilter("system.language", locale)
       .toPromise()
       .then((res) => res.data.items),
   ]);
@@ -51,12 +58,8 @@ export const BlogIndex = async ({ envId, apiKey, isPreviewEnabled }: Props) => {
     <div>
       <PageSection color="bg-creme">
         <div className="flex flex-col xl:flex-row gap-4 xl:gap-40 pt-28 pb-32 items-center">
-          <h1 className="text-8xl text-burgundy font-bold font-libre">Blog</h1>
-          <p className="max-w-3xl text-xl leading-relaxed text-gray font-sans">
-            Welcome to the Karma Health blog section, where we share insightful thought leadership
-            and engaging blog posts from experts within our institution. Stay tuned for the latest
-            trends, research, and discussions in the healthcare industry.
-          </p>
+          <h1 className="text-8xl text-burgundy font-bold font-libre">{t("title")}</h1>
+          <p className="max-w-3xl text-xl leading-relaxed text-gray font-sans">{t("intro")}</p>
         </div>
       </PageSection>
       {!isEmptyRichText(blogPage.item.elements.body.value) && (
