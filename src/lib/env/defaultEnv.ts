@@ -11,6 +11,6 @@ export const getDefaultEnv = () => ({
 });
 
 // The default environment's delivery key lives in env vars, so it never needs
-// a per-tenant key resolved from the session via the IAPI.
+// a per-tenant key resolved from the session via Kontent's internal API.
 export const isDefaultEnv = (envId: string): boolean =>
   envId === process.env.KONTENT_ENVIRONMENT_ID;

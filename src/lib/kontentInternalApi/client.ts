@@ -18,17 +18,17 @@ const baseUrl: BaseUrl = {
   host: `app.${KONTENT_HOST}`,
 };
 
-export const iapiUrl = (base: BaseUrl, path: string): URL =>
+export const internalApiUrl = (base: BaseUrl, path: string): URL =>
   new URL(path, `${base.protocol}://${base.host}`);
 
-export type IapiClient = Readonly<{
+export type InternalApiClient = Readonly<{
   config: SdkConfig;
   sdkInfo: SdkInfo;
   urlBase: BaseUrl;
   token: string;
 }>;
 
-export const createIapiClient = (token: string): IapiClient => ({
+export const createInternalApiClient = (token: string): InternalApiClient => ({
   config: {
     baseUrl,
     httpService: getDefaultHttpService({
