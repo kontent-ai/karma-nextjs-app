@@ -8,7 +8,6 @@ import type { SupportedLanguage } from "@/i18n/routing.ts";
 import type { BlogPost, Page } from "@/model/index.ts";
 import { getDeliveryClient } from "@/utils/client.server.ts";
 import { defaultPortableRichTextResolvers, isEmptyRichText } from "@/utils/richtext.tsx";
-import { createElementSmartLink, createItemSmartLink } from "@/utils/smartlink.ts";
 
 type Props = Readonly<{
   envId: string;
@@ -64,11 +63,7 @@ export const BlogIndex = async ({ envId, apiKey, isPreviewEnabled, locale }: Pro
       </PageSection>
       {!isEmptyRichText(blogPage.item.elements.body.value) && (
         <PageSection color="bg-white">
-          <div
-            className="flex flex-col pt-16 mx-auto gap-6"
-            {...createItemSmartLink(blogPage.item.system.id)}
-            {...createElementSmartLink("body")}
-          >
+          <div className="flex flex-col pt-16 mx-auto gap-6">
             <PortableText
               value={transformToPortableText(blogPage.item.elements.body.value)}
               components={defaultPortableRichTextResolvers}
