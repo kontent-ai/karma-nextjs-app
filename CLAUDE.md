@@ -2,6 +2,8 @@
 
 A Next.js sample app on top of Kontent.ai. It mirrors the Karma healthcare site and exists as an integration reference: Delivery SDK usage, Draft Mode preview, Smart Link in-context editing, and multi-environment preview via Auth0.
 
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+
 ## Tooling
 
 - Package manager is **npm**. Use `npm ci` / `npm install`, never yarn or pnpm.
