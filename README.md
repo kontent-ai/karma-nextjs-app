@@ -10,9 +10,9 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
 - **Delivery SDK** with strongly-typed content via generated models (`src/utils/client.server.ts`, `src/model/`)
 - **Draft Mode preview** — uses Next.js Draft Mode to preview unpublished content. Toggle it through the `/api/preview/enable` and `/api/preview/disable` routes; while enabled, pages render preview data instead of published content.
 - **Rich text rendering** with `@kontent-ai/rich-text-resolver-react` and custom Portable Text resolvers (`src/utils/richtext.tsx`)
-- **Smart Link** integration for in-context editing and live preview, mounted only while Draft Mode is enabled (`src/components/SmartLinkProvider.tsx`)
+- **Smart Link** in-context editing on the landing page and on detail pages for blog posts, services, research articles, and team members. The SDK is wired inside `*Preview.tsx` client components (`src/components/screens/`). Index pages intentionally have no Smart Link — editing happens on each item's detail route.
 - **Taxonomy-based filtering** on the research listing page (`src/components/research/ArticleListWithFilters.tsx`)
-- **Language switching** on research detail pages (`src/app/research/[slug]/[lang]/page.tsx`)
+- **App-wide localization** with `next-intl` under a `[locale]` segment; a global language switcher in the header swaps locales while preserving the current route (`src/components/LanguageSwitcher.tsx`).
 - **Type generation** from the Kontent.ai content model (`scripts/generateModel.ts`)
 
 ## Getting Started
@@ -47,7 +47,7 @@ On top of that, the app can preview **any other Kontent.ai environment** the sig
 
 If you only need the single default environment, you can strip the Auth0 layer out:
 
-- Delete the `src/app/envid/` route tree, `src/app/auth/`, `src/app/callback/`, `src/lib/auth0/`, `src/lib/iapi/`, `src/lib/env/resolveApiKey.ts`, `src/lib/sanitizeReturnTo.ts`, and `src/proxy.ts`.
+- Delete the `src/app/[locale]/envid/` route tree, `src/app/auth/`, `src/app/callback/`, `src/lib/auth0/`, `src/lib/kontentInternalApi/`, `src/lib/env/resolveApiKey.ts`, `src/lib/sanitizeReturnTo.ts`, and `src/proxy.ts`.
 - Replace `src/components/EnvLink.tsx` with a plain `next/link`, and remove the `/envid/` prefix handling from `src/components/Header.tsx` and `src/components/Navigation.tsx`.
 - Drop the Auth0 variables from `.env.template` and uninstall the now-unused `iron-session` and `openid-client` dependencies.
 
