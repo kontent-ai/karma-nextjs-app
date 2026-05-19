@@ -1,7 +1,5 @@
-import { createIapiClient } from "./client.ts";
-import { getApiKeyDetail } from "./endpoints/getApiKeyDetail.ts";
-import { getProjectInfo } from "./endpoints/getProjectInfo.ts";
-import { listApiKeys } from "./endpoints/listApiKeys.ts";
+import { createInternalApiClient } from "./client.ts";
+import { getApiKeyDetail, getProjectInfo, listApiKeys } from "./endpoints.ts";
 
 type LoadPreviewApiKeyDeps = Readonly<{
   accessToken: string;
@@ -12,7 +10,7 @@ export const loadPreviewApiKey = async ({
   accessToken,
   environmentId,
 }: LoadPreviewApiKeyDeps): Promise<string | null> => {
-  const client = createIapiClient(accessToken);
+  const client = createInternalApiClient(accessToken);
 
   const project = await getProjectInfo(client, environmentId).fetchSafe();
   if (!project.success) {
