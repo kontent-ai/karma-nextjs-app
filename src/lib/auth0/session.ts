@@ -13,7 +13,7 @@ export type CachedKey = Readonly<{
 }>;
 
 export type SessionData = {
-  authed?: boolean;
+  isAuthed?: boolean;
   currentKey?: CachedKey;
 };
 

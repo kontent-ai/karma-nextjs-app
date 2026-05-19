@@ -24,7 +24,7 @@ export async function proxy(req: NextRequest) {
       // Default env reads its delivery key from env vars; no per-tenant key needed.
       const hasValidKey =
         isDefaultEnv(envId) || (cached?.envId === envId && cached.expiresAt > Date.now());
-      const isValid = session.authed === true && hasValidKey;
+      const isValid = session.isAuthed === true && hasValidKey;
 
       if (!isValid) {
         const login = new URL("/auth/login", getAuth0Config().appBaseUrl);

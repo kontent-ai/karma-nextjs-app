@@ -72,7 +72,7 @@ export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: stri
   });
 
   const session = await getSession();
-  session.authed = true;
+  session.isAuthed = true;
 
   // The default env serves its key from env vars; only non-default tenants need
   // a delivery key resolved via the IAPI and cached on the session.
