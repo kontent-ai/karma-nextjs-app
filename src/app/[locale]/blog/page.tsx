@@ -1,5 +1,4 @@
 import { draftMode } from "next/headers";
-import { SmartLinkEnvironment } from "@/components/SmartLinkProvider.tsx";
 import { BlogIndex } from "@/components/screens/BlogIndex.tsx";
 import type { SupportedLanguage } from "@/i18n/routing.ts";
 import { getDefaultEnv } from "@/lib/env/defaultEnv.ts";
@@ -14,10 +13,5 @@ export default async function Page({ params }: Props) {
   const { locale } = await params;
   const { envId, apiKey } = getDefaultEnv();
   const { isEnabled } = await draftMode();
-  return (
-    <>
-      {isEnabled ? <SmartLinkEnvironment environmentId={envId} languageCodename={locale} /> : null}
-      <BlogIndex envId={envId} apiKey={apiKey} isPreviewEnabled={isEnabled} locale={locale} />
-    </>
-  );
+  return <BlogIndex envId={envId} apiKey={apiKey} isPreviewEnabled={isEnabled} locale={locale} />;
 }
