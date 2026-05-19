@@ -11,17 +11,17 @@ const KEY_TTL_MS = 8 * 60 * 60 * 1000;
 
 const configCache = new Map<string, Promise<client.Configuration>>();
 
-const getConfig = (): Promise<client.Configuration> => {
+const getConfig = async (): Promise<client.Configuration> => {
   const { domain, clientId } = getAuth0Config();
   const key = `${domain}:${clientId}`;
   const existing = configCache.get(key);
   if (existing) {
-    return existing;
+    return await existing;
   }
   // No client secret = public client; openid-client handles this transparently.
   const created = client.discovery(new URL(`https://${domain}`), clientId);
   configCache.set(key, created);
-  return created;
+  return await created;
 };
 
 const getRedirectUri = () => `${getAuth0Config().appBaseUrl}/callback`;
