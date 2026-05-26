@@ -49,6 +49,8 @@ export const useSmartLinkPreview = <T>({
     return () => {
       isCancelled = true;
     };
+    // deps are forwarded by the caller; the spread is intentional and can't be statically verified.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialFetch, ...deps]);
 
   useEffect(() => {
