@@ -2,7 +2,7 @@ import type { IDeliveryClient } from "@kontent-ai/delivery-sdk";
 import { type NextRequest, NextResponse } from "next/server";
 import { hasLocale } from "next-intl";
 import { routing, type SupportedLanguage } from "@/i18n/routing.ts";
-import { withPreviewClient } from "@/lib/preview/previewClient.ts";
+import { withPreviewClient } from "@/lib/preview/withPreviewClient.server.ts";
 import { loadBlogDetail } from "@/lib/screens/blogDetail.ts";
 import { loadLanding } from "@/lib/screens/landing.ts";
 import { loadResearchDetail } from "@/lib/screens/researchDetail.ts";
