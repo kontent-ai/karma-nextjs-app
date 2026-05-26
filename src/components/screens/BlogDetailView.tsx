@@ -34,8 +34,9 @@ export const BlogDetailView: FC<Props> = ({ post }) => {
             alt={post.elements.image?.value[0]?.description ?? ""}
             width={670}
             height={440}
-            className="rounded-lg"
+            className="rounded-lg w-full h-auto"
             isPriority={true}
+            sizes="(min-width: 1024px) 50vw, 100vw"
           />
         </div>
       </div>

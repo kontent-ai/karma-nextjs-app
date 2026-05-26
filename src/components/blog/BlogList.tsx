@@ -18,7 +18,7 @@ type BlogListProps = Readonly<{
 
 export const BlogList: FC<BlogListProps> = ({ blogs }) => (
   <div className="flex flex-col">
-    {blogs.map((blog) => (
+    {blogs.map((blog, index) => (
       <Fragment key={blog.id}>
         <PageSection color="bg-white">
           <div className="max-w-6xl mx-auto">
@@ -28,6 +28,7 @@ export const BlogList: FC<BlogListProps> = ({ blogs }) => (
               description={blog.description}
               readMoreLink={blog.readMoreLink}
               className="pt-[98px] pb-[150px]"
+              isPriority={index === 0}
             />
           </div>
         </PageSection>
