@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { withPreviewClient } from "@/lib/preview/previewClient.ts";
+import { withPreviewClient } from "@/lib/preview/withPreviewClient.server.ts";
 
 export const GET = async (req: NextRequest) =>
   await withPreviewClient(req, async ({ client, searchParams }) => {
