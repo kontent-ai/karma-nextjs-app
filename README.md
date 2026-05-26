@@ -25,7 +25,7 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/kontent-ai/karma-sample-project.git
+   git clone https://github.com/kontent-ai/karma-nextjs-app.git
    ```
 2. Install dependencies
    ```sh
@@ -37,13 +37,7 @@ A Next.js sample project built on top of Kontent.ai. It mirrors the Karma health
    npm run dev
    ```
 
-## Multi-environment preview
-
-The default content tree (`/`, `/blog`, `/research`, …) reads its delivery key from `KONTENT_DELIVERY_API_KEY` and is statically generated with ISR.
-
-On top of that, the app can preview **any other Kontent.ai environment** the signed-in user has access to. Authentication goes through Auth0 as a public client using PKCE (no Auth0 client secret). After login, the Auth0 access token is exchanged via the Kontent.ai API for that environment's Delivery preview key, which is cached in an encrypted `iron-session` cookie. These per-environment pages live under the `/envid/[envId]` route tree and are gated by `src/proxy.ts`, which redirects unauthenticated visitors to the login flow.
-
-### Removing it
+## Removing the multi-environment preview
 
 If you only need the single default environment, you can strip the Auth0 layer out:
 
@@ -70,7 +64,7 @@ Some flows require HTTPS in development — most notably the session cookie, whi
 npm run dev:https
 ```
 
-This starts Next.js with `--experimental-https`, generating a local certificate so the dev server is served over HTTPS.
+This starts Next.js with [`--experimental-https`](https://nextjs.org/docs/app/api-reference/cli/next#using-https-during-development), generating a local certificate so the dev server is served over HTTPS.
 
 ## Contributing
 
@@ -80,7 +74,7 @@ For Contributing please see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for more info
 
 Distributed under the MIT License. See [`LICENSE.md`](./LICENSE.md) for more information.
 
-[license-shield]: https://img.shields.io/github/license/kontent-ai/karma-sample-project.svg?style=for-the-badge
-[license-url]: https://github.com/kontent-ai/karma-sample-project/blob/main/LICENSE.md
+[license-shield]: https://img.shields.io/github/license/kontent-ai/karma-nextjs-app.svg?style=for-the-badge
+[license-url]: https://github.com/kontent-ai/karma-nextjs-app/blob/main/LICENSE.md
 [discussion-shield]: https://img.shields.io/discord/821885171984891914?color=%237289DA&label=Kontent%2Eai%20Discord&logo=discord&style=for-the-badge
 [discussion-url]: https://discord.com/invite/SKCxwPtevJ
