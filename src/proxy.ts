@@ -7,9 +7,16 @@ import { isDefaultEnv } from "@/lib/env/defaultEnv.ts";
 
 const intlMiddleware = createMiddleware(routing);
 
+const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // Match /envid/<id>/... with an optional non-default locale segment in front
-// (e.g. /envid/abc or /es-ES/envid/abc). The first capture is the envId.
-const ENVID_RE = /^(?:\/es-ES)?\/envid\/([^/]+)/;
+// (e.g. /envid/abc or /es-ES/envid/abc). Built from routing.locales so adding
+// a locale automatically extends the match. The first capture is the envId.
+const nonDefaultLocales = routing.locales.filter((locale) => locale !== routing.defaultLocale);
+const localePrefix = nonDefaultLocales.length
+  ? `(?:\\/(?:${nonDefaultLocales.map(escapeRegex).join("|")}))?`
+  : "";
+const ENVID_RE = new RegExp(`^${localePrefix}\\/envid\\/([^/]+)`);
 
 export async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
