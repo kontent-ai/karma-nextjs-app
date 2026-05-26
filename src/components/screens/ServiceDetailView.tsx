@@ -50,14 +50,16 @@ export const ServiceDetailView: FC<Props> = ({ service }) => {
             {...createItemSmartLink(service.system.id)}
             {...createElementSmartLink("image")}
           >
-            <KontentImage
-              src={service.elements.image.value[0]?.url}
-              alt={service.elements.image.value[0]?.description ?? ""}
-              width={670}
-              height={440}
-              className="rounded-lg w-[670px] h-[440px]"
-              isPriority={true}
-            />
+            <div className="relative w-[670px] h-[440px] max-w-full rounded-lg overflow-hidden">
+              <KontentImage
+                src={service.elements.image.value[0]?.url}
+                alt={service.elements.image.value[0]?.description ?? ""}
+                fill={true}
+                sizes="670px"
+                className="object-cover"
+                isPriority={true}
+              />
+            </div>
           </div>
         </div>
       </PageSection>

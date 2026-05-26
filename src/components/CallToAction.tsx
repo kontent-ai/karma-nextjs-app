@@ -47,13 +47,13 @@ export const CallToAction: FC<CallToActionProps> = ({
       imagePosition,
     )} items-center gap-16`}
   >
-    <div className="rounded-lg xl:w-[560px] lg:w-[420px]">
+    <div className="relative rounded-lg overflow-hidden aspect-[4/3] w-full max-w-[560px] lg:w-[420px] xl:w-[560px]">
       <KontentImage
         src={imageSrc}
         alt={imageAlt}
-        width={560}
-        height={420}
-        className="rounded object-fit"
+        fill={true}
+        sizes="(min-width: 1280px) 560px, (min-width: 1024px) 420px, 100vw"
+        className="object-cover"
       />
     </div>
 

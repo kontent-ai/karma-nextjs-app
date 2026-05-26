@@ -156,14 +156,16 @@ export const ResearchDetailView: FC<Props> = ({ article, locale }) => {
             ) : null}
           </div>
           <div className="flex-1">
-            <KontentImage
-              src={article.elements.image.value[0]?.url}
-              alt={article.elements.image.value[0]?.description ?? ""}
-              width={670}
-              height={440}
-              className="rounded-lg w-[670px] h-[440px] object-cover"
-              isPriority={true}
-            />
+            <div className="relative w-[670px] h-[440px] max-w-full rounded-lg overflow-hidden">
+              <KontentImage
+                src={article.elements.image.value[0]?.url}
+                alt={article.elements.image.value[0]?.description ?? ""}
+                fill={true}
+                sizes="670px"
+                className="object-cover"
+                isPriority={true}
+              />
+            </div>
           </div>
         </div>
       </PageSection>

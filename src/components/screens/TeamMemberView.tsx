@@ -52,17 +52,19 @@ export const TeamMemberView: FC<Props> = ({ person }) => {
             {...createItemSmartLink(person.system.id)}
             {...createElementSmartLink("image")}
           >
-            <KontentImage
-              src={person.elements.image?.value[0]?.url}
-              alt={
-                person.elements.image?.value[0]?.description ??
-                `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`
-              }
-              width={550}
-              height={440}
-              className="rounded-lg w-[550px] h-[440px] object-cover"
-              isPriority={true}
-            />
+            <div className="relative w-[550px] h-[440px] max-w-full rounded-lg overflow-hidden">
+              <KontentImage
+                src={person.elements.image?.value[0]?.url}
+                alt={
+                  person.elements.image?.value[0]?.description ??
+                  `Photo of ${person.elements.first_name?.value} ${person.elements.last_name?.value}`
+                }
+                fill={true}
+                sizes="550px"
+                className="object-cover"
+                isPriority={true}
+              />
+            </div>
           </div>
         </div>
       </PageSection>

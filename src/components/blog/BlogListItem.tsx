@@ -13,6 +13,7 @@ type BlogListItemProps = Readonly<{
   description: PortableTextObject[];
   readMoreLink: string;
   className?: string;
+  isPriority?: boolean;
 }>;
 
 export const BlogListItem: FC<BlogListItemProps> = ({
@@ -21,17 +22,19 @@ export const BlogListItem: FC<BlogListItemProps> = ({
   description,
   readMoreLink,
   className,
+  isPriority = false,
 }) => {
   const t = useTranslations();
   return (
     <div className={`flex flex-col md:flex-row gap-16 w-full ${className}`}>
-      <div className="">
+      <div className="relative shrink-0 w-[440px] h-[288px] max-w-full rounded-md overflow-hidden">
         <KontentImage
           src={imageSrc}
           alt={title}
-          width={440}
-          height={288}
-          className=" w-[440px] h-[288px] object-cover rounded-md"
+          fill={true}
+          sizes="440px"
+          className="object-cover"
+          isPriority={isPriority}
         />
       </div>
       <div className="md:w-2/3 flex flex-col justify-center gap-5">
