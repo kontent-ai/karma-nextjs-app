@@ -25,10 +25,14 @@ export const useSmartLinkPreview = <T>({
   const [isLoading, setIsLoading] = useState(true);
 
   const dataRef = useRef<T | null>(null);
-  dataRef.current = data;
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   const applyUpdateRef = useRef(applyUpdate);
-  applyUpdateRef.current = applyUpdate;
+  useEffect(() => {
+    applyUpdateRef.current = applyUpdate;
+  }, [applyUpdate]);
 
   useEffect(() => {
     let isCancelled = false;
