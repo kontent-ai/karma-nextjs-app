@@ -29,10 +29,6 @@ export default defineConfig([
       "react/jsx-max-props-per-line": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "react/jsx-wrap-multilines": "off",
-      // eslint-config-next ships newer react/react-hooks plugins than
-      // kontent-ai/eslint-config; these strict additions aren't App-Router
-      // specific, so we keep them off to match the rest of the project.
-      "react-hooks/refs": "off",
       "react-hooks/set-state-in-effect": "off",
       "react/no-unescaped-entities": "off",
     },
