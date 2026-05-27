@@ -19,4 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run biome:ci
       - run: npm run lint
-      - run: npm run build:ci
+      - run: npm run build
+        env:
+          KONTENT_ENVIRONMENT_ID: 1cd72110-0fa9-0079-fcf1-8d925301887a
+          KONTENT_DELIVERY_API_KEY: ci-stub
