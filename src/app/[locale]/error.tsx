@@ -11,7 +11,7 @@ type ErrorPageProps = Readonly<{
 
 const ErrorPage: FC<ErrorPageProps> = ({ error, reset }) => {
   const isDev = process.env.NODE_ENV === "development";
-  const detail = isDev && error instanceof Error ? error.message : null;
+  const detail = isDev ? error.message : null;
 
   return (
     <Container>
