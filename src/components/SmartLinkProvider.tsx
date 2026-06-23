@@ -10,8 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-
-const baseUrl = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
+import { kontentHost } from "@/utils/kontentHost.ts";
 
 type SmartLinkContextValue = Readonly<{
   instance: KontentSmartLink | null;
@@ -25,7 +24,7 @@ export const SmartLinkProvider: FC<PropsWithChildren> = ({ children }) => {
   const [instance, setInstance] = useState<KontentSmartLink | null>(null);
 
   useEffect(() => {
-    const created = KontentSmartLink.initialize({ baseUrl });
+    const created = KontentSmartLink.initialize({ baseUrl: kontentHost });
     setInstance(created);
     return () => {
       created.destroy();

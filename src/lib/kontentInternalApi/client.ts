@@ -4,8 +4,7 @@ import {
   type SdkConfig,
   type SdkInfo,
 } from "@kontent-ai/core-sdk";
-
-const KONTENT_HOST = process.env.NEXT_PUBLIC_KONTENT_URL ?? "kontent.ai";
+import { kontentHost } from "@/utils/kontentHost.ts";
 
 const sdkInfo: SdkInfo = {
   name: "karma-nextjs-app",
@@ -15,7 +14,7 @@ const sdkInfo: SdkInfo = {
 
 const baseUrl: BaseUrl = {
   protocol: "https",
-  host: `app.${KONTENT_HOST}`,
+  host: `app.${kontentHost}`,
 };
 
 export const internalApiUrl = (base: BaseUrl, path: string): URL =>
