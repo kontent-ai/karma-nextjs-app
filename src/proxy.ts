@@ -3,7 +3,6 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing.ts";
 import { getSessionFromRequest } from "@/lib/auth0/session.ts";
 import { isDefaultEnv } from "@/lib/env/defaultEnv.ts";
-import { getRequestOrigin } from "@/lib/requestOrigin.ts";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -34,7 +33,7 @@ export async function proxy(req: NextRequest) {
       const isValid = session.isAuthed === true && hasValidKey;
 
       if (!isValid) {
-        const login = new URL("/auth/login", getRequestOrigin(req));
+        const login = new URL("/auth/login", req.url);
         login.searchParams.set("returnTo", path + req.nextUrl.search);
         return NextResponse.redirect(login);
       }
