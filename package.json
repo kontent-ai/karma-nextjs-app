@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@kontent-ai/core-sdk": "^12.0.0-preview.29",
-    "@kontent-ai/delivery-sdk": "^16.4.3",
+    "@kontent-ai/delivery-sdk": "^16.4.8",
     "@kontent-ai/rich-text-resolver": "^3.0.2",
     "@kontent-ai/rich-text-resolver-react": "^3.0.2",
     "@kontent-ai/smart-link": "^5.0.6",
@@ -33,7 +33,7 @@
     "@biomejs/biome": "^2.3.13",
     "@kontent-ai/biome-config": "^0.7.0",
     "@kontent-ai/eslint-config": "^3.0.0",
-    "@kontent-ai/model-generator": "^10.0.0",
+    "@kontent-ai/model-generator": "^10.1.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
@@ -43,12 +43,5 @@
     "local-ssl-proxy": "^2.0.5",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
-  },
-  "overrides": {
-    "@kontent-ai/management-sdk": "^8.5.1",
-    "@kontent-ai/migration-toolkit": "^3.1.5",
-    "@kontent-ai-consulting/tools-analytics": "^0.0.12",
-    "@kontent-ai/delivery-sdk": "^16.4.3",
-    "coreSdkLegacy": "npm:@kontent-ai/core-sdk@^10.12.5"
   }
 }
