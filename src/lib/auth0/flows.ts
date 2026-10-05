@@ -1,6 +1,7 @@
 import * as client from "openid-client";
 import { isDefaultEnv } from "@/lib/env/defaultEnv.ts";
 import { loadPreviewApiKey } from "@/lib/kontentInternalApi/loadPreviewApiKey.ts";
+import { sanitizeReturnTo } from "@/lib/sanitizeReturnTo.ts";
 import { getAuth0Config } from "./config.ts";
 import { getLoginFlowSession, getSession } from "./session.ts";
 
@@ -96,7 +97,7 @@ export const handleCallback = async (callbackUrl: URL): Promise<{ returnTo: stri
   loginFlow.destroy();
   await loginFlow.save();
 
-  return { returnTo: returnTo || "/" };
+  return { returnTo: sanitizeReturnTo(returnTo) };
 };
 
 export const buildLogoutUrl = async (returnTo: string): Promise<string> => {

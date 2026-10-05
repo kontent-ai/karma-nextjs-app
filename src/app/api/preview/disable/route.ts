@@ -1,11 +1,10 @@
 import { draftMode } from "next/headers";
-import { type NextRequest, NextResponse } from "next/server";
-import { getRequestOrigin } from "@/lib/requestOrigin.ts";
+import type { NextRequest } from "next/server";
+import { redirectToPath } from "@/lib/redirectToPath.ts";
 import { sanitizeReturnTo } from "@/lib/sanitizeReturnTo.ts";
 
 export async function GET(req: NextRequest) {
   const draft = await draftMode();
   draft.disable();
-  const returnTo = sanitizeReturnTo(req.nextUrl.searchParams.get("returnTo"));
-  return NextResponse.redirect(new URL(returnTo, getRequestOrigin(req)));
+  return redirectToPath(sanitizeReturnTo(req.nextUrl.searchParams.get("returnTo")));
 }

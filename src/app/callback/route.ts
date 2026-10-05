@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { handleCallback } from "@/lib/auth0/flows.ts";
+import { redirectToPath } from "@/lib/redirectToPath.ts";
 import { getRequestOrigin } from "@/lib/requestOrigin.ts";
 
 export async function GET(req: NextRequest) {
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
     const origin = getRequestOrigin(req);
     const callbackUrl = new URL(req.nextUrl.pathname + req.nextUrl.search, origin);
     const { returnTo } = await handleCallback(callbackUrl);
-    return NextResponse.redirect(new URL(returnTo, origin));
+    return redirectToPath(returnTo);
   } catch (err) {
     console.error("Auth0 callback failed:", err);
     return new NextResponse("Authentication failed.", { status: 400 });
